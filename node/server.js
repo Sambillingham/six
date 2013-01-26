@@ -64,6 +64,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
   });
 
-}).listen(5000);
+}).listen(1883);
 
 console.log("MQTT Server: ", thisMqttServer);
