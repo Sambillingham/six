@@ -1,5 +1,4 @@
 var mqtt = require('mqttjs');
-var port = process.env.PORT || 5000;
 
 console.log('included MQTTjs...');
 console.log('Listening on' + port);
@@ -65,6 +64,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
   });
 
-}).listen(port);
+}).listen(5000);
 
 console.log("MQTT Server: ", thisMqttServer);
