@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+	<meta charset="utf-8">
+	<title>Six Client</title>
+
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+
+	</head>
+
+
+	<body>
+		<h1>Six Client</h1>
+
+		 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+		  	var socket = io.connect('http://192.168.0.20');
+
+		  		socket.on('gpslong', function (data) {
+		  			console.log(data);
+		  		//socket.emit('my other event', { my: 'data' });
+
+
+		  		});
+		</script>
+	</body>
+</html>
+
+
