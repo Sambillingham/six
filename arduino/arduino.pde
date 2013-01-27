@@ -12,6 +12,7 @@ int id = 1;
 int randomNumber = random(50,100);
 float latitude = 0;
 float longitude = 0;
+int randomNumberTwo = random(0,100);
 
 const int buttonPin = 2;     // the number of the pushbutton pin
 const int ledPin =  A5;      // the number of the LED Board pin
@@ -74,18 +75,18 @@ void setup()
     pinMode(buzzerPin, OUTPUT);
     pinMode(buttonPin, INPUT); 
     
-    Serial.println("arduino");
-    
     //Start Wifly
-  WiFly.begin();
-  
-  if (!WiFly.join(ssid, passphrase)) {
-    Serial.println("Association failed.");
-    while (1) {
-      // Hang on failure.
+    WiFly.begin();
+    
+    if (!WiFly.join(ssid, passphrase)) {
+      Serial.println("Association failed.");
+      while (1) {
+        // Hang on failure.
+      }
     }
-  }
-    Serial.println("arduino2");
+  
+    Serial.println("Associated!");
+    
     cl.connect("ardWiFly");
     Serial.println("arduino3");
     cl.subscribe(subTopic);
@@ -120,6 +121,10 @@ void loop()
         digitalWrite(ledPin, HIGH);
         //analogWrite(buzzerPin, 400);
       }
+      
+      
+        randomNumberTwo = random(0,100);
+      
       //convert longitude to char array, ready for  publishing
       char longitudeChar[20];
       dtostrf(longitude,10,6, longitudeChar);
@@ -147,5 +152,15 @@ void loop()
       Serial.print("rn: ");
       Serial.println(randomNumber);
       Serial.println(" ");
-      delay(1000);
+      
+      //convert randomNumber to char array, ready for  publishing
+      char randomNumberTwoChar[20];
+      dtostrf(randomNumberTwo, 10,6,randomNumberTwoChar);
+      
+      cl.publish("dbTestSend", randomNumberTwoChar);
+      Serial.print("rn2");
+      Serial.println(randomNumberTwo);
+      Serial.println(" ");
+      
+      delay(10000);
 }

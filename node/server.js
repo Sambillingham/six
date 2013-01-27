@@ -3,25 +3,17 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     mqtt = require('mqttjs'),
+    mongoose = require('mongoose'),
     socketsPort = 8080,
     mqttPort = 1883;
 
-
-    var gpsLat = '',
-        gpsLong = '',
-        test = '',
-        gpsLongNEW = '',
-        dbTestSendVal = '',
-        testDB='',
-        blahDB = {
-                  items: "some stuff",
-                  moreitems: "rah rah"
-                  };
 
 var gpsLat = '',
     gpsLong = '',
     test = '',
     gpsLongNEW = '',
+    dbTestSendVal = '',
+    testDB='',
     connections = {
         p1p2: "50",
         p1p3: "70",
@@ -35,8 +27,8 @@ var gpsLat = '',
         };
 
 
-//Mongoose for Mongo
-// Retrieve
+//Mongo native db connection for Mongo
+
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -54,10 +46,7 @@ MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
 
 //Mongo end
 
-//MQTT begin
 
-console.log('included MQTTjs...');
-console.log('MQTT Listening on' + mqttPort);
 
 server.listen(socketsPort);
 
@@ -76,14 +65,15 @@ app.get('/', function (req, res) {
 
               io.sockets.on('connection', function (socket) {
 
-                    console.log(' what is new gps', gpsLongNEW);
-                     socket.emit('strengthconnections', connections );
-                     socket.emit('persononedata', personOne );
-                  
-                  
-                  socket.on('my other event', function (data) {
-                      console.log(data);
-                  });
+                    socket.emit('persononedata', personOne );
+
+                    socket.on('senddata', function(){
+
+                            console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
+
+                                    socket.emit('persononedata', personOne );
+
+                    });
               });
 
             // END sockets Server
@@ -175,5 +165,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 // END mqtt Server
 
-
+console.log("----------------------------"); 
 console.log("MQTT Server: ", thisMqttServer); 
+console.log("----------------------------"); 
