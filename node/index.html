@@ -19,14 +19,18 @@
 		 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
-		  	var socket = io.connect('http://192.168.0.20');
+			(function () {
 
-		  		socket.on('gpslong', function (data) {
-		  			console.log(data);
-		  		//socket.emit('my other event', { my: 'data' });
+				  	var socket = io.connect('http://192.168.0.20');
 
 
-		  		});
+				  		socket.on('mongo', function (data) {
+				  			console.log('mongo incoming',  data);
+				  			//console.log('mongo incoming',  { mongo: 'data' })
+				  		});
+
+				  	
+		  	})();
 		</script>
 	</body>
 </html>
