@@ -3,13 +3,17 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     mqtt = require('mqttjs'),
-    socketsPort = 8080;
+    socketsPort = 8080,
     mqttPort = 1883;
 
     var gpsLat = '',
         gpsLong = '',
-        gpsLatNeW = '',
-        gpsLongNEW = '';
+        test = '',
+        gpsLongNEW = '',
+        blahDB = {
+                  items: "some stuff",
+                  moreitems: "rah rah"
+                  };
 
 
 console.log('included MQTTjs...');
@@ -27,42 +31,26 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-// Sockets Server
+  // Sockets Server
 
 
-  io.sockets.on('connection', function (socket) {
-        
-      function emitGPS () {
+              io.sockets.on('connection', function (socket) {
 
-        socket.emit('gpslong', gpsLongNEW);
-      }
+                      socket.emit('mongo', test );
+                  
+                  
+                  socket.on('my other event', function (data) {
+                      console.log(data);
+                  });
+              });
 
-      emitGPS();
-          // setTimeout(function () {
-
-          //   socket.emit('twat', {hi: "twat"});
-
-          //   emitShit();
-
-          // }, 1000);
-
-       
-
-        // setTimeout(function {
-        // socket.emit('twat', twat);
-        // emitingShit();
-        // }, 500);
-
-      socket.on('my other event', function (data) {
-          console.log(data);
-      });
-  });
-
-// END sockets Server
+            // END sockets Server
 
 // MQTT Server
 
 var thisMqttServer = mqtt.createServer(function(client) {
+
+              
 
     var self = this;
 
@@ -85,12 +73,12 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
           self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
-          if (packet.topic == 'gpslong') {
-              console.log('______ gps long Topic _____', packet.payload);
-              gpsLongNEW = packet.payload;
+          if (packet.topic == 'test') {
+             
+              test = packet.payload;
           };
           if (packet.topic == 'gpslat') {
-              console.log('___+++___ gps lat Topic _____', packet.payload);
+
              gpsLongNEW = packet.payload;
             // emitShit();
           };
