@@ -75,19 +75,15 @@ app.get('/', function (req, res) {
 
               io.sockets.on('connection', function (socket) {
 
-                        socket.emit('persononedata', personOne );
+                    socket.emit('persononedata', personOne );
 
-                    socket.on('receivedp1', function(){
-                        console.log(' what is new gps', personOne.gpsLong);
-                     //   socket.emit('strengthconnections', connections );
-                        socket.emit('persononedata', personOne );
-                      
-                      
-                        socket.on('my other event', function (data) {
-                          console.log(data);
-                        });
+                    socket.on('senddata', function(){
 
-                  });
+                            console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
+
+                                    socket.emit('persononedata', personOne );
+
+                    });
               });
 
             // END sockets Server
