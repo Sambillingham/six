@@ -17,4 +17,8 @@
 char passphrase[] = "fab38fab38";
 char ssid[] = "kings";
 
+// Wifi parameters - Luke's phone
+//char passphrase[] = "12345678";
+//char ssid[] = "Dimension";
+
 #endif
