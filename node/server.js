@@ -3,7 +3,6 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     mqtt = require('mqttjs'),
-    mongoose = require('mongoose'),
     socketsPort = 8080,
     mqttPort = 1883;
 
