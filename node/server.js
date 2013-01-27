@@ -10,11 +10,46 @@ var express = require('express'),
         gpsLong = '',
         test = '',
         gpsLongNEW = '',
+        dbTestSendVal = '',
         blahDB = {
                   items: "some stuff",
                   moreitems: "rah rah"
                   };
 
+//Mongoose for Mongo
+var mongoose = require('mongoose');
+var dbValuesSchema = mongoose.Schema({
+  UID: Number,
+  name: String
+})
+
+var dbValues = mongoose.model('Values', dbValuesSchema);
+
+var testVals = new dbValues({UID:'12345',name:'TesterUser'})
+
+testVals.save(function(err,testVals){
+if(err)
+  console.log("Failed to save to Mongo");
+});
+
+dbValues.find(function(err, values){
+if(err)
+  console.log(values)
+
+});
+
+mongoose.connect('mongodb://localhost/test');
+var db = mongoose.connection;
+db.on('error',console.error.bind(console,'connection error'));
+db.once('open',function callback(){
+
+console.log('Database Connected!')
+
+})
+
+//Mongo end
+
+//MQTT begin
 
 console.log('included MQTTjs...');
 console.log('MQTT Listening on' + mqttPort);
@@ -73,10 +108,26 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
           self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
+          if (packet.topic == 'dbTestSend') {
+              
+              console.log('______ dbTestSend _____', packet.payload);
+              
+              dbTestSendVal = packet.payload;
+              
+              var testDBVals = new dbValues({UID:dbTestSendVal,name:'Chris'})
+              
+              testDBVals.save(function(err,testDBVals){
+                
+                if(err)
+                console.log("Failed to save to Mongo");
+                });
+            }
+
           if (packet.topic == 'test') {
              
               test = packet.payload;
           };
+
           if (packet.topic == 'gpslat') {
 
              gpsLongNEW = packet.payload;
@@ -132,4 +183,4 @@ var thisMqttServer = mqtt.createServer(function(client) {
 // END mqtt Server
 
 
-console.log("MQTT Server: ", thisMqttServer);
+console.log("MQTT Server: ", thisMqttServer); 

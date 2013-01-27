@@ -14,7 +14,7 @@
 //char ssid[] = "HACK";
 
 // Wifi parameters - DAT House
-char passphrase[] = "kings";
-char ssid[] = "fab38fab38";
+char passphrase[] = "fab38fab38";
+char ssid[] = "kings";
 
 #endif
