@@ -148,9 +148,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
               test = packet.payload;
           };
 
-
-          if (packet.topic == 'gpslat') {
-
           if (packet.topic == 'gpslong') {
 
 
