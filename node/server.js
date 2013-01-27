@@ -12,6 +12,7 @@ var express = require('express'),
         test = '',
         gpsLongNEW = '',
         dbTestSendVal = '',
+        testDB='',
         blahDB = {
                   items: "some stuff",
                   moreitems: "rah rah"
@@ -35,35 +36,21 @@ var gpsLat = '',
 
 
 //Mongoose for Mongo
-var mongoose = require('mongoose');
-var dbValuesSchema = mongoose.Schema({
-  UID: Number,
-  name: String
-})
+// Retrieve
 
-var dbValues = mongoose.model('Values', dbValuesSchema);
+var MongoClient = require('mongodb').MongoClient;
 
-var testVals = new dbValues({UID:'12345',name:'TesterUser'})
+// Connect to the db
+MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
+  if(!err) { 
 
-testVals.save(function(err,testVals){
-if(err)
-  console.log("Failed to save to Mongo");
+   testDB = db.collection('TestCollection');
+    
+    console.log("We are connected");
+
+  };
 });
 
-dbValues.find(function(err, values){
-if(err)
-  console.log(values)
-
-});
-
-mongoose.connect('mongodb://localhost/test');
-var db = mongoose.connection;
-db.on('error',console.error.bind(console,'connection error'));
-db.once('open',function callback(){
-
-console.log('Database Connected!')
-
-})
 
 //Mongo end
 
@@ -133,32 +120,16 @@ var thisMqttServer = mqtt.createServer(function(client) {
               console.log('______ dbTestSend _____', packet.payload);
               
               dbTestSendVal = packet.payload;
-              
-              var testDBVals = new dbValues({UID:dbTestSendVal,name:'Chris'})
-              
-              testDBVals.save(function(err,testDBVals){
-                
-                if(err)
-                console.log("Failed to save to Mongo");
-                });
-            }
-
-          if (packet.topic == 'test') {
-             
-              test = packet.payload;
-          };
-
-          if (packet.topic == 'gpslong') {
+              console.log('Sent'+dbTestSendVal );
 
 
-             personOne.gpsLong = packet.payload;
-             console.log(' what is new gps', gpsLongNEW);
-            // emitShit();
-          };
+              testDB.update({UID:12345}, {$set:{name:'Chris2'}}, {w:1}, function(err, result) {
+                console.log(result);
+              });
+  };
 
-        }
-
-    });
+};
+  });
 
     client.on('subscribe', function(packet) {
 
