@@ -32,21 +32,24 @@
 			(function () {
 
 				var bigCircle = '',
-					lineSmall = '';
+					personOneGpsLong = '50';
 
 				  	var socket = io.connect('http://192.168.0.20');
 
 
-				  		socket.on('strengthconnections', function (data) {
-				  			bigCircle = data;
-				  			console.log('connections object',  data);
-				  		});
+				  		// socket.on('strengthconnections', function (data) {
+				  		// 	bigCircle = data;
+				  		// 	console.log('connections object',  data);
+				  		// });
 
 				  		socket.on('persononedata', function (data) {
-				  			lineSmall = data;
-				  			console.log('Person One has Somthing to say',  data);
+				  			personOneGpsLong = data.gpsLong;
+				  			console.log('Person has a long: ',  personOneGpsLong);
+				  			setTimeout(socket.emit('receivedp1'),1000);
 				  		});
 
+
+				 
 
 				// set the scene size
 				var WIDTH = 400,
@@ -87,7 +90,8 @@
 				});
 
 				// set up the sphere vars
-				var radius = 50, segments = 16, rings = 16;
+				var radius = personOneGpsLong, segments = 16, rings = 16;
+					
 
 				// create a new mesh with sphere geometry -
 				// we will cover the sphereMaterial next!
@@ -112,9 +116,21 @@
 				// add to the scene
 				scene.add(pointLight);
 
-				// draw!
-				renderer.render(scene, camera);
-				  	
+				
+				function animate() {
+				requestAnimationFrame( animate );
+				render();
+
+				console.log('  ########## this is my RADius', radius);
+				radius = personOneGpsLong;
+				}
+
+				function render() {
+				var time = Date.now() * 0.00005;
+				renderer.render( scene, camera );
+				}
+
+				animate();
 		  	})();
 		</script>
 	</body>

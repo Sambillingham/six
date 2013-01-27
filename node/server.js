@@ -3,19 +3,9 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server),
     mqtt = require('mqttjs'),
+    mongoose = require('mongoose'),
     socketsPort = 8080,
     mqttPort = 1883;
-
-
-    var gpsLat = '',
-        gpsLong = '',
-        test = '',
-        gpsLongNEW = '',
-        dbTestSendVal = '',
-        blahDB = {
-                  items: "some stuff",
-                  moreitems: "rah rah"
-                  };
 
 var gpsLat = '',
     gpsLong = '',
@@ -35,7 +25,6 @@ var gpsLat = '',
 
 
 //Mongoose for Mongo
-var mongoose = require('mongoose');
 var dbValuesSchema = mongoose.Schema({
   UID: Number,
   name: String
@@ -67,10 +56,7 @@ console.log('Database Connected!')
 
 //Mongo end
 
-//MQTT begin
 
-console.log('included MQTTjs...');
-console.log('MQTT Listening on' + mqttPort);
 
 server.listen(socketsPort);
 
@@ -89,13 +75,18 @@ app.get('/', function (req, res) {
 
               io.sockets.on('connection', function (socket) {
 
-                    console.log(' what is new gps', gpsLongNEW);
-                     socket.emit('strengthconnections', connections );
-                     socket.emit('persononedata', personOne );
-                  
-                  
-                  socket.on('my other event', function (data) {
-                      console.log(data);
+                        socket.emit('persononedata', personOne );
+
+                    socket.on('receivedp1', function(){
+                        console.log(' what is new gps', personOne.gpsLong);
+                     //   socket.emit('strengthconnections', connections );
+                        socket.emit('persononedata', personOne );
+                      
+                      
+                        socket.on('my other event', function (data) {
+                          console.log(data);
+                        });
+
                   });
               });
 
@@ -143,17 +134,10 @@ var thisMqttServer = mqtt.createServer(function(client) {
                 });
             }
 
-          if (packet.topic == 'test') {
+          if (packet.topic == 'personone/gpslong') {
              
-              test = packet.payload;
-          };
-
-          if (packet.topic == 'gpslong') {
-
-
-             personOne.gpsLong = packet.payload;
-             console.log(' what is new gps', gpsLongNEW);
-            // emitShit();
+              personOne.gpsLong = packet.payload;
+              console.log(' more shit', personOne.gpsLong);
           };
 
         }
@@ -204,5 +188,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 // END mqtt Server
 
-
+console.log("----------------------------"); 
 console.log("MQTT Server: ", thisMqttServer); 
+console.log("----------------------------"); 
