@@ -6,6 +6,7 @@ var express = require('express'),
     socketsPort = 8080,
     mqttPort = 1883;
 
+
     var gpsLat = '',
         gpsLong = '',
         test = '',
@@ -15,6 +16,23 @@ var express = require('express'),
                   items: "some stuff",
                   moreitems: "rah rah"
                   };
+
+var gpsLat = '',
+    gpsLong = '',
+    test = '',
+    gpsLongNEW = '',
+    connections = {
+        p1p2: "50",
+        p1p3: "70",
+        p2p3: "20",
+    },
+    personOne = {
+        gpsLat: "3425.12",
+        gpsLong: "",
+        bpm: "87",
+        temp: "21",
+        };
+
 
 //Mongoose for Mongo
 var mongoose = require('mongoose');
@@ -71,7 +89,9 @@ app.get('/', function (req, res) {
 
               io.sockets.on('connection', function (socket) {
 
-                      socket.emit('mongo', test );
+                    console.log(' what is new gps', gpsLongNEW);
+                     socket.emit('strengthconnections', connections );
+                     socket.emit('persononedata', personOne );
                   
                   
                   socket.on('my other event', function (data) {
@@ -128,9 +148,14 @@ var thisMqttServer = mqtt.createServer(function(client) {
               test = packet.payload;
           };
 
+
           if (packet.topic == 'gpslat') {
 
-             gpsLongNEW = packet.payload;
+          if (packet.topic == 'gpslong') {
+
+
+             personOne.gpsLong = packet.payload;
+             console.log(' what is new gps', gpsLongNEW);
             // emitShit();
           };
 
