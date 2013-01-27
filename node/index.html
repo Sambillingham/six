@@ -21,12 +21,20 @@
 		<script>
 			(function () {
 
+				var bigCircle = '',
+					lineSmall = '';
+
 				  	var socket = io.connect('http://192.168.0.20');
 
 
-				  		socket.on('mongo', function (data) {
-				  			console.log('mongo incoming',  data);
-				  			//console.log('mongo incoming',  { mongo: 'data' })
+				  		socket.on('strengthconnections', function (data) {
+				  			bigCircle = data;
+				  			console.log('connections object',  data);
+				  		});
+
+				  		socket.on('persononedata', function (data) {
+				  			lineSmall = data;
+				  			console.log('Person One has Somthing to say',  data);
 				  		});
 
 				  	
