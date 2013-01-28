@@ -2,61 +2,57 @@
 
         var bigCircle = '',
         personOneGpsLong = '50';
-        size = personOneGpsLong;
 
         var socket = io.connect('http://192.168.0.20');
 
             socket.on('persononedata', function (data) {
 
-                    personOneGpsLong = data.gpsLong;
+                    personOneGpsLong = data;
 
-                    console.log('Person has a long: ',  personOneGpsLong);
+                    console.log('LOCATION UPDATE is now: ',  personOneGpsLong.gpsLong);
 
-                            setTimeout(function () {
-
-                                socket.emit('senddata' );
-
-                            }, 3000);
+                            
                             
             });
 
-        // Three.js is Go - Setup
-        var renderer = new THREE.WebGLRenderer({antialias: true});
-        renderer.setSize(500,500);
-        /// dump it in the body
-        document.body.appendChild(renderer.domElement);
-        //  pretty that shit
-        renderer.setClearColorHex(0xEEEEEE, 1.0);
-        renderer.clear();
-        // CAMERA 
-        // new THREE.PerspectiveCamera( FOV, viewAspectRatio, zNear, zFar );
-        var camera = new THREE.PerspectiveCamera(45, 200/200, 1, 10000);
-        camera.position.z = 300;
-        // Bitches Love cubes
-        var scene = new THREE.Scene();
-        var cube = new THREE.Mesh(new THREE.CubeGeometry(50,50,50),
-                       new THREE.MeshBasicMaterial({color: 0x000000}));
-        
-        scene.add(cube);
-        // ADD some magic render camera thingy
-        renderer.render(scene, camera);
+var camera, scene, renderer;
+    var geometry, material, mesh;
 
-        function animate(t) {
-        console.log('SIZE: ', personOneGpsLong);
-        // spin the camera in a circle
-        camera.position.x = Math.sin(t/1000)*personOneGpsLong;
-        camera.position.y = personOneGpsLong;
-        camera.position.z = Math.cos(t/1000)*personOneGpsLong;
-        // you need to update lookAt every frame
-        camera.lookAt(scene.position);
-        // renderer automatically clears unless autoClear = false
-        renderer.render(scene, camera);
-        window.requestAnimationFrame(animate, renderer.domElement);
-      };
-      animate(new Date().getTime());
+    init();
+    animate();
 
-    
+    function init() {
 
-    
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.z = 1000;
+
+        scene = new THREE.Scene();
+
+        geometry = new THREE.CubeGeometry( 200, 200, 200 );
+        material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+
+        mesh = new THREE.Mesh( geometry, material );
+        scene.add( mesh );
+
+        renderer = new THREE.CanvasRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        document.body.appendChild( renderer.domElement );
+
+    }
+
+    function animate() {
+
+        // note: three.js includes requestAnimationFrame shim
+        requestAnimationFrame( animate );
+
+        mesh.rotation.x += 0.01;
+        mesh.rotation.y += 0.02;
+
+        renderer.render( scene, camera );
+
+    }
+
+
 
 })();
