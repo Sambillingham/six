@@ -69,13 +69,13 @@ app.get('/', function (req, res) {
 
                     })();
 
-                    socket.on('senddata', function(){
+                    // socket.on('senddata', function(){
 
-                            console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
+                    //         console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
 
-                          //          socket.emit('persononedata', personOne );
+                    //       //          socket.emit('persononedata', personOne );
 
-                    });
+                    // });
               });
 
             // END sockets Server
