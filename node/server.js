@@ -1,8 +1,9 @@
 var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
-    io = require('socket.io').listen(server),
+    io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
+    MongoClient = require('mongodb').MongoClient,
     socketsPort = 8080,
     mqttPort = 1883;
 
@@ -20,7 +21,7 @@ var gpsLat = '',
     },
     personOne = {
         gpsLat: "3425.12",
-        gpsLong: "",
+        gpsLong: "400",
         bpm: "87",
         temp: "21",
         };
@@ -28,8 +29,6 @@ var gpsLat = '',
 
 //Mongo native db connection for Mongo
 
-
-var MongoClient = require('mongodb').MongoClient;
 
 // Connect to the db
 MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
@@ -47,8 +46,6 @@ MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
 
 //Mongo end
 
-
-
 server.listen(socketsPort);
 
 app.configure(function() {
@@ -61,20 +58,26 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-  // Sockets Server
+            // Sockets Server
 
 
               io.sockets.on('connection', function (socket) {
 
-                    socket.emit('persononedata', personOne );
+                    (function () {
 
-                    socket.on('senddata', function(){
+                        socket.emit("persononedata", personOne);
 
-                            console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
+                        setTimeout(arguments.callee, 1000);
 
-                                    socket.emit('persononedata', personOne );
+                    })();
 
-                    });
+                    // socket.on('senddata', function(){
+
+                    //         console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
+
+                    //       //          socket.emit('persononedata', personOne );
+
+                    // });
               });
 
             // END sockets Server
@@ -82,8 +85,6 @@ app.get('/', function (req, res) {
 // MQTT Server
 
 var thisMqttServer = mqtt.createServer(function(client) {
-
-              
 
     var self = this;
 
@@ -106,16 +107,23 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
           self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
-          if (packet.topic == 'dbTestSend') {
+          // LUKE PLEASE DONT DELETE ME AGAIN
+
+            if (packet.topic == '1/gps/long'){
+
+                    personOne.gpsLong = packet.payload;
+
+            }
+
+          // !!!
+
+            if (packet.topic == 'dbTestSend') {
               
               console.log('______ dbTestSend _____', packet.payload);
               dbTestSendVal = packet.payload;
               console.log('Sent'+dbTestSendVal );
 
               
-
-
-
   };
 
   };
