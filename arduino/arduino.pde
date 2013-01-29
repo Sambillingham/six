@@ -77,11 +77,11 @@ void setup()
     
     //Start Wifly
     WiFly.begin();
-    
+    Serial.println("Wifi starting..");
     if (!WiFly.join(ssid, passphrase)) {
       Serial.println("Association failed.");
       while (1) {
-        // Hang on failure.
+        Serial.println("Failing to connect...");
       }
     }
   

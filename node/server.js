@@ -35,9 +35,11 @@ var MongoClient = require('mongodb').MongoClient;
 MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
   if(!err) { 
 
-   testDB = db.collection('TestCollection');
-    
-    console.log("We are connected");
+   userDB = db.collection('Users');
+   relationshipsDB = db.collection('Connections')
+   changesDB = db.collection('Changes')
+
+   console.log("We are connected");
 
   };
 });
@@ -107,17 +109,16 @@ var thisMqttServer = mqtt.createServer(function(client) {
           if (packet.topic == 'dbTestSend') {
               
               console.log('______ dbTestSend _____', packet.payload);
-              
               dbTestSendVal = packet.payload;
               console.log('Sent'+dbTestSendVal );
 
+              
 
-              testDB.update({UID:12345}, {$set:{name:'Chris2'}}, {w:1}, function(err, result) {
-                console.log(result);
-              });
+
+
   };
 
-};
+  };
   });
 
     client.on('subscribe', function(packet) {
