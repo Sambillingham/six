@@ -97,45 +97,40 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
           self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
-          // LUKE PLEASE DONT DELETE ME AGAIN
+          // FILL Objects for Database to read  
 
+                    switch (packet.topic) {
 
-                if (packet.topic == '1/GpsLat'){
+                    case '1/GpsLat':
 
                             personOne.gpsLat = packet.payload;
-
-                }
-                 if (packet.topic == '1/GpsLong'){
+                    break;
+                    case '1/GpsLong':
 
                             personOne.gpsLong = packet.payload;
-
-                }
-                 if (packet.topic == '1/RandomNum'){
+                    break;
+                    case '1/RandomNum':
 
                             personOne.randomNum = packet.payload;
-
-                }
-
-                if (packet.topic == '2/GpsLat'){
+                    break;
+                    case '2/GpsLat':
 
                             personTwo.gpsLat = packet.payload;
-
-                }
-                 if (packet.topic == '2/GpsLong'){
+                    break;
+                    case '2/GpsLong':
 
                             personTwo.gpsLong = packet.payload;
-
-                }
-                 if (packet.topic == '2/RandomNum'){
+                    break;
+                    case '2/RandomNum':
 
                             personTwo.randomNum = packet.payload;
+                    break;
+                    default:
+                            console.log('NO RELEVANT MQTT TOPIC FOUND');
 
-                }
+                    }
 
-        
-
-
-          // !!!
+          // END FILLING OBJECTS
 
             if (packet.topic == 'dbTestSend') {
               
