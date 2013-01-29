@@ -8,12 +8,7 @@ var express = require('express'),
     mqttPort = 1883;
 
 
-var gpsLat = '',
-    gpsLong = '',
-    test = '',
-    gpsLongNEW = '',
-    dbTestSendVal = '',
-    testDB='',
+var testDB='',
     connections = {
         p1p2: "50",
         p1p3: "70",
@@ -25,10 +20,6 @@ var gpsLat = '',
         bpm: "87",
         temp: "21",
         };
-
-
-//Mongo native db connection for Mongo
-
 
 // Connect to the db
 MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
@@ -59,9 +50,8 @@ app.get('/', function (req, res) {
 });
 
             // Sockets Server
-
-
-              io.sockets.on('connection', function (socket) {
+            
+            io.sockets.on('connection', function (socket) {
 
                     (function () {
 
@@ -71,13 +61,6 @@ app.get('/', function (req, res) {
 
                     })();
 
-                    // socket.on('senddata', function(){
-
-                    //         console.log('PERSON ONE GPS IS NOW ----', personOne.gpsLong);
-
-                    //       //          socket.emit('persononedata', personOne );
-
-                    // });
               });
 
             // END sockets Server
@@ -93,10 +76,11 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 
     client.on('connect', function(packet) {
-      console.log('we have a connection', packet);
-      client.connack({returnCode: 0});
-      client.id = packet.client;
-      self.clients[client.id] = client;
+
+            console.log('we have a connection', packet);
+            client.connack({returnCode: 0});
+            client.id = packet.client;
+            self.clients[client.id] = client;
 
     });
 
@@ -124,10 +108,10 @@ var thisMqttServer = mqtt.createServer(function(client) {
               console.log('Sent'+dbTestSendVal );
 
               
-  };
+            };
 
-  };
-  });
+        };
+    });
 
     client.on('subscribe', function(packet) {
 
