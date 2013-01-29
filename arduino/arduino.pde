@@ -33,7 +33,7 @@ void toggleLED() {
 
 /**********************SETUP FOR MQTT***********************/
 void callback(char *a, uint8_t *b, int c);
-uint8_t ip[] = { 192, 168, 0, 8 };
+uint8_t ip[] = { 10, 5, 91, 2 };
 PubSubClient cl(ip, 1883, callback);
 
 char*  subTopic="tog/c/l";
@@ -77,15 +77,17 @@ void setup()
     
     //Start Wifly
     WiFly.begin();
-    Serial.println("Wifi starting..");
-    if (!WiFly.join(ssid, passphrase)) {
+    Serial.println("Wifly begin");
+    
+    /*if (!WiFly.join(ssid, passphrase)) {
       Serial.println("Association failed.");
       while (1) {
-        Serial.println("Failing to connect...");
+        // Hang on failure.
       }
     }
   
     Serial.println("Associated!");
+    */
     
     cl.connect("ardWiFly");
     Serial.println("arduino3");
