@@ -25,17 +25,24 @@
 
         var bigCircle = '',
         personOneData = {};
+        personTwoData = {};
 
-        var socket = io.connect('http://192.168.0.20');
+        var socket = io.connect('http://127.0.0.1');
 
             socket.on('persononedata', function (data) {
 
                     personOneData = data;
 
-                    console.log('LOCATION UPDATE is now: ',  personOneData.gpsLong);
+                    console.log('DUDE ONE:   ',  personOneData);
+            
+            });
 
-                            
-                            
+            socket.on('persontwodata', function (data) {
+
+                    personTwoData = data;
+
+                    console.log('DUDE TWO:   ',  personTwoData);
+            
             });
 
 
@@ -47,7 +54,7 @@
 
         // CAMERA ans SETUP type stuff
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-        camera.position.set(0, 0, 1000);
+        camera.position.set(0, 0, 700);
 
         scene = new THREE.Scene();
         //scene.fog = new THREE.Fog( 0x000000, 100, 2000 ); // everything further than pram 1 starts to go black
@@ -76,8 +83,8 @@
         // ADD all the awesome stuff you made
         scene.add( personOneCube);
         scene.add( personTwoCube);
-        scene.add( PersonOneLinkTwo);
-        scene.add( orb );
+        // scene.add( PersonOneLinkTwo);
+        // scene.add( orb );
        // scene.add( new THREE.AmbientLight( 0x222222 ) );
 
         // Post processing
@@ -103,20 +110,20 @@
         personOneCube.rotation.x += 0.01;
         personOneCube.rotation.y += 0.02;
 
-        personOneCube.position.x =  -200;
+        personOneCube.position.x = personOneData.gpsLat;
         personOneCube.position.y = personOneData.gpsLong;
-        personOneCube.position.z = 150;
+        personOneCube.position.z = personOneData.randomNum;
 
         personTwoCube.rotation.x -= 0.01;
         personTwoCube.rotation.y -= 0.02;
-        personTwoCube.position.x = -800;
-        personTwoCube.position.y = -100;
-        personTwoCube.position.z = 250;
+        personTwoCube.position.x = personTwoData.gpsLat;
+        personTwoCube.position.y = personTwoData.gpsLong;
+        personTwoCube.position.z = personTwoData.randomNum;
 
         orb.position.set( 50, 100, 800);
 
         // Testing some mouse movement effects
-       // camera.position.set(  (-4* mouseY),  0, 2000 + (0.1 * mouseX) );
+       // camera.position.set(  (0.3 * mouseY),  0, 2000 + (0.3 * mouseX) );
 
 
       //  lineGeometry.vertices.x = THREE.Vector3( -400, (personOneData.gpsLong), 0 );
@@ -134,7 +141,7 @@
             mouseX = event.clientX;
             mouseY = event.clientY;
 
-            console.log( mouseX, mouseY);
+            //console.log( mouseX, mouseY);
 
 
     }

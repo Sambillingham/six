@@ -15,11 +15,15 @@ var testDB='',
         p2p3: "20",
     },
     personOne = {
-        gpsLat: "3425.12",
+        gpsLat: "425.12",
         gpsLong: "400",
-        bpm: "87",
-        temp: "21",
-        };
+        randomNum: "287",
+    };
+    personTwo = {
+        gpsLat: "325.12",
+        gpsLong: "340",
+        randomNum: "237",
+    };
 
 // Connect to the db
 MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
@@ -57,6 +61,8 @@ app.get('/', function (req, res) {
 
                         socket.emit("persononedata", personOne);
 
+                        socket.emit("persontwodata", personTwo);
+
                         setTimeout(arguments.callee, 1000);
 
                     })();
@@ -93,11 +99,41 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
           // LUKE PLEASE DONT DELETE ME AGAIN
 
-            if (packet.topic == '1/gps/long'){
 
-                    personOne.gpsLong = packet.payload;
+                if (packet.topic == '1/GpsLat'){
 
-            }
+                            personOne.gpsLat = packet.payload;
+
+                }
+                 if (packet.topic == '1/GpsLong'){
+
+                            personOne.gpsLong = packet.payload;
+
+                }
+                 if (packet.topic == '1/RandomNum'){
+
+                            personOne.randomNum = packet.payload;
+
+                }
+
+                if (packet.topic == '2/GpsLat'){
+
+                            personTwo.gpsLat = packet.payload;
+
+                }
+                 if (packet.topic == '2/GpsLong'){
+
+                            personTwo.gpsLong = packet.payload;
+
+                }
+                 if (packet.topic == '2/RandomNum'){
+
+                            personTwo.randomNum = packet.payload;
+
+                }
+
+        
+
 
           // !!!
 
