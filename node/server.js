@@ -3,9 +3,12 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
-    MongoClient = require('mongodb').MongoClient,
+    Db = require('mongodb').Db,
     socketsPort = 8080,
     mqttPort = 1883;
+    relationships = '';
+    gpsLatData = [];
+    gpsLongData = [];
 
 
 var testDB='',
@@ -22,18 +25,19 @@ var testDB='',
         };
 
 // Connect to the db
-MongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
-  if(!err) { 
 
-   userDB = db.collection('Users');
-   relationshipsDB = db.collection('Connections')
-   changesDB = db.collection('Changes')
+console.log('Connecting you to the grid.. Please wait..')
 
-   console.log("We are connected");
+Db.connect("mongodb://localhost:27017/test", function(err, db) {
+  if(!err)
+  
+  console.log('You have joined the grid.');
 
-  };
-});
+    relationships =  db.collection('Relationships')
 
+        console.log('The grid has a collection.')
+
+        });
 
 //Mongo end
 
@@ -101,17 +105,24 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
           // !!!
 
-            if (packet.topic == 'dbTestSend') {
+            if (packet.topic == 'GPSLONG') {
               
-              console.log('______ dbTestSend _____', packet.payload);
-              dbTestSendVal = packet.payload;
-              console.log('Sent'+dbTestSendVal );
+               console.log('______ dbTestSend _____', packet.payload);
+               dbTestSendVal = packet.payload;
+               gpsLongData = dbTestSendVal.split(',');
+               var ArdID = parseInt(gpsLongData[0]);
+               console.log('Arduino ID' + ArdID)
 
-              
-            };
-
-        };
-    });
+               relationships.find({ID: {$in:[ArdID]}}).toArray(function(err, doc) {
+                if(err){
+                    console.log('The grid did not like that.')
+                }
+                console.log(doc)
+                    });        
+                            };
+                        }
+                    })
+            
 
     client.on('subscribe', function(packet) {
 
