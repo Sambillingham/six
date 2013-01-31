@@ -5,10 +5,13 @@ var express = require('express'),
     mqtt = require('mqttjs'),
     mongoClient = require('mongodb').MongoClient,
     socketsPort = 8080,
-    mqttPort = 1883;
+    mqttPort = 1883,
+    serverAddress = "192.168.0.20";
 
 
 var testDB='',
+    defaultTopic = '/default',
+    defaultPayload = "I'm a payload",
     connections = {
         p1p2: "50",
         p1p3: "70",
@@ -63,7 +66,7 @@ app.get('/', function (req, res) {
 
                         socket.emit("persontwodata", personTwo);
 
-                        publishClient();
+                        publishClient('/buzz', '600');
 
                         setTimeout(arguments.callee, 1000);
 
@@ -204,9 +207,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
 console.log("MQTT Server: ", thisMqttServer); 
 console.log("----------------------------"); 
 
-function publishClient () {
-
-var thisMqttClient = mqtt.createClient( mqttPort, "192.168.0.20", function (err, client) {
+var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
   
       if (err) {
 
@@ -219,26 +220,19 @@ var thisMqttClient = mqtt.createClient( mqttPort, "192.168.0.20", function (err,
 
                  client: "buzz"
 
-              //  keepalive: 3000
-
         });
 
         client.on('connack', function (packet) {
 
             if (packet.returnCode === 0) {
 
-                    if (personOne.gpsLat == personTwo.gpsLat ){
-                          
-                            client.publish({
+                    client.publish({
 
-                                topic: '/buzz',
+                            topic: defaultTopic,
 
-                                payload: '1'
+                            payload: defaultPayload
                         
-                            });
-                    }
-
-                client.disconnect();
+                    });
 
             } else {
 
@@ -251,7 +245,7 @@ var thisMqttClient = mqtt.createClient( mqttPort, "192.168.0.20", function (err,
 
         client.on('close', function () {
 
-                 //   process.exit(0);
+                process.exit(0);
 
         });
 
@@ -264,4 +258,14 @@ var thisMqttClient = mqtt.createClient( mqttPort, "192.168.0.20", function (err,
         });
 });
 
+function publishClient ( topicName , payloadInfo ) {
+
+        thisMqttClient.publish( {
+
+                topic: topicName,
+                
+                payload: payloadInfo
+
+
+        });
 }
