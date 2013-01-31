@@ -3,26 +3,33 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
-    Db = require('mongodb').Db,
-    socketsPort = 8080,
-    mqttPort = 1883;
     relationships = '';
     gpsLatData = [];
     gpsLongData = [];
+    mongoClient = require('mongodb').MongoClient,
+    socketsPort = 8080,
+    mqttPort = 1883,
+    serverAddress = "192.168.0.20";
 
 
 var testDB='',
+    defaultTopic = '/default',
+    defaultPayload = "I'm a payload",
     connections = {
         p1p2: "50",
         p1p3: "70",
         p2p3: "20",
     },
     personOne = {
-        gpsLat: "3425.12",
+        gpsLat: "200",
         gpsLong: "400",
-        bpm: "87",
-        temp: "21",
-        };
+        randomNum: "287",
+    };
+    personTwo = {
+        gpsLat: "200",
+        gpsLong: "340",
+        randomNum: "237",
+    };
 
 // Connect to the db
 
@@ -61,6 +68,10 @@ app.get('/', function (req, res) {
 
                         socket.emit("persononedata", personOne);
 
+                        socket.emit("persontwodata", personTwo);
+
+                        publishClient('/buzz', '600');
+
                         setTimeout(arguments.callee, 1000);
 
                     })();
@@ -79,31 +90,63 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 
 
-    client.on('connect', function(packet) {
+    client.on('connect', function (packet) {
 
             console.log('we have a connection', packet);
-            client.connack({returnCode: 0});
+
+            client.connack({
+
+                returnCode: 0
+
+            });
             client.id = packet.client;
+
             self.clients[client.id] = client;
 
     });
 
-    client.on('publish', function(packet) {
+    client.on('publish', function (packet) {
 
         console.log('this is a pub packet: ', packet);
+
         for (var k in self.clients) {
 
-          self.clients[k].publish({topic: packet.topic, payload: packet.payload});
+            self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
-          // LUKE PLEASE DONT DELETE ME AGAIN
+                    // FILL Objects for Database to read  
 
-            if (packet.topic == '1/gps/long'){
+                    switch (packet.topic) {
 
-                    personOne.gpsLong = packet.payload;
+                    case '1/GpsLat':
 
-            }
+                            personOne.gpsLat = packet.payload;
+                    break;
+                    case '1/GpsLong':
 
-          // !!!
+                            personOne.gpsLong = packet.payload;
+                    break;
+                    case '1/RandomNum':
+
+                            personOne.randomNum = packet.payload;
+                    break;
+                    case '2/GpsLat':
+
+                            personTwo.gpsLat = packet.payload;
+                    break;
+                    case '2/GpsLong':
+
+                            personTwo.gpsLong = packet.payload;
+                    break;
+                    case '2/RandomNum':
+
+                            personTwo.randomNum = packet.payload;
+                    break;
+                   // default:
+                            console.log('NO RELEVANT MQTT TOPIC FOUND');
+
+                    }
+
+                    // END FILLING OBJECTS
 
             if (packet.topic == 'GPSLONG') {
               
@@ -124,38 +167,42 @@ var thisMqttServer = mqtt.createServer(function(client) {
                     })
             
 
-    client.on('subscribe', function(packet) {
+    client.on('subscribe', function (packet) {
 
         var granted = [];
+
         for (var i = 0; i < packet.subscriptions.length; i++) {
-        granted.push(packet.subscriptions[i].qos);
 
-    }
+                 granted.push(packet.subscriptions[i].qos);
 
-    client.suback({granted: granted});
+        }
+
+        client.suback({ granted: granted });
+
     });
 
-    client.on('pingreq', function(packet) {
+    client.on('pingreq', function (packet) {
 
         client.pingresp();
 
     });
 
-    client.on('disconnect', function(packet) {
+    client.on('disconnect', function (packet) {
 
         client.stream.end();
 
     });
 
-    client.on('close', function(err) {
+    client.on('close', function (err) {
 
         delete self.clients[client.id];
 
     });
 
-    client.on('error', function(err) {
+    client.on('error', function (err) {
 
         client.stream.end();
+        
         util.log('error!');
 
     });
@@ -168,6 +215,68 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 // END mqtt Server
 
-console.log("----------------------------"); 
 console.log("MQTT Server: ", thisMqttServer); 
 console.log("----------------------------"); 
+
+var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
+  
+      if (err) {
+
+                console.log("Unable to connect to broker");
+                process.exit(1);
+      }
+
+
+        client.connect({
+
+                 client: "buzz"
+
+        });
+
+        client.on('connack', function (packet) {
+
+            if (packet.returnCode === 0) {
+
+                    client.publish({
+
+                            topic: defaultTopic,
+
+                            payload: defaultPayload
+                        
+                    });
+
+            } else {
+
+                    console.log('connack error %d', packet.returnCode);
+
+                    process.exit(-1);
+
+            }
+        });
+
+        client.on('close', function () {
+
+                process.exit(0);
+
+        });
+
+        client.on('error', function (e) {
+
+                console.log('error %s', e);
+
+                process.exit(-1);
+
+        });
+});
+
+function publishClient ( topicName , payloadInfo ) {
+
+        thisMqttClient.publish( {
+
+                topic: topicName,
+                
+                payload: payloadInfo
+
+
+        });
+}
