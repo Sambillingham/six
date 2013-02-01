@@ -7,7 +7,8 @@ var express = require('express'),
     socketsPort = 8080,
     mqttPort = 1883,
     serverAddress = "127.0.0.1",
-    distanceCalc = 0.04;
+    distanceCalc = 0.04,
+    NumOfClients = 4;
 
 
 var testDB='',
@@ -85,7 +86,7 @@ app.get('/', function (req, res) {
 
                         socket.emit("persontwodata", person2);
 
-                        publishClient('2/buzz', '600');
+                       // publishClient('2/buzz', '600');
 
                         setTimeout(arguments.callee, 1000);
 
@@ -130,7 +131,8 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
                     var topicCharArrayThing = packet.topic.split(""),
                         topicRemoveSlash = packet.topic.split("/"),
-                        aID = topicRemoveSlash[0];
+                        aID = topicRemoveSlash[0],
+                        personCheck = '';
 
                     if ( topicRemoveSlash[1] != "buzz" ){
 
@@ -139,6 +141,11 @@ var thisMqttServer = mqtt.createServer(function(client) {
                             console.log( " --------> " + aID, payloadDataType);
 
                             eval("person" + aID + "." + payloadDataType + "=" + '"' + packet.payload + '"' + ";");
+
+                            personCheck = eval("person" + aID);
+
+                            console.log(personCheck);
+                            locationCheck( personCheck);
 
                     }
 
@@ -152,7 +159,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
                     }
 
-                    locationCheck(person1);
+                    
               
             
 
@@ -279,29 +286,19 @@ function publishClient ( topicName , payloadInfo ) {
 
 function locationCheck ( checkMe ) {
 
-            console.log(' We are crunching numbers sir...', "I am   " + checkMe.id );
+            console.log(" We are crunching numbers sir...     I am:  ",  checkMe.id );
 
-            switch (checkMe.gpsLong ) {
+            for ( var i = 1 ; i <= NumOfClients ; i++ ) {
 
-            case person1.gpsLong:
+                    var person = eval("person" + i); ;
+                    console.log("looping...  ", person );
 
-                    console.log("i am near arduino 1 store in db");
-            break;
-            case person2.gpsLong:
+                    if ( checkMe.gpsLong == person.gpsLong && checkMe.gpsLat == person.gpsLat && checkMe.id != person.id ){
 
-                    console.log("i am near arduino 2 store in db");
-            break;
-            case person3.gpsLong:
+                            console.log('Booom booom');
 
-                    console.log("i am near arduino 3 store in db ");
-            break;
-            case person4.gpsLong:
+                    }
 
-                    console.log("i am near arduino 3 store in db ");
-            break;
-
-
-           }
-
+            }
 
 }
