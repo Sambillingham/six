@@ -6,42 +6,45 @@ var express = require('express'),
     mongoClient = require('mongodb').MongoClient,
     socketsPort = 8080,
     mqttPort = 1883,
-    serverAddress = "192.168.0.20",
+    serverAddress = "127.0.0.1",
     distanceCalc = 0.04;
 
 
 var testDB='',
     defaultTopic = '/default',
     defaultPayload = "I'm a payload",
+    topicId = '',
+    payloadDataType = '',
     connections = {
         p1p2: "50",
         p1p3: "70",
-        p2p3: "20",
+        p2p3: "20"
     },
-    personOne = {
+    person1 = {
         id: "1",
         gpsLat: "200",
         gpsLong: "400",
-        randomNum: "-287",
+        randomNum: "-287"
     };
-    personTwo = {
+    person2 = {
         id: "2",
         gpsLat: "200",
         gpsLong: "340",
-        randomNum: "-237",
+        randomNum: "-237"
     };
-    personThree = {
+    person3 = {
         id: "3",
         gpsLat: "100",
-        gpsLong: "340",
-        randomNum: "-227",
+        gpsLong: "399",
+        randomNum: "-227"
     };
-    personFour = {
-        id: "3",
+    person4 = {
+        id: "4",
         gpsLat: "150",
-        gpsLong: "390",
-        randomNum: "-187",
+        gpsLong: "190",
+        randomNum: "-187"
     };
+
 
 
 // Connect to the db
@@ -78,11 +81,11 @@ app.get('/', function (req, res) {
 
                     (function () {
 
-                        socket.emit("persononedata", personOne);
+                        socket.emit("persononedata", person1);
 
-                        socket.emit("persontwodata", personTwo);
+                        socket.emit("persontwodata", person2);
 
-                        publishClient('/buzz', '600');
+                        publishClient('2/buzz', '600');
 
                         setTimeout(arguments.callee, 1000);
 
@@ -125,78 +128,33 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
             self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
-                    // FILL Objects for Database to read  
+                    var topicCharArrayThing = packet.topic.split(""),
+                        topicRemoveSlash = packet.topic.split("/"),
+                        aID = topicRemoveSlash[0];
 
+                    if ( topicRemoveSlash[1] != "buzz" ){
 
-                    switch (packet.topic) {
+                            payloadDataType = topicRemoveSlash[1];
 
-                    case  '1/GpsLat':
+                            console.log( " --------> " + aID, payloadDataType);
 
-                            personOne.gpsLat = packet.payload;
-                            
-                            locationCheck(personOne);
-                    break;
-                    case '1/GpsLong':
-
-                            personOne.gpsLong = packet.payload;
-                            
-                            locationCheck(personOne);
-                    break;
-                    case '1/RandomNum':
-
-                            personOne.randomNum = packet.payload;
-                    break;
-                    case '2/GpsLat':
-
-                            personTwo.gpsLat = packet.payload;
-                    break;
-                    case '2/GpsLong':
-
-                            personTwo.gpsLong = packet.payload;
-                    break;
-                    case '2/RandomNum':
-
-                            personTwo.randomNum = packet.payload;
-                    break;
-                    case '3/GpsLat':
-
-                            personThree.gpsLat = packet.payload;
-                    break;
-                    case '3/GpsLong':
-
-                            personThree.gpsLong = packet.payload;
-                    break;
-                    case '3/RandomNum':
-
-                            personThree.randomNum = packet.payload;
-                    break;
-                    case '4/GpsLat':
-
-                            personFour.gpsLat = packet.payload;
-                    break;
-                    case '4/GpsLong':
-
-                            personFour.gpsLong = packet.payload;
-                    break;
-                    case '4/RandomNum':
-
-                            personFour.randomNum = packet.payload;
-                    break;
-                   // default:
-                            console.log('NO RELEVANT MQTT TOPIC FOUND');
+                            eval("person" + aID + "." + payloadDataType + "=" + '"' + packet.payload + '"' + ";");
 
                     }
 
-                    // END FILLING OBJECTS
+                    if (packet.topic == 'dbTestSend') {
+                      
+                            console.log('______ dbTestSend _____', packet.payload);
 
-            if (packet.topic == 'dbTestSend') {
-              
-              console.log('______ dbTestSend _____', packet.payload);
-              dbTestSendVal = packet.payload;
-              console.log('Sent'+dbTestSendVal );
+                            dbTestSendVal = packet.payload;
 
+                            console.log('Sent'+dbTestSendVal );
+
+                    }
+
+                    locationCheck(person1);
               
-            };
+            
 
         };
     });
@@ -253,6 +211,7 @@ console.log("MQTT Server: ", thisMqttServer);
 console.log("----------------------------"); 
 
 var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
+        var defaultTopic;
   
       if (err) {
 
@@ -320,29 +279,29 @@ function publishClient ( topicName , payloadInfo ) {
 
 function locationCheck ( checkMe ) {
 
-            console.log(' We are crunching numbers sir...', "I am" + checkMe.id );
+            console.log(' We are crunching numbers sir...', "I am   " + checkMe.id );
 
-            switch (checkMe.gpsLong) {
+            switch (checkMe.gpsLong ) {
 
-            case personOne.gpsLong:
+            case person1.gpsLong:
 
                     console.log("i am near arduino 1 store in db");
             break;
-            case personTwo.gpsLong:
+            case person2.gpsLong:
 
                     console.log("i am near arduino 2 store in db");
             break;
-            case personThree.gpsLong:
+            case person3.gpsLong:
 
                     console.log("i am near arduino 3 store in db ");
             break;
-            case personFour.gpsLong:
+            case person4.gpsLong:
 
                     console.log("i am near arduino 3 store in db ");
             break;
 
 
-            }
+           }
 
 
 }
