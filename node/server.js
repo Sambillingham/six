@@ -6,7 +6,8 @@ var express = require('express'),
     mongoClient = require('mongodb').MongoClient,
     socketsPort = 8080,
     mqttPort = 1883,
-    serverAddress = "192.168.0.20";
+    serverAddress = "192.168.0.20",
+    distanceCalc = 0.04;
 
 
 var testDB='',
@@ -18,15 +19,30 @@ var testDB='',
         p2p3: "20",
     },
     personOne = {
+        id: "1",
         gpsLat: "200",
         gpsLong: "400",
-        randomNum: "287",
+        randomNum: "-287",
     };
     personTwo = {
+        id: "2",
         gpsLat: "200",
         gpsLong: "340",
-        randomNum: "237",
+        randomNum: "-237",
     };
+    personThree = {
+        id: "3",
+        gpsLat: "100",
+        gpsLong: "340",
+        randomNum: "-227",
+    };
+    personFour = {
+        id: "3",
+        gpsLat: "150",
+        gpsLong: "390",
+        randomNum: "-187",
+    };
+
 
 // Connect to the db
 mongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
@@ -111,15 +127,20 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
                     // FILL Objects for Database to read  
 
+
                     switch (packet.topic) {
 
-                    case '1/GpsLat':
+                    case  '1/GpsLat':
 
                             personOne.gpsLat = packet.payload;
+                            
+                            locationCheck(personOne);
                     break;
                     case '1/GpsLong':
 
                             personOne.gpsLong = packet.payload;
+                            
+                            locationCheck(personOne);
                     break;
                     case '1/RandomNum':
 
@@ -136,6 +157,30 @@ var thisMqttServer = mqtt.createServer(function(client) {
                     case '2/RandomNum':
 
                             personTwo.randomNum = packet.payload;
+                    break;
+                    case '3/GpsLat':
+
+                            personThree.gpsLat = packet.payload;
+                    break;
+                    case '3/GpsLong':
+
+                            personThree.gpsLong = packet.payload;
+                    break;
+                    case '3/RandomNum':
+
+                            personThree.randomNum = packet.payload;
+                    break;
+                    case '4/GpsLat':
+
+                            personFour.gpsLat = packet.payload;
+                    break;
+                    case '4/GpsLong':
+
+                            personFour.gpsLong = packet.payload;
+                    break;
+                    case '4/RandomNum':
+
+                            personFour.randomNum = packet.payload;
                     break;
                    // default:
                             console.log('NO RELEVANT MQTT TOPIC FOUND');
@@ -211,7 +256,8 @@ var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, 
   
       if (err) {
 
-                console.log("Unable to connect to broker");
+                console.log(err);
+                console.log(" CLIENT = Unable to connect to broker");
                 process.exit(1);
       }
 
@@ -268,4 +314,35 @@ function publishClient ( topicName , payloadInfo ) {
 
 
         });
+}
+
+//0.0003 = 20m
+
+function locationCheck ( checkMe ) {
+
+            console.log(' We are crunching numbers sir...', "I am" + checkMe.id );
+
+            switch (checkMe.gpsLong) {
+
+            case personOne.gpsLong:
+
+                    console.log("i am near arduino 1 store in db");
+            break;
+            case personTwo.gpsLong:
+
+                    console.log("i am near arduino 2 store in db");
+            break;
+            case personThree.gpsLong:
+
+                    console.log("i am near arduino 3 store in db ");
+            break;
+            case personFour.gpsLong:
+
+                    console.log("i am near arduino 3 store in db ");
+            break;
+
+
+            }
+
+
 }
