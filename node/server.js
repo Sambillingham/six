@@ -7,7 +7,6 @@ var express = require('express'),
     socketsPort = 8080,
     mqttPort = 1883,
     serverAddress = "127.0.0.1",
-    distanceCalc = 0.0003,
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4;
 
@@ -17,62 +16,69 @@ var testDB='',
     defaultPayload = "I'm a payload",
     topicId = '',
     payloadDataType = '',
-    connections = {
-        p1p2: "50",
-        p1p3: "70",
-        p2p3: "20"
-    },
+    // connections = {
+    //     p1p2: "50",
+    //     p1p3: "70",
+    //     p2p3: "20"
+    // },
     people = [
         {
-            id: "1",
+            id: 0,
             gpsLat: "50.0103",
             gpsLong: "50.0293",
             randomNum: "-287"
         },
         {
-            id: "2",
+            id: 1,
             gpsLat: "50.0023",
             gpsLong: "50.0999",
             randomNum: "-237"
         },
         {
-            id: "3",
+            id: 2,
             gpsLat: "50.0023",
             gpsLong: "50.0433",
             randomNum: "-227"
         },
         {
-            id: "4",
+            id: 3,
             gpsLat: "50.0345",
             gpsLong: "50.1234",
             randomNum: "-187"
         }
 
-    ]
-    // person1 = {
-    //     id: "1",
-    //     gpsLat: "50.0103",
-    //     gpsLong: "50.0293",
-    //     randomNum: "-287"
-    // };
-    // person2 = {
-    //     id: "2",
-    //     gpsLat: "50.0023",
-    //     gpsLong: "50.0999",
-    //     randomNum: "-237"
-    // };
-    // person3 = {
-    //     id: "3",
-    //     gpsLat: "50.0023",
-    //     gpsLong: "50.0433",
-    //     randomNum: "-227"
-    // };
-    // person4 = {
-    //     id: "4",
-    //     gpsLat: "50.0345",
-    //     gpsLong: "50.1234",
-    //     randomNum: "-187"
-    // };
+    ];
+    connections = [
+                {
+                    a1: 0,
+                    a2: 0,
+                    a3: 0,
+                    a4: 0
+                },
+                {
+                    a1: 0,
+                    a2: 0,
+                    a3: 0,
+                    a4: 0
+                },
+
+                {
+                    a1: 0,
+                    a2: 0,
+                    a3: 0,
+                    a4: 0
+                },
+
+                {
+                    a1: 0,
+                    a2: 0,
+                    a3: 0,
+                    a4: 0
+                }
+
+
+    ];
+    
 
 // Connect to the db
 mongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
@@ -113,6 +119,8 @@ app.get('/', function (req, res) {
                         socket.emit("persontwodata", people[1]);
 
                        // publishClient('2/buzz', '600');
+
+                        increaseConnection(0,1);
 
                         setTimeout(arguments.callee, 1000);
 
@@ -157,7 +165,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
                     var topicRemoveSlash = packet.topic.split("/");
                         whichAttribute =  topicRemoveSlash[1],
-                        aID = (topicRemoveSlash[0]) - 1;
+                        aID = (topicRemoveSlash[0]) ;
 
 
                     if ( topicRemoveSlash[1] !== "buzz" ){
@@ -166,6 +174,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
                             proximityCheck(aID);
 
                     }
+
 
                     if (packet.topic === 'dbTestSend') {
                       
@@ -176,10 +185,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
                             console.log('Sent'+dbTestSendVal );
 
                     }
-
-                    
-              
-            
 
         };
     });
@@ -300,46 +305,44 @@ function publishClient ( topicName , payloadInfo ) {
         });
 }
 
-function locationCheck ( checkMe ) {
-
-            console.log(" We are crunching numbers sir...     I am:  ",  checkMe.id );
-
-            for ( var i = 1 ; i <= NumOfClients ; i++ ) {
-
-                    var person = eval("person" + i);
-                    //console.log("looping...  ", person );
-                    var disCalcLong = Math.abs(checkMe.gpsLong - person.gpsLong),
-                        disCalcLat = Math.abs(checkMe.gpsLat - person.gpsLat);
-
-                        console.log(disCalcLat, disCalcLong);
-
-                    if ( disCalcLat >= distanceCalc) {
-
-                            console.log('Booom  ', checkMe, '  is near  ' , person);
-                    }
-
-            }
-
-}
-
 function proximityCheck (id) {
 
     var thisGpsLat = people[id].gpsLat,
         thisGpsLong = people[id].gpsLong,
+        thisId = people[id].id;
         proximityLong = '',
         proximityLat = '';
 
     for (var i = 0, j = people.length; i < j; i++) {
 
+            secondaryArduino = i ;
+
             proximityLat = Math.abs(thisGpsLat - people[i].gpsLat );
             proximityLong = Math.abs(thisGpsLong - people[i].gpsLong );
 
-            if (i !== id && proximityLat <= proximityThreshold && proximityLong <= proximityThreshold ) {
+           // console.log( "The varible loop is ", i , " and the id number is ", thisId);
 
-                    console.log("Person ", (id + 1), " is near to person ", ( i+1) ) ;
+            if ( i !== thisId ){
+
+                    if ( proximityLat <= proximityThreshold && proximityLong <= proximityThreshold ) {
+
+                            console.log("Person ", thisId, " is near to person ", i ) ;
+
+                            // MAKE A CALL TO THE DATABSE HERE!
+                            // ADD ONE TO CONNECTION BETWEEN primaryArduino and secondaryArduino
+                            // 
+
+                    }
+            } else {
+
+                console.log('The Loop was equal to the id number, would make faulse result');
 
             }
 
     }
 
 }
+
+
+
+
