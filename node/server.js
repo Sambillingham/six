@@ -332,11 +332,6 @@ function proximityCheck (id) {
                             console.log("Person ", thisId, " is near to person ", i ) ;
 
                             increaseConnection(thisId,i);
-
-                            // MAKE A CALL TO THE DATABSE HERE!
-                            // ADD ONE TO CONNECTION BETWEEN primaryArduino and secondaryArduino
-                            // 
-
                     }
             } else {
 
@@ -368,7 +363,9 @@ function increaseConnection ( primary, secondary ){
 
             connectionID = findConnnectionId( thisPrimary, thisSecondary);
 
-            console.log("Connection ID within increase function is", connectionID);
+            console.log("Connection ID ", connectionID);
+
+            addConnectionDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
 
 }
 
@@ -390,7 +387,6 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
             connectionIdThing = "a" + thisArduino + "a" + thisOtherArduino;
 
             actualConnectionID = connectionIdObject[connectionIdThing] || connectionIdObject[0];
-           // console.log("The connection id for", thisArduino, " and ", thisOtherArduino,"is ....." , actualConnectionID);
 
             return actualConnectionID;
 
@@ -399,8 +395,17 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
 function addConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
 
          //Add the entry to the Database with these paramaters
+         console.log("Example entry", "ID: ", connectionID, "Arduino One: ",  arduinoOne, "Arduino Two: ", arduinoTwo, "Relationship: ", relationship);
 
+}
 
+function queryAndReturnRelationship (connectionID){
+
+        var relationshipQuery = 0;
+
+        //ADD DB query here to find relationship for the requested connectionID
+
+        return relationshipQuery;
 }
 
 
