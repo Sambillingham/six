@@ -16,11 +16,6 @@ var testDB='',
     defaultPayload = "I'm a payload",
     topicId = '',
     payloadDataType = '',
-    // connections = {
-    //     p1p2: "50",
-    //     p1p3: "70",
-    //     p2p3: "20"
-    // },
     people = [
         {
             id: 0,
@@ -50,34 +45,43 @@ var testDB='',
     ];
     connections = [
                 {
+                    a0: 0,
                     a1: 0,
                     a2: 0,
-                    a3: 0,
-                    a4: 0
+                    a3: 0
                 },
                 {
+                    a0: 0,
                     a1: 0,
                     a2: 0,
-                    a3: 0,
-                    a4: 0
-                },
-
-                {
-                    a1: 0,
-                    a2: 0,
-                    a3: 0,
-                    a4: 0
+                    a3: 0
                 },
 
                 {
+                    a0: 0,
                     a1: 0,
                     a2: 0,
-                    a3: 0,
-                    a4: 0
+                    a3: 0
+                },
+
+                {
+                    a0: 0,
+                    a1: 0,
+                    a2: 0,
+                    a3: 0
                 }
 
 
-    ];
+    ],
+    connectionIdObject = {
+
+        "a0a1" : 1,
+        "a0a2" : 2,
+        "a0a3" : 3,
+        "a1a2" : 4,
+        "a1a3" : 5,
+        "a2a3" : 6
+    };
     
 
 // Connect to the db
@@ -118,9 +122,8 @@ app.get('/', function (req, res) {
 
                         socket.emit("persontwodata", people[1]);
 
-                       // publishClient('2/buzz', '600');
-
-                        increaseConnection(0,1);
+                        //publishClient('2/buzz', '600');
+                        
 
                         setTimeout(arguments.callee, 1000);
 
@@ -328,6 +331,8 @@ function proximityCheck (id) {
 
                             console.log("Person ", thisId, " is near to person ", i ) ;
 
+                            increaseConnection(thisId,i);
+
                             // MAKE A CALL TO THE DATABSE HERE!
                             // ADD ONE TO CONNECTION BETWEEN primaryArduino and secondaryArduino
                             // 
@@ -343,6 +348,48 @@ function proximityCheck (id) {
 
 }
 
+function increaseConnection ( primary, secondary ){
 
+        var thisPrimary = primary,
+            secondaryIsPrimary = secondary,
+            thisSecondary = "a" + secondary,
+            secondaryInSecondary = "a" + primary,
+            connectionID = "";
+
+            connections[thisPrimary][thisSecondary] += 1;
+            connections[secondaryIsPrimary][secondaryInSecondary] += 1;
+
+            console.log( "This is the Primary array slot ", connections[thisPrimary][thisSecondary]);
+            console.log( "This is the secondary array slot " , connections[secondaryIsPrimary][secondaryInSecondary]);
+
+            connectionID = findConnnectionId( thisPrimary , secondaryIsPrimary);
+
+            console.log("Connection ID within increase function is", connectionID);
+
+}
+
+function findConnnectionId (ArduinoOne, ArduinoTwo) {
+
+        var thisArduino = ArduinoOne,
+            thisOtherArduino = ArduinoTwo,
+            connectionIdThing = "";
+
+            if (thisOtherArduino < thisArduino){
+
+                    var tempStore = thisArduino;
+
+                    thisArduino = thisOtherArduino;
+                    thisOtherArduino = tempStore;
+
+            }
+
+            connectionIdThing = "a" + thisArduino + "a" + thisOtherArduino;
+
+            actualConnectionID = connectionIdObject[connectionIdThing] || connectionIdObject[0];
+            console.log("The connection id for", thisArduino, " and ", thisOtherArduino,"is ....." , actualConnectionID);
+
+            return actualConnectionID;
+
+}
 
 
