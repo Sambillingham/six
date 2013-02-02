@@ -4,34 +4,43 @@ var express = require('express'),
     io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
     relationships = '';
+    changes = '';
+    users = '';
     gpsLatData = [];
     gpsLongData = [];
-    mongoClient = require('mongodb').MongoClient,
+    Db = require('mongodb').Db,
     socketsPort = 8080,
     mqttPort = 1883,
     serverAddress = "192.168.0.20";
-
-
-var testDB='',
+    
     defaultTopic = '/default',
     defaultPayload = "I'm a payload",
-    connections = {
-        p1p2: "50",
-        p1p3: "70",
-        p2p3: "20",
-    },
-    personOne = {
-        gpsLat: "200",
-        gpsLong: "400",
-        randomNum: "287",
+
+    aID1 = {
+        gpsLat: "",
+        gpsLong: "",
+        ID:"1"
     };
-    personTwo = {
-        gpsLat: "200",
-        gpsLong: "340",
-        randomNum: "237",
+    
+    aID2 = {
+        gpsLat: "",
+        gpsLong: "",
+        ID:"2"
     };
 
-// Connect to the db
+    aID3 = {
+        gpsLat: "",
+        gpsLong: "",
+        ID:"3"
+    }
+
+    aID4 = {
+        gpsLat: "",
+        gpsLong: "",
+        ID:"4"
+    }
+
+// Mongo connection
 
 console.log('Connecting you to the grid.. Please wait..')
 
@@ -41,8 +50,10 @@ Db.connect("mongodb://localhost:27017/test", function(err, db) {
   console.log('You have joined the grid.');
 
     relationships =  db.collection('Relationships')
+    changes = db.collection('Changes')
+    users = db.collection('Users')
 
-        console.log('The grid has a collection.')
+        console.log('The grid has connected to all the collections.')
 
         });
 
@@ -92,7 +103,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
     client.on('connect', function (packet) {
 
-            console.log('we have a connection', packet);
+            console.log('Someone else has connected to the grid..' + packet.client);
 
             client.connack({
 
@@ -119,28 +130,37 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
                     case '1/GpsLat':
 
-                            personOne.gpsLat = packet.payload;
+                            aID1.gpsLat = packet.payload;
                     break;
                     case '1/GpsLong':
 
-                            personOne.gpsLong = packet.payload;
-                    break;
-                    case '1/RandomNum':
-
-                            personOne.randomNum = packet.payload;
+                            aID1.gpsLong = packet.payload;
                     break;
                     case '2/GpsLat':
 
-                            personTwo.gpsLat = packet.payload;
+                            aID2.gpsLat = packet.payload;
                     break;
                     case '2/GpsLong':
 
-                            personTwo.gpsLong = packet.payload;
+                            aID2.gpsLong = packet.payload;
                     break;
-                    case '2/RandomNum':
+                    case '3/GpsLat':
 
-                            personTwo.randomNum = packet.payload;
+                            aID3.gpsLat = packet.payload;
                     break;
+                    case '3/GpsLong':
+
+                            aID3.gpsLong = packet.payload;
+                    break;
+                    case '4/GpsLat':
+
+                            aID4.gpsLat = packet.payload;
+                    break;
+                    case '4/GpsLong':
+
+                            aID4.gpsLong = packet.payload;
+                    break;
+                    
                    // default:
                             console.log('NO RELEVANT MQTT TOPIC FOUND');
 
@@ -152,20 +172,14 @@ var thisMqttServer = mqtt.createServer(function(client) {
               
                console.log('______ dbTestSend _____', packet.payload);
                dbTestSendVal = packet.payload;
-               gpsLongData = dbTestSendVal.split(',');
-               var ArdID = parseInt(gpsLongData[0]);
-               console.log('Arduino ID' + ArdID)
+               var dbTestSendVal2 = '2';
+               updateRTotal(dbTestSendVal,dbTestSendVal2)
+           }
+       };
+   });
 
-               relationships.find({ID: {$in:[ArdID]}}).toArray(function(err, doc) {
-                if(err){
-                    console.log('The grid did not like that.')
-                }
-                console.log(doc)
-                    });        
-                            };
-                        }
-                    })
-            
+              
+       
 
     client.on('subscribe', function (packet) {
 
@@ -215,59 +229,59 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 // END mqtt Server
 
-console.log("MQTT Server: ", thisMqttServer); 
-console.log("----------------------------"); 
+console.log("Grid connector is now connected."); 
+console.log("The grids MQTT server is now running."); 
 
-var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
+// var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
   
-      if (err) {
+//       if (err) {
 
-                console.log("Unable to connect to broker");
-                process.exit(1);
-      }
+//                 console.log("Unable to connect to broker");
+//                 process.exit(1);
+//       }
 
 
-        client.connect({
+//         client.connect({
 
-                 client: "buzz"
+//                  client: "buzz"
 
-        });
+//         });
 
-        client.on('connack', function (packet) {
+//         client.on('connack', function (packet) {
 
-            if (packet.returnCode === 0) {
+//             if (packet.returnCode === 0) {
 
-                    client.publish({
+//                     client.publish({
 
-                            topic: defaultTopic,
+//                             topic: defaultTopic,
 
-                            payload: defaultPayload
+//                             payload: defaultPayload
                         
-                    });
+//                     });
 
-            } else {
+//             } else {
 
-                    console.log('connack error %d', packet.returnCode);
+//                     console.log('connack error %d', packet.returnCode);
 
-                    process.exit(-1);
+//                     process.exit(-1);
 
-            }
-        });
+//             }
+//         });
 
-        client.on('close', function () {
+//         client.on('close', function () {
 
-                process.exit(0);
+//                 process.exit(0);
 
-        });
+//         });
 
-        client.on('error', function (e) {
+//         client.on('error', function (e) {
 
-                console.log('error %s', e);
+//                 console.log('error %s', e);
 
-                process.exit(-1);
+//                 process.exit(-1);
 
-        });
-});
+//         });
+// });
 
 function publishClient ( topicName , payloadInfo ) {
 
@@ -279,4 +293,20 @@ function publishClient ( topicName , payloadInfo ) {
 
 
         });
+
 }
+
+function updateRTotal (aID1, aID2){
+    console.log("Function running..")
+    var foo = parseInt(aID1)
+    var foo2 = parseInt(aID2)
+relationships.find({aID1: {$in:[foo]}, aID2:{$in:[foo2]}}).toArray(function(err,doc){
+if(err){
+    console.log('The grid refused that query.')
+}
+console.log(doc)
+})
+};
+
+
+
