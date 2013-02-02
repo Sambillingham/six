@@ -351,18 +351,22 @@ function proximityCheck (id) {
 function increaseConnection ( primary, secondary ){
 
         var thisPrimary = primary,
-            secondaryIsPrimary = secondary,
-            thisSecondary = "a" + secondary,
-            secondaryInSecondary = "a" + primary,
-            connectionID = "";
+            thisSecondary = secondary,
+            arraySecondary = "a" + secondary,
+            connectionID = "",
+            tempStore = "";
 
-            connections[thisPrimary][thisSecondary] += 1;
-            connections[secondaryIsPrimary][secondaryInSecondary] += 1;
+            if (secondary < primary ){
 
-            console.log( "This is the Primary array slot ", connections[thisPrimary][thisSecondary]);
-            console.log( "This is the secondary array slot " , connections[secondaryIsPrimary][secondaryInSecondary]);
+                    thisPrimary = secondary;
+                    arraySecondary = "a" + primary;
+                    thisSecondary = primary;
 
-            connectionID = findConnnectionId( thisPrimary , secondaryIsPrimary);
+            }
+
+            connections[thisPrimary][arraySecondary] += 1;
+
+            connectionID = findConnnectionId( thisPrimary, thisSecondary);
 
             console.log("Connection ID within increase function is", connectionID);
 
@@ -386,9 +390,16 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
             connectionIdThing = "a" + thisArduino + "a" + thisOtherArduino;
 
             actualConnectionID = connectionIdObject[connectionIdThing] || connectionIdObject[0];
-            console.log("The connection id for", thisArduino, " and ", thisOtherArduino,"is ....." , actualConnectionID);
+           // console.log("The connection id for", thisArduino, " and ", thisOtherArduino,"is ....." , actualConnectionID);
 
             return actualConnectionID;
+
+}
+
+function addConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
+
+         //Add the entry to the Database with these paramaters
+
 
 }
 
