@@ -7,7 +7,8 @@ var express = require('express'),
     socketsPort = 8080,
     mqttPort = 1883,
     serverAddress = "127.0.0.1",
-    distanceCalc = 0.04,
+    distanceCalc = 0.0003,
+    proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4;
 
 
@@ -21,32 +22,57 @@ var testDB='',
         p1p3: "70",
         p2p3: "20"
     },
-    person1 = {
-        id: "1",
-        gpsLat: "200",
-        gpsLong: "400",
-        randomNum: "-287"
-    };
-    person2 = {
-        id: "2",
-        gpsLat: "200",
-        gpsLong: "340",
-        randomNum: "-237"
-    };
-    person3 = {
-        id: "3",
-        gpsLat: "100",
-        gpsLong: "399",
-        randomNum: "-227"
-    };
-    person4 = {
-        id: "4",
-        gpsLat: "150",
-        gpsLong: "190",
-        randomNum: "-187"
-    };
+    people = [
+        {
+            id: "1",
+            gpsLat: "50.0103",
+            gpsLong: "50.0293",
+            randomNum: "-287"
+        },
+        {
+            id: "2",
+            gpsLat: "50.0023",
+            gpsLong: "50.0999",
+            randomNum: "-237"
+        },
+        {
+            id: "3",
+            gpsLat: "50.0023",
+            gpsLong: "50.0433",
+            randomNum: "-227"
+        },
+        {
+            id: "4",
+            gpsLat: "50.0345",
+            gpsLong: "50.1234",
+            randomNum: "-187"
+        }
 
-
+    ]
+    // person1 = {
+    //     id: "1",
+    //     gpsLat: "50.0103",
+    //     gpsLong: "50.0293",
+    //     randomNum: "-287"
+    // };
+    // person2 = {
+    //     id: "2",
+    //     gpsLat: "50.0023",
+    //     gpsLong: "50.0999",
+    //     randomNum: "-237"
+    // };
+    // person3 = {
+    //     id: "3",
+    //     gpsLat: "50.0023",
+    //     gpsLong: "50.0433",
+    //     randomNum: "-227"
+    // };
+    // person4 = {
+    //     id: "4",
+    //     gpsLat: "50.0345",
+    //     gpsLong: "50.1234",
+    //     randomNum: "-187"
+    // };
 
 // Connect to the db
 mongoClient.connect("mongodb://localhost:27017/test", function(err, db) {
@@ -82,9 +108,9 @@ app.get('/', function (req, res) {
 
                     (function () {
 
-                        socket.emit("persononedata", person1);
+                        socket.emit("persononedata", people[0]);
 
-                        socket.emit("persontwodata", person2);
+                        socket.emit("persontwodata", people[1]);
 
                        // publishClient('2/buzz', '600');
 
@@ -129,27 +155,19 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
             self.clients[k].publish({topic: packet.topic, payload: packet.payload});
 
-                    var topicCharArrayThing = packet.topic.split(""),
-                        topicRemoveSlash = packet.topic.split("/"),
-                        aID = topicRemoveSlash[0],
-                        personCheck = '';
+                    var topicRemoveSlash = packet.topic.split("/");
+                        whichAttribute =  topicRemoveSlash[1],
+                        aID = (topicRemoveSlash[0]) - 1;
 
-                    if ( topicRemoveSlash[1] != "buzz" ){
 
-                            payloadDataType = topicRemoveSlash[1];
+                    if ( topicRemoveSlash[1] !== "buzz" ){
 
-                            console.log( " --------> " + aID, payloadDataType);
-
-                            eval("person" + aID + "." + payloadDataType + "=" + '"' + packet.payload + '"' + ";");
-
-                            personCheck = eval("person" + aID);
-
-                            console.log(personCheck);
-                            locationCheck( personCheck);
+                            people[aID][topicRemoveSlash[1]] = packet.payload;
+                            proximityCheck(aID);
 
                     }
 
-                    if (packet.topic == 'dbTestSend') {
+                    if (packet.topic === 'dbTestSend') {
                       
                             console.log('______ dbTestSend _____', packet.payload);
 
@@ -282,23 +300,46 @@ function publishClient ( topicName , payloadInfo ) {
         });
 }
 
-//0.0003 = 20m
-
 function locationCheck ( checkMe ) {
 
             console.log(" We are crunching numbers sir...     I am:  ",  checkMe.id );
 
             for ( var i = 1 ; i <= NumOfClients ; i++ ) {
 
-                    var person = eval("person" + i); ;
-                    console.log("looping...  ", person );
+                    var person = eval("person" + i);
+                    //console.log("looping...  ", person );
+                    var disCalcLong = Math.abs(checkMe.gpsLong - person.gpsLong),
+                        disCalcLat = Math.abs(checkMe.gpsLat - person.gpsLat);
 
-                    if ( checkMe.gpsLong == person.gpsLong && checkMe.gpsLat == person.gpsLat && checkMe.id != person.id ){
+                        console.log(disCalcLat, disCalcLong);
 
-                            console.log('Booom booom');
+                    if ( disCalcLat >= distanceCalc) {
 
+                            console.log('Booom  ', checkMe, '  is near  ' , person);
                     }
 
             }
+
+}
+
+function proximityCheck (id) {
+
+    var thisGpsLat = people[id].gpsLat,
+        thisGpsLong = people[id].gpsLong,
+        proximityLong = '',
+        proximityLat = '';
+
+    for (var i = 0, j = people.length; i < j; i++) {
+
+            proximityLat = Math.abs(thisGpsLat - people[i].gpsLat );
+            proximityLong = Math.abs(thisGpsLong - people[i].gpsLong );
+
+            if (i !== id && proximityLat <= proximityThreshold && proximityLong <= proximityThreshold ) {
+
+                    console.log("Person ", (id + 1), " is near to person ", ( i+1) ) ;
+
+            }
+
+    }
 
 }
