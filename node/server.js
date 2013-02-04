@@ -8,7 +8,7 @@ var express = require('express'),
     gpsLongData = [];
     Db = require('mongodb').Db,
     socketsPort = 8080,
-    mqttPort = 1883,
+    mqttPort = 8085,
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4;
@@ -387,7 +387,7 @@ function increaseConnection ( primary, secondary ){
 
             console.log("Connection ID ", connectionID);
 
-            addConnectionDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
+            updateConnectionDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
 
 }
 
@@ -414,20 +414,53 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
 
 }
 
-function addConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
+function updateConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
 
-         //Add the entry to the Database with these paramaters
+
+         //UPDATE the entry to the Database with these paramaters
          console.log("Example entry", "ID: ", connectionID, "Arduino One: ",  arduinoOne, "Arduino Two: ", arduinoTwo, "Relationship: ", relationship);
 
 }
 
-function queryAndReturnRelationship (connectionID){
+function updateUserMax (id , newMax) {
+
+        // USERS
+        // DB query to update a users max connections to the new value
+}
+
+function addRelationshipChange ( connectionID , relationship) {
+
+        // RELATIONSHIP CHANGE
+        // DB query to Add another entry with the relevant connection ID and the change to the relationship
+
+}
+
+function returnCurrentRelationship (connectionID) {
+
+        // USERS
+        //ADD DB query here to return latest relationship for the requested connectionID
 
         var relationshipQuery = 0;
 
-        //ADD DB query here to find relationship for the requested connectionID
-
         return relationshipQuery;
 }
+
+function returnCurrentUserMax ( id ) {
+
+        var thisid = id,
+
+            userMax = 0;
+        // USERS
+        // ADD DB query here to return latest users Max connections
+
+        return userMax;
+
+}
+
+
+
+
+
+
 
 
