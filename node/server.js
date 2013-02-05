@@ -10,8 +10,7 @@ var express = require('express'),
     gpsLongData = [];
     Db = require('mongodb').Db,
     socketsPort = 8080,
-    mqttPort = 1883,
-
+    mqttPort = 8085,
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4;
@@ -27,25 +26,29 @@ var testDB='',
             id: 0,
             gpsLat: "50.0103",
             gpsLong: "50.0293",
-            randomNum: "-287"
+            randomNum: "-287",
+            maxCon: 0
         },
         {
             id: 1,
             gpsLat: "50.0023",
             gpsLong: "50.0999",
-            randomNum: "-237"
+            randomNum: "-237",
+            maxCon: 0
         },
         {
             id: 2,
             gpsLat: "50.0023",
             gpsLong: "50.0433",
-            randomNum: "-227"
+            randomNum: "-227",
+            maxCon: 0
         },
         {
             id: 3,
             gpsLat: "50.0345",
             gpsLong: "50.1234",
-            randomNum: "-187"
+            randomNum: "-187",
+            maxCon: 0
         }
 
     ];
@@ -88,8 +91,18 @@ var testDB='',
         "a1a3" : 5,
         "a2a3" : 6
 
-    };
+    },
     
+    connectionIdTime = {
+
+        "1" : false,
+        "2" : false,
+        "3" : false,
+        "4" : false,
+        "5" : false,
+        "6" : false
+    };    
+
 
 // Mongo connection
 
@@ -107,7 +120,7 @@ Db.connect("mongodb://localhost:27017/test", function(err, db) {
     relationships =  db.collection('Relationships')
     changes = db.collection('Changes')
     users = db.collection('Users')
-    connections = db.collection('Connections')
+
 
         console.log('The grid has connected to all the collections.')
 
@@ -116,10 +129,11 @@ Db.connect("mongodb://localhost:27017/test", function(err, db) {
 
         console.log('The grid has a collection.');
 
-
 });
 
 //Mongo end
+
+
 
 server.listen(socketsPort);
 
@@ -133,26 +147,26 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-            // Sockets Server
-            
-            io.sockets.on('connection', function (socket) {
+    // Sockets Server
+    
+    io.sockets.on('connection', function (socket) {
 
-                    (function () {
+            (function () {
 
-                        socket.emit("persononedata", people[0]);
+                socket.emit("persononedata", people[0]);
 
-                        socket.emit("persontwodata", people[1]);
+                socket.emit("persontwodata", people[1]);
 
-                        //publishClient('2/buzz', '600');
-                        
+                //publishClient('2/buzz', '600');
+                
 
-                        setTimeout(arguments.callee, 1000);
+                setTimeout(arguments.callee, 1000);
 
-                    })();
+            })();
 
-              });
+      });
 
-            // END sockets Server
+    // END sockets Server
 
 // MQTT Server
 
@@ -198,32 +212,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
                             proximityCheck(aID);
 
                     }
-
-
-                    if (packet.topic == 'GPSLONG') {
-
-                        console.log('______ dbTestSend _____', packet.payload);
-
-                            dbTestSendVal = packet.payload;
-
-                            gpsLongData = dbTestSendVal.split(',');
-                            var ArdID = parseInt(gpsLongData[0]);
-
-                            console.log('Arduino ID' + ArdID)
-
-                            relationships.find({ID: {$in:[ArdID]}}).toArray(function(err, doc) {
-
-                                if(err){
-
-                                    console.log('The grid did not like that.')
-
-                                }
-
-                            console.log(doc)
-                            }); 
-
-                    }
-
         };
     });
 
@@ -379,14 +367,14 @@ function proximityCheck (id) {
 
                     if ( proximityLat <= proximityThreshold && proximityLong <= proximityThreshold ) {
 
-                            console.log("Person ", thisId, " is near to person ", i ) ;
+                            console.log("Person: ", thisId, " is near to person: ", i ) ;
 
                             increaseConnection(thisId,i);
                     }
+
             } else {
 
-                console.log('The Loop was equal to the id number, would make false result');
-
+                console.log('The Loop was equal to the id number or was not relevant');
             }
 
     }
@@ -409,14 +397,26 @@ function increaseConnection ( primary, secondary ){
 
             }
 
-            connections[thisPrimary][arraySecondary] += 1;
-
             connectionID = findConnnectionId( thisPrimary, thisSecondary);
 
-            console.log("Connection ID ", connectionID);
+            if ( connectionIdTime[connectionID] !== true ) {
 
-            addConnectionDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
+                    console.log( 'we are set to.... ', connectionIdTime);
 
+                    connections[thisPrimary][arraySecondary] += 1;
+
+                    //ADD Max Connections
+
+                    people[thisPrimary].maxCon += connections[thisPrimary][arraySecondary];
+
+                    //console.log("Connection ID ", connectionID);
+
+                    updateRelationshipDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
+
+                    connectionIdTime[connectionID] = true
+
+                    timeDelayForConnection(connectionIdTime[connectionID]);
+            }
 }
 
 function findConnnectionId (ArduinoOne, ArduinoTwo) {
@@ -442,23 +442,95 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
 
 }
 
-function addConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
+function updateRelationshipDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
 
-         //Add the entry to the Database with these paramaters
-         collection.insert([{'ConnectionID':ConnectionID}, {'Ard1ID':arduinoOne}, {'Ard2ID':arduinoTwo}, {'rID':relationship}])
+        //$inc increments rTotal by relationship. $set sets rTotal to relationship. 
 
-         console.log("Example entry", "ID: ", connectionID, "Arduino One: ",  arduinoOne, "Arduino Two: ", arduinoTwo, "Relationship: ", relationship);
+         relationships.update({ID:connectionID}, {$inc:{rTotal:relationship}}, function(err){
+            if (err) console.log('Update failed');
+            else console.log('Updated relationship: ' + connectionID + 'New total: ' + relationship );
+         });
+
+         
+}
+
+function updateUserMax (id , newMax) {
+
+        //Sets the users totalActivity to the number passed through from newMax.
+
+        users.update({ID:id},{$set:{totalActivity:newMax}}, function(err){
+            if(err) console.log('Update user max failed.');
+            else console.log('Updated user' + id + 'with' + newMax);
+        })
+}
+
+function addRelationshipChange ( connectionID , relationship) {
+
+        //Inserts a new document with the ID and change into changes collection. 
+        changes.insert({ID:connectionID,rChange:relationship}, function(err){
+            if(err) console.log('Inserting change failed.')
+            else console.log('Inserted change' + connectionID + " : " + relationship)
+        })
 
 }
 
-function queryAndReturnRelationship (connectionID){
+function returnCurrentRelationship (connectionID) {
+        
+        var rTotal;
 
-        var relationshipQuery = 0;
+        // Return relationship rTotal from ConnectionID
+        relationships.findOne({ID:connectionID}), function(err, document){
+            if(err) console.log('Cannot find relationship');
+            else 
+                rTotal = document.rTotal;
+                console.log('Found relationship for' + document.rTotal)
+        }
 
-        //ADD DB query here to find relationship for the requested connectionID
-
+        var relationshipQuery;
+        relationshipQuery = rTotal;
         return relationshipQuery;
 }
+
+function returnCurrentUserMax ( id ) {
+
+        var thisid = id,
+        userMax = 0;
+        // USERS
+        // ADD DB query here to return latest users Max connections
+        users.findOne({ID:id}), function(err,document){
+            if(err) console.log('Cannot find current user max');
+            else
+                userMax = document.userMax;
+                console.log('Found user max for' + id)
+        
+        return userMax;
+
+}
+
+function decayRelationship () {
+
+
+
+}
+
+function timeDelayForConnection ( connectionID ) {
+
+    var thisID = connectionID;
+
+        setTimeout( function () { 
+
+                connectionIdTime[connectionID] = false ;
+
+        }, 300 );
+
+    console.log( 'we are set to.... ', connectionIdTime);
+
+
+}
+
+
+
+
 
 
 
