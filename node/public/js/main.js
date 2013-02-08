@@ -33,7 +33,7 @@
 
                     personOneData = data;
 
-                    console.log('DUDE ONE:   ',  personOneData);
+                    console.log('DUDE ONE:   ',  personOneData["gpsLat"]);
             
             });
 
