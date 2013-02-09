@@ -34,17 +34,12 @@
                     personOneData = data;
 
                     console.log('DUDES:   ',  personOneData);
+
+
             
             });
 
-            // socket.on('persontwodata', function (data) {
-
-            //         personTwoData = data;
-
-            //         console.log('DUDE TWO:   ',  personTwoData);
-            
-            // });
-
+          
 
 
         init();

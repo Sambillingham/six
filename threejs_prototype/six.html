@@ -1,0 +1,194 @@
+<html>
+
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+			canvas { 
+				background: #FFF;
+				width: 100%;
+				height: 100% 
+			}
+		</style> 
+		<script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>
+	</head>
+
+	<body> 
+
+
+		<script>
+
+			//set the global variables
+			var WIDTH = window.innerWidth; // scene width
+		    var HEIGHT = window.innerHeight; // scene height
+
+		    var VIEW_ANGLE = 45; // camera attributes
+		    var ASPECT = WIDTH/HEIGHT; // camera attributes
+		    var NEAR = 0.1; // camera attributes
+		    var FAR = 10000; // camera attributes
+
+		    var renderer = new THREE.WebGLRenderer(); // WebGL renderer
+		    var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR); // Three js camera
+		    var scene = new THREE.Scene(); // Three js scene
+
+		    //initialise the scene, camera and renderer
+		    function init() {
+
+			    scene.add(camera); // add camera to scene
+			    camera.position.z = 600; // zoom out camera from 0,0,0
+			    renderer.setSize(WIDTH,HEIGHT); // start renderer
+
+			    document.body.appendChild(renderer.domElement); // append render to body
+
+			}
+
+			//scene lighting
+			function addlight() {
+				
+				var pointLight = new THREE.PointLight(0xFFFFFF); // point light
+				
+				pointLight.position.x = 10; // light position
+				pointLight.position.y = 50;
+				pointLight.position.z = 130;
+
+				scene.add(pointLight); // add light to scene
+
+			}
+
+			//grid. ONLY NEEDED FOR DEVELOPMENT
+    		function addGrid() {
+				plane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 20, 20 ), new THREE.MeshBasicMaterial( { color: 0x333333, wireframe: true } ) );
+				plane.rotation.x = - Math.PI / 2;
+				plane.position.y = -50;
+				scene.add( plane );
+			}
+
+			/************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+			//array to store each sphere. Each sphere represents a person
+			var person = new Array();
+			person[0] = new sphere(0xD2C282,50,16,16, 160, 60, -200);//gold
+			person[1] = new sphere(0x00FF00,50,16,16, -60, -60, -200);//green
+			person[2] = new sphere(0xFF0000,50,16,16, -260, -160, -200);//red
+			person[3] = new sphere(0x0000FF,50,16,16, -260, 60, -200);//blue
+
+		    //array to store each line. Each line represents a relationship between two people
+		    var relationship = new Array();
+		    relationship[0] = new line(person[0],person[1]);
+		    relationship[1] = new line(person[0],person[2]);
+		    relationship[2] = new line(person[0],person[3]);
+		    relationship[3] = new line(person[1],person[2]);
+		    relationship[4] = new line(person[1],person[3]);
+		    relationship[5] = new line(person[2],person[3]);
+
+
+		    //function to create a sphere given the shown parameters. all parameters are stored in the object
+			function sphere(sColor,sRadius,sSegmentsWidth,sSegmentsHeight, sX, sY, sZ) {
+
+				this.sColor = sColor;
+				this.sRadius = sRadius;
+				this.sSegmentsWidth = sSegmentsWidth;
+				this.sSegmentsHeight = sSegmentsHeight;
+				this.sX = sX;
+				this.sY = sY;
+				this.sZ = sZ;
+
+				var sphereMaterial = new THREE.MeshPhongMaterial( 
+					{ 
+						ambient: 0x030303, 
+						color: sColor,
+						specular: 0xFFFFFF, 
+						shininess: 30, 
+						shading: THREE.SmoothShading,
+						opacity: 0.8, 
+						transparent: true
+						//map: texture, transparent: true 
+					} 
+				);
+
+			    var radius = sRadius; // set up the sphere radius
+			    var segmentsWidth = sSegmentsWidth; // set up the sphere segmentsWidth
+			    var segmentsHeight = sSegmentsHeight;  // set up the sphere segmentsHeight
+
+			    this.sphere = new THREE.Mesh( new THREE.SphereGeometry(radius, segmentsWidth,segmentsHeight), sphereMaterial); // create new mesh - sphere geometry
+
+			    this.sphere.position.x = this.sX;
+			    this.sphere.position.y = this.sY;
+			    this.sphere.position.z = this.sZ;
+
+				scene.add(this.sphere);// add sphere to scene
+
+		    }
+
+		    //function to create a line from one sphere to another. Both spheres are stored in variables 'sphereA' and 'sphereB'.
+		    function line(sphereA, sphereB){
+
+		    	this.sphereA = sphereA;
+		    	this.sphereB = sphereB;
+
+	    		var pointA = new THREE.Vector3( sphereA.sphere.position.x, sphereA.sphere.position.y, sphereA.sphere.position.z );
+			    var pointB = new THREE.Vector3( sphereB.sphere.position.x, sphereB.sphere.position.y, sphereB.sphere.position.z );
+
+			    var lineGeometry = new THREE.Geometry();
+
+			    lineGeometry.vertices.push( pointA ); 
+			    lineGeometry.vertices.push( pointB );
+			    lineGeometry.verticesNeedUpdate = true;
+
+			    var lineMaterial = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.5, linewidth:5 } );
+
+			    this.line = new THREE.Line( lineGeometry, lineMaterial );
+			    this.line.geometry.verticesNeedUpdate = true;
+
+				scene.add( this.line );
+
+
+		    }
+
+		    /************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+    		function animate(t) {
+
+				/* ANIMATIONS HERE------------------------------------------- */
+
+				//animating a sphere
+				person[0].sphere.position.x = Math.cos(t/600)*225;
+				person[0].sphere.position.z = Math.sin(t/600)*185;
+
+				person[1].sphere.position.y = Math.cos(t/600)*225;
+				person[1].sphere.position.z = Math.sin(t/600)*185;
+
+				person[2].sphere.position.x = Math.cos(t/600)*115;
+				person[2].sphere.position.z = Math.sin(t/600)*95;
+
+				person[3].sphere.position.y = Math.cos(t/600)*115;
+				person[3].sphere.position.z = Math.sin(t/600)*95;
+
+				//loop to set the two vertices of each relationship line equal to the positions of the two sphere they connect to 
+				for(var i = 0; i<relationship.length; i++){
+
+					var sphereAPos = relationship[i].sphereA.sphere.position;
+					var sphereBPos = relationship[i].sphereB.sphere.position;
+					
+					relationship[i].line.geometry.vertices[0].set(sphereAPos.x,sphereAPos.y,sphereAPos.z);
+					relationship[i].line.geometry.vertices[1].set(sphereBPos.x,sphereBPos.y,sphereBPos.z);
+					relationship[i].line.geometry.verticesNeedUpdate = true;
+				}
+
+				/* ANIMATIONS END------------------------------------------- */
+
+				renderer.render(scene, camera); // render scene
+				requestAnimationFrame( animate );
+				
+			}
+
+			//run all the functions to make it work
+			init(); // run intitialise function
+			addlight(); // add light to scene
+			addGrid(); // add a grid to the scene;
+			animate();// run animate loop
+										
+		</script>
+lineTwo
+	</body> 
+
+</html>
