@@ -138,9 +138,12 @@ app.get('/', function (req, res) {
 
             (function () {
 
-                socket.emit("persononedata", people[0]);
 
-                socket.emit("persontwodata", people[1]);
+                for ( var i = 0 ; i < people.length ; i++){
+
+                        socket.emit("persononedata", people[i]);
+
+                }
 
                 //publishClient('2/buzz', '600');
                 
@@ -195,6 +198,9 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
                             people[aID][topicRemoveSlash[1]] = packet.payload;
                             proximityCheck(aID);
+
+
+                            //console.log( 'Timeouts ', connectionIdTime);
 
                     }
 
@@ -396,24 +402,24 @@ function increaseConnection ( primary, secondary ){
 
             connectionID = findConnnectionId( thisPrimary, thisSecondary);
 
-            if ( connectionIdTime[connectionID] !== true ) {
+            //if ( connectionIdTime[connectionID] !== true ) {
 
                     console.log( 'we are set to.... ', connectionIdTime);
 
                     connections[thisPrimary][arraySecondary] += 1;
-
                     //ADD Max Connections
 
                     people[thisPrimary].maxCon += connections[thisPrimary][arraySecondary];
 
                     //console.log("Connection ID ", connectionID);
 
-                    updateConnectionDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
 
-                    connectionIdTime[connectionID] = true
+                    updateRelationshipDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
 
-                    timeDelayForConnection(connectionIdTime[connectionID]);
-            }
+                 //   connectionIdTime[connectionID] = true
+
+                 //   timeDelayForConnection(connectionIdTime[connectionID]);
+           //}
 }
 
 function findConnnectionId (ArduinoOne, ArduinoTwo) {
@@ -439,7 +445,7 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
 
 }
 
-function updateConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
+function updateRelationshipDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
 
         // RELATIONSHIPS
         // UPDATE the entry to the Database with these paramaters
@@ -447,13 +453,13 @@ function updateConnectionDbEntry ( connectionID , arduinoOne, arduinoTwo , relat
 
 }
 
-function updateUserMax (id , newMax) {
+function updateUserMax ( id , newMax ) {
 
         // USERS
         // DB query to update a users max connections to the new value
 }
 
-function addRelationshipChange ( connectionID , relationship) {
+function addRelationshipChange ( connectionID , relationship ) {
 
         // CHANGES
         // DB query to Add another entry with the relevant connection ID and the change to the relationship
@@ -497,8 +503,6 @@ function timeDelayForConnection ( connectionID ) {
                 connectionIdTime[connectionID] = false ;
 
         }, 30000 );
-
-    console.log( 'we are set to.... ', connectionIdTime);
 
 
 }
