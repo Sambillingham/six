@@ -250,8 +250,8 @@ app.get('/', function (req, res) {
         (function () {
 
                 // INITIAL INSERT for DB users & relationships Uncomment on deployment
-                //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
-                //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
+                users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
+                relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
                 // USE TO UPDATE BY HAND may need at some point
                 //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
