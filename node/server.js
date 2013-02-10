@@ -209,7 +209,7 @@ app.get('/', function (req, res) {
 
                                 } else {
                                         
-                                        socket.emit("personTwodata", item);
+                                        socket.emit("maxConnection", item);
                                         console.log(item);
 
                                 }
@@ -230,7 +230,7 @@ app.get('/', function (req, res) {
 
                                 } else {
                                         
-                                        socket.emit("persononedata", item);
+                                        socket.emit("relationshipConnections", item);
                                         console.log(item);
 
                                 }
@@ -579,11 +579,11 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
 function addRelationshipChange ( connectionID , relationship ) {
 
-        Inserts a new document with the ID and change into changes collection. 
-        changes.insert({ID:connectionID,rChange:relationship}, function(err){
-            if(err) console.log('Inserting change failed.')
-            else console.log('Inserted change' + connectionID + " : " + relationship)
-        })
+       // Inserts a new document with the ID and change into changes collection. 
+        // changes.insert({ID:connectionID,rChange:relationship}, function(err){
+        //     if(err) console.log('Inserting change failed.')
+        //     else console.log('Inserted change' + connectionID + " : " + relationship)
+        // })
 
 }
 

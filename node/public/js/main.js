@@ -24,30 +24,54 @@
 
 
         var bigCircle = '',
-        personOneData = {};
-        personTwoData = {};
+        relationshipConnections = {};
+        maxConnection = {};
 
         var socket = io.connect('http://127.0.0.1');
 
-            socket.on('persononedata', function (data) {
+            socket.on('relationshipConnections', function (data) {
 
-                    personOneData = data;
+                    relationshipConnections = data;
 
-                    console.log('DUDES###:   ',  personOneData);
+                    //console.log('Relationship Connections Data:   ',  relationshipConnections);
+
+                    for ( var i = 1; i < 7; i++){
+
+                        if ( relationshipConnections.conId === i ) {
+
+                            console.log('Relationship for', i , ' is ', relationshipConnections.relationship);
+                        }
+                    }
+
+            });
+            socket.on('maxConnection', function (data) {
+
+                    maxConnection = data;
+
+                   // console.log('Max Connection Data:   ',  maxConnection);
+
+                   switch (maxConnection.id) {
+
+                    case 0 :
+                    console.log('Max Connection for 0 is ', maxConnection.max);
+                    break;
+                    case 1 :
+                    console.log('Max Connection for 1 is ', maxConnection.max);
+                    break;
+                    case 2 :
+                    console.log('Max Connection for 2 is ', maxConnection.max);
+                    break;
+                    case 3 :
+                    console.log('Max Connection for 3 is ', maxConnection.max);
+                    break;
+                   }
 
 
             
             });
-            socket.on('personTwodata', function (data) {
-
-                    personOneData = data;
-
-                    console.log('DUDES@@@:   ',  personOneData);
-
 
             
-            });
-
+            
           
 
 
@@ -68,8 +92,8 @@
         lineGeometry = new THREE.Geometry();
         sphereGeometry = new THREE.SphereGeometry( 10, 40, 40 );
 
-        lineGeometry.vertices.push( new THREE.Vector3( -800, (personOneData.gpsLong), 0 ));
-        lineGeometry.vertices.push( new THREE.Vector3( -500, (personOneData.gpsLong), 0 ));
+        lineGeometry.vertices.push( new THREE.Vector3( -800, 200, 0 ));
+        lineGeometry.vertices.push( new THREE.Vector3( -500, 200, 0 ));
 
         geometry.verticesNeedUpdate = true;
 
@@ -114,15 +138,15 @@
         personOneCube.rotation.x += 0.01;
         personOneCube.rotation.y += 0.02;
 
-        personOneCube.position.x = personOneData.gpsLat;
-        personOneCube.position.y = personOneData.gpsLong;
-        personOneCube.position.z = personOneData.randomNum;
+        personOneCube.position.x = 200;
+        personOneCube.position.y = 200;
+        personOneCube.position.z = 200;
 
         personTwoCube.rotation.x -= 0.01;
         personTwoCube.rotation.y -= 0.02;
-        personTwoCube.position.x = personTwoData.gpsLat;
-        personTwoCube.position.y = personTwoData.gpsLong;
-        personTwoCube.position.z = personTwoData.randomNum;
+        personTwoCube.position.x = 200;
+        personTwoCube.position.y = 200;
+        personTwoCube.position.z = 200;
 
         orb.position.set( 50, 100, 800);
 
