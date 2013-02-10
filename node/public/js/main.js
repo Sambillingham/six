@@ -27,7 +27,7 @@
         personOneData = {};
         personTwoData = {};
 
-        var socket = io.connect('http://178.79.132.119');
+        var socket = io.connect('http://127.0.0.1');
 
             socket.on('persononedata', function (data) {
 

@@ -8,7 +8,7 @@ var express = require('express'),
     users = '';
     gpsLatData = [];
     gpsLongData = [];
-    Db = require('mongodb').Db,
+    MongoClient = require('mongodb').MongoClient,
     socketsPort = 8080,
     mqttPort = 8085,
     serverAddress = "127.0.0.1",
@@ -101,38 +101,83 @@ var testDB='',
         "4" : false,
         "5" : false,
         "6" : false
-    };    
+    },
+    UserMaxConnection = [
+                {
 
+                    "id" : 0,
+                    "max" : 0
+                },
+                {
+
+                    "id" : 1,
+                    "max" : 0
+                },
+                {
+
+                    "id" : 2,
+                    "max" : 0
+                },
+                {
+
+                    "id" : 3,
+                    "max" : 0
+                }
+    ],
+    relationshipsDbInsert = [
+                {
+                    "conId" : 1,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 2,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 3,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 4,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 5,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 6,
+                    "relationship" : 0
+                }
+
+    ];
+
+        var doc1 = {'hello':'doc1'};
 
 // Mongo connection
+MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
 
-console.log('Connecting you to the grid.. Please wait..');
+    if(err) {
 
-Db.connect("mongodb://localhost:27017/test", function(err, db) {
+            console.log(err);
+    }
 
-  if(!err){
+        // Create DB if they dont already Exist
+        db.createCollection('Relationships', function(err, collection) {});
+        db.createCollection('Users', function(err, collection) {});
+        db.createCollection('Changes', function(err, collection) {});
+        //END DB Creation
 
-  }
-  
-  console.log('You have joined the grid.');
+        // Create var for "easier" reference
+        relationships =  db.collection('Relationships');
+        users = db.collection('Users');
+        changes = db.collection('Changes');
+        // End var creation
 
+        console.log('The grid has connected to all the collections.');
 
-    relationships =  db.collection('Relationships')
-    changes = db.collection('Changes')
-    users = db.collection('Users')
-
-
-        console.log('The grid has connected to all the collections.')
-
-    // Can you make it dynamically create this if it does not already exist and then call it?
-   // relationships =  db.collection('Relationships');
-
-        console.log('The grid has a collection.');
-
-});
-
-//Mongo end
-
+}); 
+//MONGO END
 
 
 server.listen(socketsPort);
@@ -166,6 +211,33 @@ app.get('/', function (req, res) {
                 setTimeout(arguments.callee, 1000);
 
             })();
+
+
+
+        //Test function that reapeats every 2 seconds;
+        (function () {
+
+                // INITIAL INSERT for DB users
+                //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
+                //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
+
+
+                //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
+                
+                users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
+                users.update( {id:3}, {$set:{max:27}}, {w:1}, function ( err, result ) {});
+
+                users.findOne( { id: 2 }, function ( err, item ) {
+
+                        console.log(item.max);
+
+                });
+
+                setTimeout(arguments.callee, 2000);
+
+        })();
+
+        //END TEST FUNCTION
 
       });
 
@@ -266,13 +338,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 
 }).listen(mqttPort);
-
-
 // END mqtt Server
-
-console.log("Grid connector is now connected."); 
-console.log("The grids MQTT server is now running."); 
-
 
 var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
         var defaultTopic;
@@ -337,20 +403,6 @@ function publishClient ( topicName , payloadInfo ) {
 
 }
 
-// function updateRTotal (aID1, aID2){
-//     console.log("Function running..")
-//     var foo = parseInt(aID1)
-//     var foo2 = parseInt(aID2)
-// relationships.find({aID1: {$in:[foo]}, aID2:{$in:[foo2]}}).toArray(function(err,doc){
-// if(err){
-//     console.log('The grid refused that query.')
-// }
-
-// console.log(doc)
-// })
-// };
-
-
 
 function proximityCheck (id) {
 
@@ -367,7 +419,7 @@ function proximityCheck (id) {
             proximityLat = Math.abs(thisGpsLat - people[i].gpsLat );
             proximityLong = Math.abs(thisGpsLong - people[i].gpsLong );
 
-            console.log( "The varible loop is ", i , " and the id number is ", thisId);
+            //console.log( "The varible loop is ", i , " and the id number is ", thisId);
 
             if ( i !== thisId ){
 
@@ -407,17 +459,18 @@ function increaseConnection ( primary, secondary ){
 
             //if ( connectionIdTime[connectionID] !== true ) {
 
-                    console.log( 'we are set to.... ', connectionIdTime);
+                   // console.log( 'we are set to.... ', connectionIdTime);
 
                     connections[thisPrimary][arraySecondary] += 1;
+
                     //ADD Max Connections
 
-                    people[thisPrimary].maxCon += connections[thisPrimary][arraySecondary];
+                    updateUserMax( thisPrimary ,thisSecondary , 1 );
 
                     //console.log("Connection ID ", connectionID);
 
 
-                    updateRelationshipDbEntry(connectionID, thisPrimary, thisSecondary, connections[thisPrimary][arraySecondary] );
+                    updateRelationshipDbEntry( connectionID );
 
                  //   connectionIdTime[connectionID] = true
 
@@ -448,27 +501,63 @@ function findConnnectionId (ArduinoOne, ArduinoTwo) {
 
 }
 
-function updateRelationshipDbEntry ( connectionID , arduinoOne, arduinoTwo , relationship ){
+function updateRelationshipDbEntry ( connectionID ){
 
-        //$inc increments rTotal by relationship. $set sets rTotal to relationship. 
+        relationships.update( { conId:connectionID }, { $inc: { relationship:1 } }, {w:1}, function ( err, result ){
 
+                if (err)  { 
 
-         relationships.update({ID:connectionID}, {$inc:{rTotal:relationship}}, function(err){
-            if (err) console.log('Update failed');
-            else console.log('Updated relationship: ' + connectionID + 'New total: ' + relationship );
-         });
+                    console.log('Update failed', err);
 
+                }
+
+                else  {
+
+                console.log('incremented by + 1 relationship: ' + connectionID );
+
+                }
+
+        });
          
 }
 
-function updateUserMax ( id , newMax ) {
+function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
-        //Sets the users totalActivity to the number passed through from newMax.
+        // Incremention both Users Max Connection by Increment
 
-        users.update({ID:id},{$set:{totalActivity:newMax}}, function(err){
-            if(err) console.log('Update user max failed.');
-            else console.log('Updated user' + id + 'with' + newMax);
-        })
+        users.update( { id:ArduinoOne }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
+
+                if (err)  { 
+
+                    console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                console.log('incremented' , ArduinoOne , 'MAX Connection' );
+
+                }
+
+        });
+
+        users.update( { id:ArduinoTwo }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
+
+                if (err)  { 
+
+                    console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                console.log('incremented' , ArduinoTwo , 'MAX Connection' );
+
+                }
+
+        });
+
+
 }
 
 function addRelationshipChange ( connectionID , relationship ) {
@@ -502,16 +591,25 @@ function returnCurrentUserMax ( id ) {
 
         var thisid = id,
         userMax = 0;
+        
         // USERS
         // ADD DB query here to return latest users Max connections
         users.findOne({ID:id}), function(err,document){
-            if(err) console.log('Cannot find current user max');
-            else
-                userMax = document.userMax;
-                console.log('Found user max for' + id)
-        
-        return userMax;
 
+            if(err) { 
+
+                    console.log('Cannot find current user max');
+
+            }
+
+            else {
+                userMax = document.userMax;
+
+                console.log('Found user max for' + id)
+            }
+           return userMax;
+
+        }
 }
 
 function decayRelationship () {
@@ -529,13 +627,4 @@ function timeDelayForConnection ( connectionID ) {
                 connectionIdTime[connectionID] = false ;
 
         }, 300 );
-
-
 }
-
-
-
-
-
-
-
