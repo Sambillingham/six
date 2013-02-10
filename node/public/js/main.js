@@ -40,6 +40,8 @@
                         if ( relationshipConnections.conId === i ) {
 
                             console.log('Relationship for', i , ' is ', relationshipConnections.relationship);
+
+                            $('#rel'+i).html('Relationship ID ' + i  + "'s connection is " + relationshipConnections.relationship);
                         }
                     }
 
@@ -50,22 +52,15 @@
 
                    // console.log('Max Connection Data:   ',  maxConnection);
 
-                   switch (maxConnection.id) {
+                   for ( var i = 0 ; i < 4; i++) {
 
-                    case 0 :
-                    console.log('Max Connection for 0 is ', maxConnection.max);
-                    break;
-                    case 1 :
-                    console.log('Max Connection for 1 is ', maxConnection.max);
-                    break;
-                    case 2 :
-                    console.log('Max Connection for 2 is ', maxConnection.max);
-                    break;
-                    case 3 :
-                    console.log('Max Connection for 3 is ', maxConnection.max);
-                    break;
-                   }
+                        if ( maxConnection.id === i ) {
 
+                            console.log('Max Connection for ', i , ' is ', maxConnection.max);
+
+                            $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
+                        }
+                    }
 
             
             });
