@@ -176,67 +176,90 @@ MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
 
         console.log('The grid has connected to all the collections.');
 
-}); 
-//MONGO END
-
+});//MONGO END
 
 server.listen(socketsPort);
 
 app.configure(function() {
 
-  app.use(express.static(__dirname + '/public'));
+        app.use(express.static(__dirname + '/public'));
 
 });
 
 app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/index.html');
+
+        res.sendfile(__dirname + '/index.html');
+
 });
 
     // Sockets Server
     
     io.sockets.on('connection', function (socket) {
 
-            (function () {
+            (function () { // ANONYMOUS SELF CALLING FUNCTION 1.5 SECS
 
+                // FIND USERS IN DB AND EMIT TO SOCKET
+                for ( var i = 0 ; i < 4 ; i++){
 
-                for ( var i = 0 ; i < people.length ; i++){
+                        users.findOne( { id: i }, function ( err, item ) {
 
-                        socket.emit("persononedata", people[i]);
+                                if ( err ) {
+
+                                        console.log('Oh noes an error');
+
+                                } else {
+                                        
+                                        socket.emit("personTwodata", item);
+                                        console.log(item);
+
+                                }
+
+                        });
 
                 }
+                //END USERS DB FIND/EMIT
+
+                // FIND RELATIONSHIPS IN DB AND EMIT TO SOCKET
+                for ( var i = 1 ; i <= relationshipsDbInsert.length ; i++){
+
+                        relationships.findOne( { conId: i }, function ( err, item ) {
+
+                                if ( err ) {
+
+                                        console.log('Oh noes an error');
+
+                                } else {
+                                        
+                                        socket.emit("persononedata", item);
+                                        console.log(item);
+
+                                }
+
+                        });
+
+                }
+                //END RELATIONSHIPS DB FIND/EMIT
 
                 //publishClient('2/buzz', '600');
-                
 
-                setTimeout(arguments.callee, 1000);
+                setTimeout(arguments.callee, 1500);
 
-            })();
-
-
+            })(); // END ANONYMOUS FUNCTION
 
         //Test function that reapeats every 2 seconds;
         (function () {
 
-                // INITIAL INSERT for DB users
+                // INITIAL INSERT for DB users & relationships Uncomment on deployment
                 //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
                 //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
-
+                // USE TO UPDATE BY HAND may need at some point
                 //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
-                
-                users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
-                users.update( {id:3}, {$set:{max:27}}, {w:1}, function ( err, result ) {});
-
-                users.findOne( { id: 2 }, function ( err, item ) {
-
-                        console.log(item.max);
-
-                });
+                //users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
 
                 setTimeout(arguments.callee, 2000);
 
         })();
-
         //END TEST FUNCTION
 
       });
@@ -344,8 +367,7 @@ var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, 
         var defaultTopic;
 
         if(err) {
-                console.log(err);
-                console.log(" CLIENT = Unable to connect to broker");
+                console.log(err , " CLIENT = Unable to connect to broker");
                 process.exit(1);
         }
         client.connect({
@@ -463,14 +485,9 @@ function increaseConnection ( primary, secondary ){
 
                     connections[thisPrimary][arraySecondary] += 1;
 
-                    //ADD Max Connections
+                    updateUserMax( thisPrimary ,thisSecondary , 1 ); //UPDATE Max Connections
 
-                    updateUserMax( thisPrimary ,thisSecondary , 1 );
-
-                    //console.log("Connection ID ", connectionID);
-
-
-                    updateRelationshipDbEntry( connectionID );
+                    updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
                  //   connectionIdTime[connectionID] = true
 
@@ -562,54 +579,12 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
 function addRelationshipChange ( connectionID , relationship ) {
 
-        //Inserts a new document with the ID and change into changes collection. 
+        Inserts a new document with the ID and change into changes collection. 
         changes.insert({ID:connectionID,rChange:relationship}, function(err){
             if(err) console.log('Inserting change failed.')
             else console.log('Inserted change' + connectionID + " : " + relationship)
         })
 
-}
-
-function returnCurrentRelationship (connectionID) {
-        
-        var rTotal;
-
-        // Return relationship rTotal from ConnectionID
-        relationships.findOne({ID:connectionID}), function(err, document){
-            if(err) console.log('Cannot find relationship');
-            else 
-                rTotal = document.rTotal;
-                console.log('Found relationship for' + document.rTotal)
-        }
-
-        var relationshipQuery;
-        relationshipQuery = rTotal;
-        return relationshipQuery;
-}
-
-function returnCurrentUserMax ( id ) {
-
-        var thisid = id,
-        userMax = 0;
-        
-        // USERS
-        // ADD DB query here to return latest users Max connections
-        users.findOne({ID:id}), function(err,document){
-
-            if(err) { 
-
-                    console.log('Cannot find current user max');
-
-            }
-
-            else {
-                userMax = document.userMax;
-
-                console.log('Found user max for' + id)
-            }
-           return userMax;
-
-        }
 }
 
 function decayRelationship () {

@@ -33,7 +33,16 @@
 
                     personOneData = data;
 
-                    console.log('DUDES:   ',  personOneData);
+                    console.log('DUDES###:   ',  personOneData);
+
+
+            
+            });
+            socket.on('personTwodata', function (data) {
+
+                    personOneData = data;
+
+                    console.log('DUDES@@@:   ',  personOneData);
 
 
             
