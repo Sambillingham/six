@@ -1,0 +1,134 @@
+<html>
+
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+			canvas { 
+				background: #202020;
+				width: 100%;
+				height: 100%;
+				margin:-8px 0 0 -8px;
+			}
+		</style> 
+		<!--<script src="js/three.js"></script>-->
+		<script src="js/tween.js"></script>
+		<script type="text/javascript" src="js/Three.js"></script>
+	</head>
+
+	<body> 
+
+		<script>
+			// This is the annotated source for this [blog post](/blog/2011/08/17/tweenjs-for-smooth-animation/).
+// It is part of [LearningThree.js](http://learningthreejs.com) blog.
+ 
+// ## Now lets start
+
+// declare a bunch of variable we will need later
+var startTime	= Date.now();
+var container;
+var camera, scene, renderer;
+var cube;
+
+// maybe replace that by window... or something
+var userOpts	= {
+	range		: 800,
+	duration	: 2500,
+	delay		: 200,
+	easing		: ''
+};
+
+
+
+// ## bootstrap functions
+// initialiaze everything
+init();
+// make it move			
+animate();
+
+// ## =========================
+
+// ## Tween.js Setup (Start here)
+
+// ## =========================
+
+function setupTween()
+{
+	// 
+	var update	= function(){
+		cube.position.x = current.x;
+		console.log(current.x);
+	}
+	var current	= { x: -userOpts.range };
+
+
+	// remove previous tweens if needed
+	TWEEN.removeAll();
+	
+	// convert the string from dat-gui into tween.js functions 
+	var easing	= TWEEN.Easing['Quintic']['EaseInOut'];
+	// build the tween to go ahead
+	var tweenHead	= new TWEEN.Tween(current)
+		.to({x: +userOpts.range}, userOpts.duration)
+		.delay(userOpts.delay)
+		.easing(easing)
+		.onUpdate(update);
+	tweenHead.start();
+}
+
+// ## =========================
+
+// ## Tween.js Setup (End here)
+
+// ## =========================
+
+// ## Initialize everything
+function init() {
+
+	// create the camera
+	camera	= new THREE.Camera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
+	camera.position.z = 1000;
+
+	// create the Scene
+	scene	= new THREE.Scene();
+
+	// initial setup of the tweens
+	setupTween();
+
+	// create the Cube
+	cube	= new THREE.Mesh( new THREE.SphereGeometry( 200, 48, 32 ), new THREE.MeshNormalMaterial() );
+	cube.position.x = -userOpts.range;
+
+	// add the object to the scene
+	scene.addObject( cube );
+
+	// create the container element
+	container = document.createElement( 'div' );
+	document.body.appendChild( container );
+
+	// init the WebGL renderer and append it to the Dom
+	renderer = new THREE.WebGLRenderer();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	container.appendChild( renderer.domElement );
+}
+
+// ## Animate and Display the Scene
+function animate() {
+	// render the 3D scene
+	render();
+	// relaunch the 'timer' 
+	requestAnimationFrame( animate );
+	// update the tweens from TWEEN library
+	TWEEN.update();
+}
+
+
+// ## Render the 3D Scene
+function render() {
+	// actually display the scene in the Dom element
+	renderer.render( scene, camera );
+}
+
+		</script>
+	</body> 
+
+</html>
