@@ -209,7 +209,7 @@ app.get('/', function (req, res) {
                                 } else {
                                         
                                         socket.emit("maxConnection", item);
-                                        //console.log(item);
+                                        console.log(item);
 
                                 }
 
@@ -230,7 +230,7 @@ app.get('/', function (req, res) {
                                 } else {
                                         
                                         socket.emit("relationshipConnections", item);
-                                        //console.log(item);
+                                        console.log(item);
 
                                 }
 
@@ -241,14 +241,14 @@ app.get('/', function (req, res) {
 
                 //publishClient('2/buzz', '600');
 
-                setTimeout(arguments.callee, 4500);
+                setTimeout(arguments.callee, 1500);
 
             })(); // END ANONYMOUS FUNCTION
 
         //Test function that reapeats every 2 seconds;
         (function () {
 
-            console.log(connectionIdTime);
+            //console.log(connectionIdTime);
 
                 // INITIAL INSERT for DB users & relationships Uncomment on deployment
                 //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
@@ -484,9 +484,9 @@ function increaseConnection ( primary, secondary ){
             console.log('THIS is the connection ID we are looking at is --- >', connectionIdTime[stringConnectionID]);
 
 
-            if ( connectionIdTime[stringConnectionID] === false ) {
+           // if ( connectionIdTime[stringConnectionID] === false ) {
 
-                    console.log( connectionIdTime,'   looks like');
+                  //  console.log( connectionIdTime,'   looks like');
 
                     connections[thisPrimary][arraySecondary] += 1;// ADDing to connection array
 
@@ -494,10 +494,10 @@ function increaseConnection ( primary, secondary ){
 
                     updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
-                    connectionIdTime[stringConnectionID] = true;
+                   // connectionIdTime[stringConnectionID] = true;
 
-                    timeDelayForConnection(stringConnectionID);
-            }
+                  //  timeDelayForConnection(stringConnectionID);
+           // }
 }
 
 function findConnnectionId (ArduinoOne, ArduinoTwo) {

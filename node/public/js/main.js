@@ -18,7 +18,57 @@
         orb,
         rotation,
         mouseX = 0,
-        mouseY = 0;
+        mouseY = 0,
+        okayToUpdate = true,
+        UserMaxConnection = [
+                {
+
+                    "id" : 0,
+                    "max" : 0
+                },
+                {
+
+                    "id" : 1,
+                    "max" : 0
+                },
+                {
+
+                    "id" : 2,
+                    "max" : 0
+                },
+                {
+
+                    "id" : 3,
+                    "max" : 0
+                }
+    ],
+    relationshipsDbInsert = [
+                {
+                    "conId" : 1,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 2,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 3,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 4,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 5,
+                    "relationship" : 0
+                },
+                {
+                    "conId" : 6,
+                    "relationship" : 0
+                }
+
+    ];
         //
 
 
@@ -28,6 +78,9 @@
         maxConnection = {};
 
         var socket = io.connect('http://127.0.0.1');
+
+            
+
 
             socket.on('relationshipConnections', function (data) {
 
@@ -39,7 +92,12 @@
 
                             if ( relationshipConnections.conId === i ) {
 
-                                    console.log('Relationship for', i , ' is ', relationshipConnections.relationship);
+                                j = (i - 1);
+
+                                relationshipsDbInsert[j].conId = relationshipConnections.conId;
+                                relationshipsDbInsert[j].relationship = relationshipConnections.relationship;
+
+                                    //console.log('Relationship for', i , ' is ', relationshipConnections.relationship);
 
                                     $('#rel'+i).html('Relationship ID ' + i  + "'s connection is " + relationshipConnections.relationship);
                             }
@@ -56,118 +114,386 @@
 
                             if ( maxConnection.id === i ) {
 
-                                    console.log('Max Connection for ', i , ' is ', maxConnection.max);
+                                    UserMaxConnection[i].id = maxConnection.id;
+                                    UserMaxConnection[i].max = maxConnection.max;
 
-                                    $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
+                                    if ( okayToUpdate === true ) {
+
+                                        onUpdateValues();
+
+                                    } 
+
+
+
+                                        //console.log('Max Connection for ', i , ' is ', maxConnection.max);
+
+                                        $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
                             }
                     }
 
             
             });
 
+            setTimeout( function() {
+
+                    console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
+
+
+
+            }, 1000 );
+
+            //socket.on('connected', function () {
+
+                    
+            //});
+
+
+
+
+
+            /****************************************************************************
+            *****************************************************************************
+            ********                      GLOBAL VARIABLES                       ********
+            *****************************************************************************
+            ****************************************************************************/
+
+            //main global variables
+            var WIDTH = window.innerWidth; // scene width
+            var HEIGHT = window.innerHeight; // scene height
+
+            var VIEW_ANGLE = 45; // camera attributes
+            var ASPECT = WIDTH/HEIGHT; // camera attributes
+            var NEAR = 0.1; // camera attributes
+            var FAR = 10000; // camera attributes
+
+            var renderer = new THREE.WebGLRenderer(); // WebGL renderer
+            var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR); // Three js camera
+            var scene = new THREE.Scene(); // Three js scene
+
+            //variables for 3d objects
+            var person = new Array();
+            var relationship = new Array();
+            var sphereLocations = new Array();
+
+            //variables for tweening
+            var tweenDuration = 1500;
+            var tweenDelay = 0;
+
+            /****************************************************************************
+            *****************************************************************************
+            ********                       SETUP FUNCTIONS                       ********
+            *****************************************************************************
+            ****************************************************************************/
+
+            //initialise the scene, camera and renderer
+            function init() {
+                scene.add(camera); // add camera to scene
+                camera.position.z = 1200; // zoom out camera from 0,0,0
+                renderer.setSize(WIDTH,HEIGHT); // start renderer
+
+                document.body.appendChild(renderer.domElement); // append render to body
+                window.addEventListener( 'resize', onWindowResize, false ); // when the window is resized, run the onWindowresize method
+
+                //array to store each sphere. Each sphere represents a person
+                person[0] = new sphere("GOLD",0xD2C282,UserMaxConnection[0].max, 0, 0, 0);//gold
+                person[1] = new sphere("GREEN",0x00FF00,UserMaxConnection[1].max, 0, 0, 0);//green
+                person[2] = new sphere("RED",0xFF0000,UserMaxConnection[2].max, 0, 0, 0);//red
+                person[3] = new sphere("BLUE",0x0000FF,UserMaxConnection[3].max, 0, 0, 0);//blue
+
+                console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
+
+                //array to store each line. Each line represents a relationship between two people
+                relationship[0] = new line(person[0],person[1]);
+                relationship[1] = new line(person[0],person[2]);
+                relationship[2] = new line(person[0],person[3]);
+                relationship[3] = new line(person[1],person[2]);
+                relationship[4] = new line(person[1],person[3]);
+                relationship[5] = new line(person[2],person[3]);
+
+                //array to store each of the locations on the page where the spheres can be positioned
+                sphereLocations[0] = new locationHolder(0,0,0);
+                sphereLocations[1] = new locationHolder(200,60,0);
+                sphereLocations[2] = new locationHolder(-70,300,0);
+                sphereLocations[3] = new locationHolder(-320,-350,0);
+
+                //setup the sphere positions
+                setupSpherePositions();
+
+                //on mouse click, run the onDocumentMouseDown method
+                // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+            }
+
+            //resize the canvas when the window is resized
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+            }
+
+            //scene lighting
+            function addlight() {
+                var pointLight = new THREE.PointLight(0xFFFFFF); // create a point light
+                pointLight.position.x = 10; // position the point light
+                pointLight.position.y = 50;
+                pointLight.position.z = 130;
+                scene.add(pointLight); // add the point light to scene
+                //scene.add( new THREE.AmbientLight( 0xFF9900 ) ); //add ambient light
+            }
+
+            //grid. ONLY NEEDED FOR DEVELOPMENT
+            function addGrid() {
+                plane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 20, 20 ), new THREE.MeshBasicMaterial( { color: 0x333333, wireframe: true } ) );
+                plane.rotation.x = - Math.PI / 2;
+                plane.position.y = -50;
+                scene.add( plane );
+            }
+
+            /****************************************************************************
+            *****************************************************************************
+            ********                      CUSTOM FUNCTIONS                       ********
+            *****************************************************************************
+            ****************************************************************************/
+
+            //function for creating objects that store xyz coordinates
+            function locationHolder(x,y,z){
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
+            //function to create a sphere given the shown parameters. some parameters are stored in the object
+            function sphere(sId, sColor,sRadius, sX, sY, sZ) {
+                this.sId = sId;
+                this.sColor = sColor;
+                this.sRadius = sRadius;
+
+                var sphereMaterial = new THREE.MeshPhongMaterial({color: sColor, transparent: true, blending: THREE.AdditiveBlending});
+
+                var sphereGeometry = new THREE.SphereGeometry(sRadius, 16, 16)
+
+                this.sphere = new THREE.Mesh(sphereGeometry, sphereMaterial); // create new mesh - sphere geometry
+
+                this.sphere.position.x = sX;
+                this.sphere.position.y = sY;
+                this.sphere.position.z = sZ;
+
+                this.sphere.geometry.dynamic = true;
+
+                scene.add(this.sphere);// add sphere to scene
+            }
+
+            //function to create a line from one sphere to another. Both spheres are stored in variables 'sphereA' and 'sphereB'.
+            function line(sphereA, sphereB){
+
+                this.sphereA = sphereA;
+                this.sphereB = sphereB;
+
+                var pointA = new THREE.Vector3( sphereA.sphere.position.x, sphereA.sphere.position.y, sphereA.sphere.position.z );
+                var pointB = new THREE.Vector3( sphereB.sphere.position.x, sphereB.sphere.position.y, sphereB.sphere.position.z );
+
+                var lineGeometry = new THREE.Geometry();
+
+                lineGeometry.vertices.push( pointA ); 
+                lineGeometry.vertices.push( pointB );
+                lineGeometry.verticesNeedUpdate = true;
+
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xFF9900, opacity: 0.5, linewidth:5 } );
+
+                this.line = new THREE.Line( lineGeometry, lineMaterial );
+                this.line.geometry.verticesNeedUpdate = true;
+
+                scene.add( this.line );
+
+            }
+
+            //when this method is called, all new variables for the sphere are stores, the old sphere is removed and a new sphere with the new variables is created.
+            function updateSphereRadius(){
+                for(var i = 0; i<person.length; i++){
+                    var newId = person[i].sId;
+                    var newColor = person[i].sColor;
+                    var newRadius = UserMaxConnection[i].max;
+
+                    //Used to randomly change the radius, incrementing or decrementing by 3. USED FOR DEVLEOPMENT ONLY. 
+                    // var plusOrMinus = Math.floor(Math.random()*2);
+                    // var newRadius;
+                    // if(plusOrMinus == 0){newRadius = (person[i].sRadius) + 3}
+                    // else{newRadius = (person[i].sRadius) - 3}
+                    //USED FOR DEVLEOPMENT ONLY
+
+                    var newX = person[i].sphere.position.x;
+                    var newY = person[i].sphere.position.y;
+                    var newZ = person[i].sphere.position.z;
+                    scene.remove(person[i].sphere);
+                    person[i] = new sphere(newId,newColor,newRadius,newX,newY,newZ);    
+                }
+
+                //array to store each line. Each line represents a relationship between two people
+                //TODO: make this happen dynamically
+                scene.remove(relationship[0].line);
+                scene.remove(relationship[1].line);
+                scene.remove(relationship[2].line);
+                scene.remove(relationship[3].line);
+                scene.remove(relationship[4].line);
+                scene.remove(relationship[5].line);
+                relationship[0] = new line(person[0],person[1]);
+                relationship[1] = new line(person[0],person[2]);
+                relationship[2] = new line(person[0],person[3]);
+                relationship[3] = new line(person[1],person[2]);
+                relationship[4] = new line(person[1],person[3]);
+                relationship[5] = new line(person[2],person[3]);
+            }
+
+            //method run during initialising. positions the spheres
+            //TODO: make this happen dynamically
+            function setupSpherePositions(){
+                for(var i = 0; i<person.length; i++){
+                    person[i].sphere.position.x = sphereLocations[i].x;
+                    person[i].sphere.position.y = sphereLocations[i].y;
+                    person[i].sphere.position.z = sphereLocations[i].z;
+                }
+            }
+
+
+            function repositionSpheres(){
+                var storePeople = new Array();
+
+                for(var i = 0; i<person.length; i++){
+                    var counter = 0;
+                    for(var j = 0; j<person.length; j++){
+                        if (person[j].sRadius > person[i].sRadius){
+                            counter++;
+                        }
+                        else if (person[j].sRadius == person[i].sRadius){
+                            if(j>i){
+                                counter++;
+                            }
+                        }
+
+                    }
+                    storePeople[i] = counter;
+                    //console.log(i + ") person:" + person[i].sId + " - new radius:" + person[i].sRadius + ". new pos: " + counter);
+                }
+
+                //console.log("");
+                //console.log("Store People 0: " + storePeople[0]);
+                //console.log("Store People 1: " + storePeople[1]);
+                //console.log("Store People 2: " + storePeople[2]);
+                //console.log("Store People 3: " + storePeople[3]);
+                //console.log("");
+
+                for(var i = 0; i<person.length; i++){
+                    var k = storePeople[i];
+                    var objectToTween = person[i];
+                    var fromPosX = objectToTween.sphere.position.x;
+                    var fromPosY = objectToTween.sphere.position.y;
+                    var fromPosZ = objectToTween.sphere.position.z;
+                    //console.log(k);
+                    //console.log("person "+objectToTween.sId+" is at sphere loc " + k + "(x: " + sphereLocations[k].x+ ")");
+                    var toPosX = sphereLocations[k].x;
+                    var toPosY = sphereLocations[k].y;
+                    var toPosZ = sphereLocations[k].z;
+                    //console.log("move person "+i+" to poistion "+storePeople[i]);
+                    //console.log("move person "+objectToTween+" from position "+ fromPosX+" to poistion "+toPosX)
+                    setupTween(objectToTween,fromPosX,fromPosY,fromPosZ, toPosX,toPosY,toPosZ);
+
+                }
+
+                //console.log("");
+                //console.log("");
+            }
+
+            function setupTween(objectToTween,fromPosX,fromPosY,fromPosZ,toPosX,toPosY,toPosZ)
+            { 
+                var update  = function(){
+                    objectToTween.sphere.position.x = current.x;
+                    objectToTween.sphere.position.y = current.y;
+                    objectToTween.sphere.position.z = current.z;
+                }
+
+                var current = { x: fromPosX, y: fromPosY, z: fromPosZ };
+                var easing  = TWEEN.Easing['Quintic']['EaseInOut'];
+                
+                var tweenHead   = new TWEEN.Tween(current)
+                    .to({x: toPosX, y: toPosY, z: toPosZ}, tweenDuration)
+                    .delay(tweenDelay)
+                    .easing(easing)
+                    .onUpdate(update)
+                    .start();
+            }
+
+            //loop to set the two vertices of each relationship line equal to the positions of the two sphere they connect to 
+            function updateRelationshipVertices(){
+                for(var i = 0; i<relationship.length; i++){
+
+                    var sphereAPos = relationship[i].sphereA.sphere.position;
+                    var sphereBPos = relationship[i].sphereB.sphere.position;
+                    
+                    relationship[i].line.geometry.vertices[0].set(sphereAPos.x,sphereAPos.y,sphereAPos.z);
+                    relationship[i].line.geometry.vertices[1].set(sphereBPos.x,sphereBPos.y,sphereBPos.z);
+                    relationship[i].line.geometry.verticesNeedUpdate = true;
+                }
+            }
+
+            //when the mouse is clicked, do this. FOR DEVELOPMENT ONLY.
+            function onUpdateValues() {
+                TWEEN.removeAll();
+                updateSphereRadius();
+                repositionSpheres();
+
+                okayToUpdate = false;
+                timeOutForAnimation ();
+
+            }
+
+            function timeOutForAnimation () {
+
+                    setTimeout( function() {
+                        okayToUpdate = true;
+                        
+
+                    }, 2000);
+            }
+
+            /****************************************************************************
+            *****************************************************************************
+            ********                     ANIMATION FUNCTION                      ********
+            *****************************************************************************
+            ****************************************************************************/
+
+            function animate(t) {
+
+                /* ANIMATIONS HERE------------------------------------------- */
+                
+                //set the two vertices of each relationship line equal to the positions of the two sphere they connect to 
+                updateRelationshipVertices();
+
+                /* ANIMATIONS END------------------------------------------- */
+
+                renderer.render(scene, camera); // render scene
+                requestAnimationFrame( animate );
+                TWEEN.update();
+                
+            }
+
+            /****************************************************************************
+            *****************************************************************************
+            ********                       RUN EVERYTHING                        ********
+            *****************************************************************************
+            ****************************************************************************/
+            //run all the functions to make it work
+
+            setTimeout( function () { 
+
+                    init(); // run intitialise function
+                    addlight(); // add light to scene
+                    addGrid(); // add a grid to the scene;
+                    animate();// run animate loop
             
+            }, 5000);
+
             
-          
 
 
-        init();
-        animate();
-
-    function init() { // ANYTHING in here will not update
-
-        // CAMERA ans SETUP type stuff
-        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-        camera.position.set(0, 0, 700);
-
-        scene = new THREE.Scene();
-        //scene.fog = new THREE.Fog( 0x000000, 100, 2000 ); // everything further than pram 1 starts to go black
-
-        // Make shapes and materials
-        geometry = new THREE.CubeGeometry( 50, 50, 50 );
-        lineGeometry = new THREE.Geometry();
-        sphereGeometry = new THREE.SphereGeometry( 10, 40, 40 );
-
-        lineGeometry.vertices.push( new THREE.Vector3( -800, 200, 0 ));
-        lineGeometry.vertices.push( new THREE.Vector3( -500, 200, 0 ));
-
-        geometry.verticesNeedUpdate = true;
-
-        materialBlue = new THREE.MeshBasicMaterial( { color: 0x1bdbec, wireframe: true } );
-        materialOrange = new THREE.MeshBasicMaterial( { color: 0xfabf27, wireframe: true } );
-        lineMaterial = new THREE.LineBasicMaterial( { color: 0xfabf27, linewidth: 2  } );
-        sphereMterial = new THREE.MeshPhongMaterial( { color: 0xfabf27, shading: THREE.FlatShading } );
-
-        personOneCube = new THREE.Mesh( geometry, materialBlue );
-        personTwoCube = new THREE.Mesh( geometry, materialOrange );
-        PersonOneLinkTwo = new THREE.Line( lineGeometry, lineMaterial );
-        orb = new THREE.Mesh( sphereGeometry, sphereMterial );
-
-
-        // ADD all the awesome stuff you made
-        scene.add( personOneCube);
-        scene.add( personTwoCube);
-        // scene.add( PersonOneLinkTwo);
-        // scene.add( orb );
-       // scene.add( new THREE.AmbientLight( 0x222222 ) );
-
-        // Post processing
-
-        renderer = new THREE.WebGLRenderer( {clearAlpha: 1, antialias: false });
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.autoClear = false;
-
-
-
-        document.body.appendChild( renderer.domElement );
-        document.addEventListener( 'mousemove', onMouseMove, false );
-
-
-
-    }
-
-    function animate() { // VAlUES here will change on the fly
-
-        // Animation stuff goes inside here
-        requestAnimationFrame( animate );
-
-        personOneCube.rotation.x += 0.01;
-        personOneCube.rotation.y += 0.02;
-
-        personOneCube.position.x = 200;
-        personOneCube.position.y = 200;
-        personOneCube.position.z = 200;
-
-        personTwoCube.rotation.x -= 0.01;
-        personTwoCube.rotation.y -= 0.02;
-        personTwoCube.position.x = 200;
-        personTwoCube.position.y = 200;
-        personTwoCube.position.z = 200;
-
-        orb.position.set( 50, 100, 800);
-
-        // Testing some mouse movement effects
-       // camera.position.set(  (0.3 * mouseY),  0, 2000 + (0.3 * mouseX) );
-
-
-      //  lineGeometry.vertices.x = THREE.Vector3( -400, (personOneData.gpsLong), 0 );
-      //  PersonOneLinkTwo.set( 100, 100,100);
-
-
-        
-
-        renderer.render( scene, camera );
-
-    }
-
-    function onMouseMove(event) {
-
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-
-            //console.log( mouseX, mouseY);
-
-
-    }
 
 
 
