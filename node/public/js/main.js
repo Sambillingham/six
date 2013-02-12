@@ -27,7 +27,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://178.79.132.119');
+        var socket = io.connect('http://127.0.0.1');
 
             socket.on('relationshipConnections', function (data) {
 
@@ -35,14 +35,14 @@
 
                     //console.log('Relationship Connections Data:   ',  relationshipConnections);
 
-                    for ( var i = 1; i < 7; i++){
+                    for ( var i = 1; i < 7; i++) {
 
-                        if ( relationshipConnections.conId === i ) {
+                            if ( relationshipConnections.conId === i ) {
 
-                            console.log('Relationship for', i , ' is ', relationshipConnections.relationship);
+                                    console.log('Relationship for', i , ' is ', relationshipConnections.relationship);
 
-                            $('#rel'+i).html('Relationship ID ' + i  + "'s connection is " + relationshipConnections.relationship);
-                        }
+                                    $('#rel'+i).html('Relationship ID ' + i  + "'s connection is " + relationshipConnections.relationship);
+                            }
                     }
 
             });
@@ -54,12 +54,12 @@
 
                    for ( var i = 0 ; i < 4; i++) {
 
-                        if ( maxConnection.id === i ) {
+                            if ( maxConnection.id === i ) {
 
-                            console.log('Max Connection for ', i , ' is ', maxConnection.max);
+                                    console.log('Max Connection for ', i , ' is ', maxConnection.max);
 
-                            $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
-                        }
+                                    $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
+                            }
                     }
 
             

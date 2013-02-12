@@ -13,7 +13,8 @@ var express = require('express'),
     mqttPort = 8085,
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
-    NumOfClients = 4;
+    NumOfClients = 4,
+    delayForConnectionTime = 30000;
 
 
 var testDB='',
@@ -152,8 +153,6 @@ var testDB='',
 
     ];
 
-        var doc1 = {'hello':'doc1'};
-
 // Mongo connection
 MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
 
@@ -174,7 +173,7 @@ MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
         changes = db.collection('Changes');
         // End var creation
 
-        console.log('The grid has connected to all the collections.');
+        console.log(' Connected to Mongo Database');
 
 });//MONGO END
 
@@ -210,7 +209,7 @@ app.get('/', function (req, res) {
                                 } else {
                                         
                                         socket.emit("maxConnection", item);
-                                        console.log(item);
+                                        //console.log(item);
 
                                 }
 
@@ -220,7 +219,7 @@ app.get('/', function (req, res) {
                 //END USERS DB FIND/EMIT
 
                 // FIND RELATIONSHIPS IN DB AND EMIT TO SOCKET
-                for ( var i = 1 ; i <= relationshipsDbInsert.length ; i++){
+                for ( var i = 1 ; i <= relationshipsDbInsert.length ; i++) {
 
                         relationships.findOne( { conId: i }, function ( err, item ) {
 
@@ -231,7 +230,7 @@ app.get('/', function (req, res) {
                                 } else {
                                         
                                         socket.emit("relationshipConnections", item);
-                                        console.log(item);
+                                        //console.log(item);
 
                                 }
 
@@ -242,12 +241,14 @@ app.get('/', function (req, res) {
 
                 //publishClient('2/buzz', '600');
 
-                setTimeout(arguments.callee, 1500);
+                setTimeout(arguments.callee, 4500);
 
             })(); // END ANONYMOUS FUNCTION
 
         //Test function that reapeats every 2 seconds;
         (function () {
+
+            console.log(connectionIdTime);
 
                 // INITIAL INSERT for DB users & relationships Uncomment on deployment
                 //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
@@ -257,7 +258,7 @@ app.get('/', function (req, res) {
                 //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
                 //users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
 
-                setTimeout(arguments.callee, 2000);
+                setTimeout(arguments.callee, 5000);
 
         })();
         //END TEST FUNCTION
@@ -454,7 +455,8 @@ function proximityCheck (id) {
 
             } else {
 
-                console.log('The Loop was equal to the id number or was not relevant');
+                    //console.log('The Loop was equal to the id number or was not relevant');
+                    //Console.log('.')
             }
 
     }
@@ -478,21 +480,24 @@ function increaseConnection ( primary, secondary ){
             }
 
             connectionID = findConnnectionId( thisPrimary, thisSecondary);
+            stringConnectionID = connectionID + '';
+            console.log('THIS is the connection ID we are looking at is --- >', connectionIdTime[stringConnectionID]);
 
-            //if ( connectionIdTime[connectionID] !== true ) {
 
-                   // console.log( 'we are set to.... ', connectionIdTime);
+            if ( connectionIdTime[stringConnectionID] === false ) {
 
-                    connections[thisPrimary][arraySecondary] += 1;
+                    console.log( connectionIdTime,'   looks like');
+
+                    connections[thisPrimary][arraySecondary] += 1;// ADDing to connection array
 
                     updateUserMax( thisPrimary ,thisSecondary , 1 ); //UPDATE Max Connections
 
                     updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
-                 //   connectionIdTime[connectionID] = true
+                    connectionIdTime[stringConnectionID] = true;
 
-                 //   timeDelayForConnection(connectionIdTime[connectionID]);
-           //}
+                    timeDelayForConnection(stringConnectionID);
+            }
 }
 
 function findConnnectionId (ArduinoOne, ArduinoTwo) {
@@ -524,13 +529,13 @@ function updateRelationshipDbEntry ( connectionID ){
 
                 if (err)  { 
 
-                    console.log('Update failed', err);
+                        console.log('Update failed', err);
 
                 }
 
                 else  {
 
-                console.log('incremented by + 1 relationship: ' + connectionID );
+                        console.log('incremented by + 1 relationship: ' + connectionID );
 
                 }
 
@@ -544,15 +549,15 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
         users.update( { id:ArduinoOne }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
 
-                if (err)  { 
+                if (err)  {
 
-                    console.log('Update failed', err );
+                        console.log('Update failed', err );
 
                 }
 
                 else  {
 
-                console.log('incremented' , ArduinoOne , 'MAX Connection' );
+                        console.log('incremented' , ArduinoOne , 'MAX Connection' );
 
                 }
 
@@ -560,15 +565,15 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
         users.update( { id:ArduinoTwo }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
 
-                if (err)  { 
+                if (err)  {
 
-                    console.log('Update failed', err );
+                        console.log('Update failed', err );
 
                 }
 
                 else  {
 
-                console.log('incremented' , ArduinoTwo , 'MAX Connection' );
+                        console.log('incremented' , ArduinoTwo , 'MAX Connection' );
 
                 }
 
@@ -579,7 +584,7 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
 function addRelationshipChange ( connectionID , relationship ) {
 
-       // Inserts a new document with the ID and change into changes collection. 
+       // Inserts a new document with the ID and change into changes collection.
         // changes.insert({ID:connectionID,rChange:relationship}, function(err){
         //     if(err) console.log('Inserting change failed.')
         //     else console.log('Inserted change' + connectionID + " : " + relationship)
@@ -596,10 +601,12 @@ function decayRelationship () {
 function timeDelayForConnection ( connectionID ) {
 
     var thisID = connectionID;
+    console.log('we are in the Time delay for ', connectionID );
 
-        setTimeout( function () { 
+        setTimeout( function () {
 
                 connectionIdTime[connectionID] = false ;
+                console.log('In the timeout function for  ', connectionID );
 
-        }, 300 );
+        }, delayForConnectionTime );
 }
