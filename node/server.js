@@ -10,11 +10,11 @@ var express = require('express'),
     gpsLongData = [];
     MongoClient = require('mongodb').MongoClient,
     socketsPort = 8080,
-    mqttPort = 8085,
+    mqttPort = 8085, // need to be diffrent to socketsPort
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
-    NumOfClients = 4,
-    delayForConnectionTime = 30000;
+    NumOfClients = 4, // Number of Arduino's for live connection
+    delayForConnectionTime = 30000; // time in milleseconds 
 
 
 var testDB='',
@@ -209,7 +209,7 @@ app.get('/', function (req, res) {
                                 } else {
                                         
                                         socket.emit("maxConnection", item);
-                                        console.log(item);
+                                        //console.log(item);
 
                                 }
 
@@ -230,7 +230,7 @@ app.get('/', function (req, res) {
                                 } else {
                                         
                                         socket.emit("relationshipConnections", item);
-                                        console.log(item);
+                                        //console.log(item);
 
                                 }
 
@@ -245,6 +245,7 @@ app.get('/', function (req, res) {
 
             })(); // END ANONYMOUS FUNCTION
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         //Test function that reapeats every 2 seconds;
         (function () {
 
@@ -258,10 +259,15 @@ app.get('/', function (req, res) {
                 //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
                 //users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
 
+
+                console.log( connectionIdTime,'   Whats LIVE:. ');
+
+
                 setTimeout(arguments.callee, 5000);
 
         })();
         //END TEST FUNCTION
+        ////////////////////////////////////////////////////////////////////////////////////////////////
 
       });
 
@@ -484,20 +490,20 @@ function increaseConnection ( primary, secondary ){
             console.log('THIS is the connection ID we are looking at is --- >', connectionIdTime[stringConnectionID]);
 
 
-           // if ( connectionIdTime[stringConnectionID] === false ) {
+            if ( connectionIdTime[stringConnectionID] === false ) {
 
-                  //  console.log( connectionIdTime,'   looks like');
+                    console.log( connectionIdTime,'   Whats LIVE:. ');
 
-                    connections[thisPrimary][arraySecondary] += 1;// ADDing to connection array
+                            connections[thisPrimary][arraySecondary] += 1;// ADDing to connection array
 
-                    updateUserMax( thisPrimary ,thisSecondary , 1 ); //UPDATE Max Connections
+                            updateUserMax( thisPrimary ,thisSecondary , 1 ); //UPDATE Max Connections
 
-                    updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
+                            updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
-                   // connectionIdTime[stringConnectionID] = true;
+                    connectionIdTime[stringConnectionID] = true;
 
-                  //  timeDelayForConnection(stringConnectionID);
-           // }
+                    timeDelayForConnection(stringConnectionID);
+            }
 }
 
 function findConnnectionId (ArduinoOne, ArduinoTwo) {
@@ -546,24 +552,12 @@ function updateRelationshipDbEntry ( connectionID ){
 function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
         // Incremention both Users Max Connection by Increment
+        var bothArduinos = [{ id:ArduinoOne }, { id:ArduinoTwo }];
 
-        users.update( { id:ArduinoOne }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
+        //id: { $in: [ArduinoOne, ArduinoTwo] } { $and: [ { id: ArduinoOne }, { id: ArduinoTwo } ] }
+        // { $or: [ { id: ArduinoOne }, { id: ArduinoTwo } ] }
 
-                if (err)  {
-
-                        console.log('Update failed', err );
-
-                }
-
-                else  {
-
-                        console.log('incremented' , ArduinoOne , 'MAX Connection' );
-
-                }
-
-        });
-
-        users.update( { id:ArduinoTwo }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
+        users.update(  { $or: [ { id: ArduinoOne }, { id: ArduinoTwo } ] } , { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
 
                 if (err)  {
 
@@ -573,11 +567,27 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
                 else  {
 
-                        console.log('incremented' , ArduinoTwo , 'MAX Connection' );
+                        console.log('incremented' , bothArduinos , 'MAX Connection' );
 
                 }
 
         });
+
+        // users.update( { id:ArduinoTwo }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
+
+        //         if (err)  {
+
+        //                 console.log('Update failed', err );
+
+        //         }
+
+        //         else  {
+
+        //                 console.log('incremented' , ArduinoTwo , 'MAX Connection' );
+
+        //         }
+
+        // });
 
 
 }
