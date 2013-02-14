@@ -14,7 +14,8 @@ var express = require('express'),
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4, // Number of Arduino's for live connection
-    delayForConnectionTime = 30000; // time in milleseconds 
+    delayForConnectionTime = 30000, // time in milleseconds
+    timeBetweenDecay = 20000; // 1 minute between delay
 
 
 var testDB='',
@@ -260,8 +261,7 @@ app.get('/', function (req, res) {
                 //users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
 
 
-                console.log( connectionIdTime,'   Whats LIVE:. ');
-
+                ///console.log( connectionIdTime,'   Whats LIVE:. ');
 
                 setTimeout(arguments.callee, 5000);
 
@@ -272,6 +272,23 @@ app.get('/', function (req, res) {
       });
 
     // END sockets Server
+
+
+//SELF CALLING FUNCTION FOR DECAY
+setTimeout( function () {
+
+       (function () {
+                
+                decayRelationship();
+
+                setTimeout(arguments.callee, timeBetweenDecay);
+
+        })();
+            
+}, 5000);  //10 SECONDS before decay starts so db can be setup
+
+
+
 
 // MQTT Server
 
@@ -552,10 +569,6 @@ function updateRelationshipDbEntry ( connectionID ){
 function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
         // Incremention both Users Max Connection by Increment
-        var bothArduinos = [{ id:ArduinoOne }, { id:ArduinoTwo }];
-
-        //id: { $in: [ArduinoOne, ArduinoTwo] } { $and: [ { id: ArduinoOne }, { id: ArduinoTwo } ] }
-        // { $or: [ { id: ArduinoOne }, { id: ArduinoTwo } ] }
 
         users.update(  { $or: [ { id: ArduinoOne }, { id: ArduinoTwo } ] } , { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
 
@@ -567,28 +580,11 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
                 else  {
 
-                        console.log('incremented' , bothArduinos , 'MAX Connection' );
+                        console.log('incremented MAX Connection' );
 
                 }
 
         });
-
-        // users.update( { id:ArduinoTwo }, { $inc: { max:incAmmount } }, {w:1}, function ( err, result ){
-
-        //         if (err)  {
-
-        //                 console.log('Update failed', err );
-
-        //         }
-
-        //         else  {
-
-        //                 console.log('incremented' , ArduinoTwo , 'MAX Connection' );
-
-        //         }
-
-        // });
-
 
 }
 
@@ -604,6 +600,41 @@ function addRelationshipChange ( connectionID , relationship ) {
 
 function decayRelationship () {
 
+        //$and: [ id: { $gt:0, $lt:4 }, { <expression2> } , ... , { <expressionN> } ]
+
+        users.update( { id: { $gte: 0, $lte: 3 } } , { $inc: { max: -1 } }, { multi:true }, function ( err, result ){
+
+                if (err)  {
+
+                        console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                        console.log('ALL MAX CONECTIONS DECREASED BY ONE' );
+
+                }
+
+        });
+
+        relationships.update( { conId: { $gte: 1, $lte: 6 } } , { $inc: { relationship: -1 } }, { multi:true }, function ( err, result ){
+
+                if (err)  {
+
+                        console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                        console.log('ALL RELATIONSSHIP CONECTIONS DECREASED BY ONE');
+
+                }
+
+        } );
+
+        
 
 
 }
