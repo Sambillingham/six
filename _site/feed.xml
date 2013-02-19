@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 	<channel>
-		<title></title>
-		<description></description>
-		<link></link>
+		<title>Sample Jekyll Blog</title>
+		<description>This is a sample Jekyll Blog.</description>
+		<link>http://yourdomain.com/</link>
 		
 			<item>
 				<title>Guest Posts</title>
@@ -12,7 +12,7 @@ YAML header of your blog post. This will be picked up in the template and displa
 as well as on the individual post pages.&lt;/p&gt;
 </description>
 				<published>2012-03-15 00:00:00 +0000</published>
-				<link>/blog/guest-blogs</link>
+				<link>http://yourdomain.com//Meta/2012/03/15/guest-blogs/</link>
 			</item>
 		
 			<item>
@@ -30,22 +30,23 @@ as well as on the individual post pages.&lt;/p&gt;
 &lt;p&gt;Now what has happened down here, it looks like we have appeared onto another paragraph.&lt;/p&gt;
 </description>
 				<published>2012-03-08 00:00:00 +0000</published>
-				<link>/blog/everyware-im-hustling</link>
+				<link>http://yourdomain.com//Coding/2012/03/08/everyware-im-hustling/</link>
 			</item>
 		
 			<item>
 				<title>Code Snippets</title>
 				<description>&lt;p&gt;Whenever you need to post a code snippet, use the liquid tags &lt;code&gt;hilight&lt;/code&gt; and &lt;code&gt;endhilight&lt;/code&gt; like this:&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# some code goes here&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello World!&amp;quot;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div&gt;
+  &lt;pre&gt;&lt;code class='ruby'&gt;# some code goes here
+puts &amp;quot;Hello World!&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 
 &lt;p&gt;Note that this only provides color-coding. For that you might need to use a front end colorization engine like Highlight.JS or something similar.&lt;/p&gt;
 </description>
 				<published>2012-02-10 00:00:00 +0000</published>
-				<link>/blog/code-snippets</link>
+				<link>http://yourdomain.com//Design/2012/02/10/code-snippets/</link>
 			</item>
 		
 			<item>
@@ -55,8 +56,9 @@ add nice icons into your pages by using css tags.&lt;/p&gt;
 
 &lt;p&gt;To add an icon somewhere in the template simply do:&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;i&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;icon-home&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/i&amp;gt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div&gt;
+  &lt;pre&gt;&lt;code class='html'&gt;&amp;lt;i class=&amp;quot;icon-home&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 
 &lt;p&gt;This will insert a home icon, just as the one seen in the sidebar. The available class names you can use are as follows:&lt;/p&gt;
@@ -66,7 +68,7 @@ add nice icons into your pages by using css tags.&lt;/p&gt;
 &lt;p&gt;These should work in all the browsers, all the way down to and including IE7, but not IE6.&lt;/p&gt;
 </description>
 				<published>2012-01-19 00:00:00 +0000</published>
-				<link>/blog/using-web-icons</link>
+				<link>http://yourdomain.com//Design/2012/01/19/using-web-icons/</link>
 			</item>
 		
 			<item>
@@ -80,7 +82,7 @@ add nice icons into your pages by using css tags.&lt;/p&gt;
 &lt;p&gt;Proin feugiat libero ac lorem mollis fermentum. Cras et lacus sodales nisl facilisis ornare. Sed dolor eros, pulvinar ac varius non, bibendum eget odio. Nulla facilisi. Pellentesque et nisi a tellus ullamcorper faucibus. Nullam sagittis tempor mi non mattis. Proin ultricies, enim sit amet bibendum tristique, ligula ante feugiat nunc, sit amet imperdiet tortor nisl et felis. Pellentesque et nisl dui, non dictum libero. Vivamus tempor ante ac leo suscipit a sodales ligula iaculis. Curabitur massa mi, semper sed bibendum eget, auctor in nulla. Quisque at mi in ligula viverra suscipit sed vitae leo.&lt;/p&gt;
 </description>
 				<published>2012-01-18 00:00:00 +0000</published>
-				<link>/blog/hello-world</link>
+				<link>http://yourdomain.com//Meta/2012/01/18/hello-world/</link>
 			</item>
 		
 	</channel>
