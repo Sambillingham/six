@@ -9,10 +9,8 @@
 /*************************VARIABLES*************************/
 int id = 1;
 
-int randomNumber = random(50,100);
 float latitude = 0;
 float longitude = 0;
-int randomNumberTwo = random(0,100);
 
 const int buttonPin = 2;     // the number of the pushbutton pin
 const int ledPin =  A5;      // the number of the LED Board pin
@@ -33,13 +31,12 @@ void toggleLED() {
 
 /**********************SETUP FOR MQTT***********************/
 void callback(char *a, uint8_t *b, int c);
-uint8_t ip[] = { 10, 5, 91, 2 };
-PubSubClient cl(ip, 1883, callback);
+uint8_t ip[] = { 178, 79, 132, 119 };
+PubSubClient cl(ip, 8085, callback);
 
 char*  subTopic="tog/c/l";
-char*  pubTopicGpsLat="six/1/GpsLat";
-char*  pubTopicGpsLong="six/1/GpsLong";
-char*  pubTopicRandomNum="six/1/RandomNum";
+char*  pubTopicGpsLat="1/GpsLat";
+char*  pubTopicGpsLong="1/GpsLong";
 
 void callback(char *topic, uint8_t *data, int dataLen) {
     if (String(topic) == subTopic) {
@@ -51,15 +48,30 @@ void callback(char *topic, uint8_t *data, int dataLen) {
 /********************CHANGE GPS LOCATION********************/
 
 void changeGPS(int check){
-  if (check == 1)
-  {
-    longitude = -4.14;
-    latitude = 50.375;
-  }
-  else
-  {
-    longitude = 0;
-    latitude = 0;
+  
+  switch (check) {
+    
+    case 0:
+      // Babbage
+      longitude = -4.14084;
+      latitude = 50.37558;
+      break;
+      
+    case 1:
+      // North Hill
+      longitude = -4.13743;
+      latitude = 50.37496;
+      break;
+      
+    case 2:
+      // Mutley Plain
+      longitude = -4.13399;
+      latitude = 50.38238;
+      break;
+      
+    default: 
+      longitude = 0;
+      latitude = 0;
   }
 }
 /***********************************************************/
@@ -79,7 +91,7 @@ void setup()
     WiFly.begin();
     Serial.println("Wifly begin");
     
-    /*if (!WiFly.join(ssid, passphrase)) {
+    if (!WiFly.join(ssid, passphrase)) {
       Serial.println("Association failed.");
       while (1) {
         // Hang on failure.
@@ -87,7 +99,7 @@ void setup()
     }
   
     Serial.println("Associated!");
-    */
+    
     
     cl.connect("ardWiFly");
     Serial.println("arduino3");
@@ -101,21 +113,12 @@ void setup()
         toggleLED();
         delay(500);
     }
+    changeGPS(0);
 }
 
 void loop()
 {
-      // read the state of the pushbutton value:
-      buttonState = digitalRead(buttonPin);
-    
-      // check if the pushbutton is pressed.
-      // if it is, the buttonState is HIGH:
-      /*if (buttonState == HIGH) {     
-         changeGPS(1);
-      } 
-      else {
-         changeGPS(0);
-      }*/
+      
       timer = timer+1;
       if (timer >=10)
       {
@@ -125,8 +128,6 @@ void loop()
       }
       
       
-        randomNumberTwo = random(0,100);
-      
       //convert longitude to char array, ready for  publishing
       char longitudeChar[20];
       dtostrf(longitude,10,6, longitudeChar);
@@ -135,11 +136,8 @@ void loop()
       char latitudeChar[20];
       dtostrf(latitude, 10,6,latitudeChar);
       
-      //convert randomNumber to char array, ready for  publishing
-      char randomNumberChar[20];
-      dtostrf(randomNumber, 10,6,randomNumberChar);
-      
       cl.loop();
+      
       cl.publish(pubTopicGpsLong, longitudeChar);
       Serial.print("long: ");
       Serial.print(longitude);
@@ -148,20 +146,6 @@ void loop()
       cl.publish(pubTopicGpsLat, latitudeChar);
       Serial.print("lat: ");
       Serial.println(latitude);
-      Serial.println(" ");
-      
-      cl.publish(pubTopicRandomNum, randomNumberChar);
-      Serial.print("rn: ");
-      Serial.println(randomNumber);
-      Serial.println(" ");
-      
-      //convert randomNumber to char array, ready for  publishing
-      char randomNumberTwoChar[20];
-      dtostrf(randomNumberTwo, 10,6,randomNumberTwoChar);
-      
-      cl.publish("dbTestSend", randomNumberTwoChar);
-      Serial.print("rn2");
-      Serial.println(randomNumberTwo);
       Serial.println(" ");
       
       delay(10000);

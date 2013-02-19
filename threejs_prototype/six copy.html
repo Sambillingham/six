@@ -12,19 +12,9 @@
 		</style> 
 		<script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>
 		<script src="js/tween.js"></script>
-
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/EffectComposer.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/RenderPass.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/ShaderPass.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/MaskPass.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/CopyShader.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/ConvolutionShader.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/VignetteShader.js"></script>
 	</head>
 
 	<body> 
-
-		<script src="fonts/helvetiker_regular.typeface.js"></script>
 
 		<script>
 
@@ -45,8 +35,6 @@
 
 		    var renderer = new THREE.WebGLRenderer(); // WebGL renderer
 		    var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR); // Three js camera
-		    camera.position.set( 0, 600, 0 );
-			var rotate = true;
 		    var scene = new THREE.Scene(); // Three js scene
 
 		    //variables for 3d objects
@@ -58,10 +46,6 @@
 			var tweenDuration = 2500;
 			var tweenDelay = 0;
 
-			//variables for 3D text
-		    var text;
-		    var parent;
-
 			/****************************************************************************
 			*****************************************************************************
 			********                       SETUP FUNCTIONS                       ********
@@ -71,7 +55,7 @@
 		    //initialise the scene, camera and renderer
 		    function init() {
 			    scene.add(camera); // add camera to scene
-			    scene.fog = new THREE.Fog( 0x000000, 1800, 3000 ); //add fog to the scene
+			    camera.position.z = 1200; // zoom out camera from 0,0,0
 			    renderer.setSize(WIDTH,HEIGHT); // start renderer
 
 			    document.body.appendChild(renderer.domElement); // append render to body
@@ -102,9 +86,6 @@
 
 			    //on mouse click, run the onDocumentMouseDown method
 			    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-
-			    //run post processing
-			    postProcessing();
 			}
 
 			//resize the canvas when the window is resized
@@ -114,99 +95,23 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}
 
-			function postProcessing() {
-
-				//POST PROCESSING - Create Shader Passes
-				renderPass = new THREE.RenderPass( scene, camera );
-				copyPass = new THREE.ShaderPass( THREE.CopyShader );
-				//bloomPass = new THREE.BloomPass(8,3,0.5,256);
-				vignettePass = new THREE.ShaderPass( THREE.VignetteShader );;
-				vignettePass.uniforms[ "darkness" ].value = 1.5;
-
-				composer = new THREE.EffectComposer( renderer );
-				composer.addPass( renderPass );
-				composer.addPass( vignettePass );
-				//composer.addPass( bloomPass )
-				composer.addPass( copyPass );
-				
-				copyPass.renderToScreen = true; //set last pass in composer chain to renderToScreen
-
-			}
-
 			//scene lighting
 			function addlight() {
-				var pointLight = new THREE.PointLight(0xFFFFFF); // point light
-				
-				pointLight.position.x = 10; // light position
+				var pointLight = new THREE.PointLight(0xFFFFFF); // create a point light
+				pointLight.position.x = 10; // position the point light
 				pointLight.position.y = 50;
 				pointLight.position.z = 130;
-
-				scene.add(pointLight); // add light to scene
-
-				scene.add( new THREE.AmbientLight( 0xFF9900 ) );
-
-				var dirLight1 = new THREE.DirectionalLight(0xFFFFFF,0.55,500);
-				scene.add(dirLight1);
-
-				var dirLight2 = new THREE.DirectionalLight(0xFFFFFF,0.25,500);
-				dirLight2.position.set(0, 0, 1).normalize();
-				scene.add(dirLight2);
+				scene.add(pointLight); // add the point light to scene
+				//scene.add( new THREE.AmbientLight( 0xFF9900 ) ); //add ambient light
 			}
 
 			//grid. ONLY NEEDED FOR DEVELOPMENT
     		function addGrid() {
-				plane = new THREE.Mesh( new THREE.PlaneGeometry( 3000, 3000, 20, 20 ), new THREE.MeshBasicMaterial( { ambient: 0x030303, color: 0xCCCCCC, shading: THREE.FlatShading, opacity: 0.2, transparent: true, wireframe: false, blending: THREE.AdditiveBlending } ) );
+				plane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 20, 20 ), new THREE.MeshBasicMaterial( { color: 0x333333, wireframe: true } ) );
 				plane.rotation.x = - Math.PI / 2;
 				plane.position.y = -50;
 				scene.add( plane );
-
-				for (var i = 0; i < 441; i++){
-					var j = Math.floor(Math.random() * 400 - 600);
-					plane.geometry.vertices[i].z = j;
-				}
 			}
-
-			function addText() {
-
-		    	// Get text from hash
-				var theText = "Phil";
-
-				var hash = document.location.hash.substr( 1 );
-
-				if ( hash.length !== 0 ) {
-
-					theText = hash;
-
-				}
-
-				var text3d = new THREE.TextGeometry( theText, {
-
-					size: 30,
-					height: 20,
-					curveSegments: 2,
-					font: "helvetiker"
-
-				});
-
-				text3d.computeBoundingBox();
-				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
-				var textMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, overdraw: true, shading: THREE.FlatShading } );
-				text = new THREE.Mesh( text3d, textMaterial );
-
-				//text.position.x = -(text.geometry.boundingBox.max.x)/2;
-				//text.position.y = 0;
-				///text.position.z = -(text.geometry.boundingBox.max.z)/2;
-
-				text.position.x = Math.cos(centerOffset);
-				text.position.y = 60;
-				text.position.z = Math.sin(centerOffset);
-
-				parent = new THREE.Object3D();
-				parent.add( text );
-
-				scene.add( parent );
-
-		    }
 
 			/****************************************************************************
 			*****************************************************************************
@@ -227,11 +132,7 @@
 				this.sColor = sColor;
 				this.sRadius = sRadius;
 
-				var sphereMaterial = new THREE.MeshLambertMaterial(
-					{ 
-						ambient: 0xFFFFFF, color: sColor, specular: 0x000000, shininess: 0, shading: THREE.FlatShading, opacity: 1.0, transparent: true
-					} 
-				);
+				var sphereMaterial = new THREE.MeshPhongMaterial({color: sColor, transparent: true, blending: THREE.AdditiveBlending});
 
 				var sphereGeometry = new THREE.SphereGeometry(sRadius, 16, 16)
 
@@ -240,6 +141,8 @@
 			    this.sphere.position.x = sX;
 			    this.sphere.position.y = sY;
 			    this.sphere.position.z = sZ;
+
+			    this.sphere.geometry.dynamic = true;
 
 				scene.add(this.sphere);// add sphere to scene
 		    }
@@ -411,28 +314,15 @@
     		function animate(t) {
 
 				/* ANIMATIONS HERE------------------------------------------- */
-
-				var timer = Date.now() * 0.0002;
-
-				if ( rotate ) {
-
-					camera.position.x = Math.cos( timer ) * 1500;
-					camera.position.z = Math.sin( timer ) * 1500;
-
-				}
-
-				text.lookAt( camera.position ) // rotate text object to look at vector
 				
 				//set the two vertices of each relationship line equal to the positions of the two sphere they connect to 
 				updateRelationshipVertices();
 
 				/* ANIMATIONS END------------------------------------------- */
 
-				camera.lookAt( scene.position );
 				renderer.render(scene, camera); // render scene
 				requestAnimationFrame( animate );
 				TWEEN.update();
-				composer.render( 0.1); // required for post processing
 				
 			}
 
@@ -445,7 +335,6 @@
 			init(); // run intitialise function
 			addlight(); // add light to scene
 			addGrid(); // add a grid to the scene;
-			addText();
 			animate();// run animate loop
 										
 		</script>
