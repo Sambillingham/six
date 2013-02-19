@@ -2,8 +2,17 @@
 layout: default
 ---
 
-<div class="content">    
-	{% include post_header.html %}
-    {{ content }}		
+<div class="post">
+
+    <h2>{{ page.title }}</h2>
+
+        <p class="meta">
+            <span class="date"><i class="icon-clock"></i>{{ page.date | date_to_string }}</span><br/>
+            <span class="category"><i class="icon-tag"></i> {{ page.categories | category_links }}</span><br/>
+            <span class="author"><i class="icon-user"></i> {% if page.author %}{{page.author}}{% else %}{{site.author}}{% endif%}</span>
+        </p>
+
+	<div class="entry">{{ content }}</div>
+
 </div>
-    
+
