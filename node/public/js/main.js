@@ -77,7 +77,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://127.0.0.1');
+        var socket = io.connect('http://192.168.0.20');
 
             
 
@@ -151,6 +151,7 @@
 
 
 
+            
             /****************************************************************************
             *****************************************************************************
             ********                      GLOBAL VARIABLES                       ********
@@ -168,6 +169,8 @@
 
             var renderer = new THREE.WebGLRenderer(); // WebGL renderer
             var camera = new THREE.PerspectiveCamera(VIEW_ANGLE,ASPECT,NEAR,FAR); // Three js camera
+            camera.position.set( 0, 600, 0 );
+            var rotate = true;
             var scene = new THREE.Scene(); // Three js scene
 
             //variables for 3d objects
@@ -176,8 +179,12 @@
             var sphereLocations = new Array();
 
             //variables for tweening
-            var tweenDuration = 1500;
+            var tweenDuration = 2500;
             var tweenDelay = 0;
+
+            //variables for 3D text
+            var text;
+            var parent;
 
             /****************************************************************************
             *****************************************************************************
@@ -188,17 +195,17 @@
             //initialise the scene, camera and renderer
             function init() {
                 scene.add(camera); // add camera to scene
-                camera.position.z = 1200; // zoom out camera from 0,0,0
+                scene.fog = new THREE.Fog( 0x000000, 1800, 3000 ); //add fog to the scene
                 renderer.setSize(WIDTH,HEIGHT); // start renderer
 
                 document.body.appendChild(renderer.domElement); // append render to body
                 window.addEventListener( 'resize', onWindowResize, false ); // when the window is resized, run the onWindowresize method
 
                 //array to store each sphere. Each sphere represents a person
-                person[0] = new sphere("GOLD",0xD2C282,UserMaxConnection[0].max, 0, 0, 0);//gold
-                person[1] = new sphere("GREEN",0x00FF00,UserMaxConnection[1].max, 0, 0, 0);//green
-                person[2] = new sphere("RED",0xFF0000,UserMaxConnection[2].max, 0, 0, 0);//red
-                person[3] = new sphere("BLUE",0x0000FF,UserMaxConnection[3].max, 0, 0, 0);//blue
+                person[0] = new sphere("GOLD",0xD2C282,40, 0, 0, 0);//gold
+                person[1] = new sphere("GREEN",0x00FF00,44, 0, 0, 0);//green
+                person[2] = new sphere("RED",0xFF0000,36, 0, 0, 0);//red
+                person[3] = new sphere("BLUE",0x0000FF,50, 0, 0, 0);//blue
 
                 console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
 
@@ -220,7 +227,10 @@
                 setupSpherePositions();
 
                 //on mouse click, run the onDocumentMouseDown method
-                // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+               // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+                //run post processing
+                postProcessing();
             }
 
             //resize the canvas when the window is resized
@@ -230,22 +240,98 @@
                 renderer.setSize( window.innerWidth, window.innerHeight );
             }
 
+            function postProcessing() {
+
+                //POST PROCESSING - Create Shader Passes
+                renderPass = new THREE.RenderPass( scene, camera );
+                copyPass = new THREE.ShaderPass( THREE.CopyShader );
+                //bloomPass = new THREE.BloomPass(8,3,0.5,256);
+                vignettePass = new THREE.ShaderPass( THREE.VignetteShader );;
+                vignettePass.uniforms[ "darkness" ].value = 1.5;
+
+                composer = new THREE.EffectComposer( renderer );
+                composer.addPass( renderPass );
+                composer.addPass( vignettePass );
+                //composer.addPass( bloomPass )
+                composer.addPass( copyPass );
+                
+                copyPass.renderToScreen = true; //set last pass in composer chain to renderToScreen
+
+            }
+
             //scene lighting
             function addlight() {
-                var pointLight = new THREE.PointLight(0xFFFFFF); // create a point light
-                pointLight.position.x = 10; // position the point light
+                var pointLight = new THREE.PointLight(0xFFFFFF); // point light
+                
+                pointLight.position.x = 10; // light position
                 pointLight.position.y = 50;
                 pointLight.position.z = 130;
-                scene.add(pointLight); // add the point light to scene
-                //scene.add( new THREE.AmbientLight( 0xFF9900 ) ); //add ambient light
+
+                scene.add(pointLight); // add light to scene
+
+                scene.add( new THREE.AmbientLight( 0xFF9900 ) );
+
+                var dirLight1 = new THREE.DirectionalLight(0xFFFFFF,0.55,500);
+                scene.add(dirLight1);
+
+                var dirLight2 = new THREE.DirectionalLight(0xFFFFFF,0.25,500);
+                dirLight2.position.set(0, 0, 1).normalize();
+                scene.add(dirLight2);
             }
 
             //grid. ONLY NEEDED FOR DEVELOPMENT
             function addGrid() {
-                plane = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000, 20, 20 ), new THREE.MeshBasicMaterial( { color: 0x333333, wireframe: true } ) );
+                plane = new THREE.Mesh( new THREE.PlaneGeometry( 3000, 3000, 20, 20 ), new THREE.MeshBasicMaterial( { ambient: 0x030303, color: 0xCCCCCC, shading: THREE.FlatShading, opacity: 0.2, transparent: true, wireframe: false, blending: THREE.AdditiveBlending } ) );
                 plane.rotation.x = - Math.PI / 2;
                 plane.position.y = -50;
                 scene.add( plane );
+
+                for (var i = 0; i < 441; i++){
+                    var j = Math.floor(Math.random() * 400 - 600);
+                    plane.geometry.vertices[i].z = j;
+                }
+            }
+
+            function addText() {
+
+                // Get text from hash
+                var theText = "Phil";
+
+                var hash = document.location.hash.substr( 1 );
+
+                if ( hash.length !== 0 ) {
+
+                    theText = hash;
+
+                }
+
+                var text3d = new THREE.TextGeometry( theText, {
+
+                    size: 30,
+                    height: 20,
+                    curveSegments: 2,
+                    font: "helvetiker"
+
+                });
+
+                text3d.computeBoundingBox();
+                var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+                var textMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, overdraw: true, shading: THREE.FlatShading } );
+                text = new THREE.Mesh( text3d, textMaterial );
+
+                //text.position.x = -(text.geometry.boundingBox.max.x)/2;
+                //text.position.y = 0;
+                ///text.position.z = -(text.geometry.boundingBox.max.z)/2;
+
+                text.position.x = Math.cos(centerOffset);
+                text.position.y = 60;
+                text.position.z = Math.sin(centerOffset);
+
+                parent = new THREE.Object3D();
+                parent.add( text );
+
+                scene.add( parent );
+
             }
 
             /****************************************************************************
@@ -267,7 +353,11 @@
                 this.sColor = sColor;
                 this.sRadius = sRadius;
 
-                var sphereMaterial = new THREE.MeshPhongMaterial({color: sColor, transparent: true, blending: THREE.AdditiveBlending});
+                var sphereMaterial = new THREE.MeshLambertMaterial(
+                    { 
+                        ambient: 0xFFFFFF, color: sColor, specular: 0x000000, shininess: 0, shading: THREE.FlatShading, opacity: 1.0, transparent: true
+                    } 
+                );
 
                 var sphereGeometry = new THREE.SphereGeometry(sRadius, 16, 16)
 
@@ -276,8 +366,6 @@
                 this.sphere.position.x = sX;
                 this.sphere.position.y = sY;
                 this.sphere.position.z = sZ;
-
-                this.sphere.geometry.dynamic = true;
 
                 scene.add(this.sphere);// add sphere to scene
             }
@@ -311,14 +399,15 @@
                 for(var i = 0; i<person.length; i++){
                     var newId = person[i].sId;
                     var newColor = person[i].sColor;
-                    var newRadius = UserMaxConnection[i].max;
 
                     //Used to randomly change the radius, incrementing or decrementing by 3. USED FOR DEVLEOPMENT ONLY. 
-                    // var plusOrMinus = Math.floor(Math.random()*2);
-                    // var newRadius;
-                    // if(plusOrMinus == 0){newRadius = (person[i].sRadius) + 3}
-                    // else{newRadius = (person[i].sRadius) - 3}
+                    var plusOrMinus = Math.floor(Math.random()*2);
+                    var newRadius;
+                    if(plusOrMinus == 0){newRadius = (UserMaxConnection[i].max) + 3}
+                    else{newRadius = (UserMaxConnection[i].max) - 3}
                     //USED FOR DEVLEOPMENT ONLY
+
+                console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
 
                     var newX = person[i].sphere.position.x;
                     var newY = person[i].sphere.position.y;
@@ -445,7 +534,7 @@
 
             }
 
-            function timeOutForAnimation () {
+             function timeOutForAnimation () {
 
                     setTimeout( function() {
                         okayToUpdate = true;
@@ -463,18 +552,31 @@
             function animate(t) {
 
                 /* ANIMATIONS HERE------------------------------------------- */
+
+                var timer = Date.now() * 0.0002;
+
+                if ( rotate ) {
+
+                    camera.position.x = Math.cos( timer ) * 1500;
+                    camera.position.z = Math.sin( timer ) * 1500;
+
+                }
+
+                //text.lookAt( camera.position ) // rotate text object to look at vector
                 
                 //set the two vertices of each relationship line equal to the positions of the two sphere they connect to 
                 updateRelationshipVertices();
 
                 /* ANIMATIONS END------------------------------------------- */
 
+                camera.lookAt( scene.position );
                 renderer.render(scene, camera); // render scene
                 requestAnimationFrame( animate );
                 TWEEN.update();
+                composer.render( 0.1); // required for post processing
                 
             }
-
+           
             /****************************************************************************
             *****************************************************************************
             ********                       RUN EVERYTHING                        ********
