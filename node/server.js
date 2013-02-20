@@ -13,7 +13,7 @@ var express = require('express'),
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4, // Number of Arduino's for live connection
     delayForConnectionTime = 30000, // time in milleseconds
-    timeBetweenDecay = 60000; // 1 minute between delay
+    timeBetweenDecay = 6000000; // 1 hour between delay
 
 
 var defaultTopic = '/default',
@@ -252,7 +252,7 @@ setTimeout( function () {
 
         })();
             
-}, 5000);  //10 SECONDS before decay starts so db can be setup
+}, 10000);  //10 SECONDS before decay starts so db can be setup
 
 
 

@@ -77,7 +77,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://192.168.0.20');
+        var socket = io.connect('http://178.79.132.119');
 
             
 
