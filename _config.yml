@@ -20,8 +20,7 @@ category_dir: /
 #baseurl: /path/to/blog 
 
 # The URL of your actual domain. This will be used to make absolute links in the RSS feed.
-url: http://sambillingham.github.com/
-
+url: http://sambillingham.github.com/six/
 
 
 #### Under the Hood Stuff #####
