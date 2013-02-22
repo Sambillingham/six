@@ -19,10 +19,9 @@ as well as on the individual post pages.&lt;/p&gt;
 				<title>Code Snippets</title>
 				<description>&lt;p&gt;Whenever you need to post a code snippet, use the liquid tags &lt;code&gt;hilight&lt;/code&gt; and &lt;code&gt;endhilight&lt;/code&gt; like this:&lt;/p&gt;
 
-&lt;div&gt;
-  &lt;pre&gt;&lt;code class='ruby'&gt;# some code goes here
-puts &amp;quot;Hello World!&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# some code goes here&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello World!&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Note that this only provides color-coding. For that you might need to use a front end colorization engine like Highlight.JS or something similar.&lt;/p&gt;
@@ -38,9 +37,8 @@ add nice icons into your pages by using css tags.&lt;/p&gt;
 
 &lt;p&gt;To add an icon somewhere in the template simply do:&lt;/p&gt;
 
-&lt;div&gt;
-  &lt;pre&gt;&lt;code class='html'&gt;&amp;lt;i class=&amp;quot;icon-home&amp;quot;&amp;gt;&amp;lt;/i&amp;gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;i&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;class=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;icon-home&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/i&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;This will insert a home icon, just as the one seen in the sidebar. The available class names you can use are as follows:&lt;/p&gt;
