@@ -4,7 +4,7 @@
 	<head>
         <meta charset="utf-8"/>
         <title>{% if page.title %} {{ page.title }} | {% endif %} {{ site.name }}</title>
-        <link rel="stylesheet" href="{{site.baseurl}}/style.css" />
+        <link rel="stylesheet" href="{{site.baseurl}}/css/main.css" />
         <meta name="description" content="{{site.description}}"/>
         <meta name="author" content="{{site.author}}"/>
         <link rel="author" href="humans.txt"/>
@@ -12,12 +12,17 @@
 
         <link rel="stylesheet" href="{{ site.baseurl }}/resources/fontello/css/fontello.css">
         <link rel="stylesheet" href="{{ site.baseurl }}/resources/fontello/css/animation.css">
+
+
+        <link rel="stylesheet" href="{{ site.baseurl }}/css/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="{{ site.baseurl }}/css/bootstrap.min.css">
+
         <!--[if IE 7]><link rel="stylesheet" href="/resources/fontello/css/fontello-ie7.css"><![endif]-->
 	</head>
 
 	<body>
 		<div id="header">
-            <h1>Welcome to {{ site.name }}</h1>
+            <h1>{{ site.name }} project best {{ site.name }} </h1>
             <h4>{{ site.description }}</h4>
 			<hr />
 		</div>
@@ -33,13 +38,14 @@
                 <li><i class="icon-rss"></i>    <a href="{{site.baseurl}}/feed.xml">RSS Feed</a></li>
 			</ul>
 
-			<h3>Second Heading</h3>
+			<!--<h3>Second Heading</h3>
 
-			<ul>
-                <li><i class="icon-link"></i>   <a href="#">Link 1</a></li>
-				<li><i class="icon-link"></i>   <a href="#">Link 2</a></li>
-				<li><i class="icon-link"></i>   <a href="#">Link 3</a></li>
-			</ul>
+				<ul>
+	                <li><i class="icon-link"></i>   <a href="#">Link 1</a></li>
+					<li><i class="icon-link"></i>   <a href="#">Link 2</a></li>
+					<li><i class="icon-link"></i>   <a href="#">Link 3</a></li>
+				</ul>
+			-->
 		</div>
 
 		<div id="content">

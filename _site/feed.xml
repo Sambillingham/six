@@ -45,7 +45,7 @@ add nice icons into your pages by using css tags.&lt;/p&gt;
 
 &lt;p&gt;This will insert a home icon, just as the one seen in the sidebar. The available class names you can use are as follows:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/resources/img/icons.png&quot; title=&quot;Available Icons&quot; alt=&quot;Available Icons&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/six/resources/img/icons.png&quot; title=&quot;Available Icons&quot; alt=&quot;Available Icons&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;These should work in all the browsers, all the way down to and including IE7, but not IE6.&lt;/p&gt;
 </description>
