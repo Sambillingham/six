@@ -3,6 +3,7 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, { log: true }),
     mqtt = require('mqttjs'),
+    ObjectID = require('mongodb').ObjectID,
     relationships = '';
     changes = '';
     users = '';
@@ -220,8 +221,8 @@ app.get('/', function (req, res) {
             //console.log(connectionIdTime);
 
                 // INITIAL INSERT for DB users & relationships Uncomment on deployment
-                //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
-                //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
+                users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
+                relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
                 // USE TO UPDATE BY HAND may need at some point
                 //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
@@ -606,3 +607,32 @@ function timeDelayForConnection ( connectionID ) {
 
         }, delayForConnectionTime );
 }
+
+function historicData (date) {
+
+    //This gives you an array of the objects.
+
+    relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err,docs){
+    
+        console.log(docs);
+    
+    })
+    
+}
+
+function createdFrom (date) {
+
+    //This function is used within historicData to create an ObjectID with the specific date, then queries the DB for ObjectID's created after.
+
+    if (typeof(date) == 'string'){
+            timestamp = new Date(date);
+        }
+
+    hexSeconds = Math.floor(timestamp/1000).toString(16);
+
+    constructedObjectID = ObjectID(hexSeconds+"0000000000000000");
+
+    return constructedObjectID;
+
+    };
+
