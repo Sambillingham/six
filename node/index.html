@@ -6,50 +6,10 @@
 			<meta name="description" content="">
 			<meta name="author" content="">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
+
+			<link rel="stylesheet" type="text/css" href="css/main.css">
 	
-			<style>
-					body {
-						background-color: #002200;
-						margin: 0px;
-						overflow: hidden;
-						
-					}
-					h1{
-						color: #fff;
-						position: absolute;
-						top: 0;
-						margin-left: 50px;
-						text-transform: uppercase;;
-					}
-					canvas { 
-						background: #202020;
-						width: 100%;
-						height: 100%;
-						margin:-8px 0 0 -8px;
-					}
-					.user-container {
-						float: right;
-						margin-right: 20px;
-						width: 250px;
-						position: absolute;
-						bottom: 20px;
-						right: 20px;
-					}
-					.users {
-						color: #fff;
-						margin-top: 15px;
-					}
-					.relationship-container {
-						width: 250px;
-						position: absolute;
-						bottom: 20px;
-						margin-left: 50px;
-					}
-					.rel {
-						color:  #fff;
-						margin-top: 10px;
-					}
-			</style>
+			
 
 	</head>
 
@@ -58,14 +18,25 @@
 		
 		<h1> Six Display Client </h1>
 
-		<div class="user-container">
+		<div class="views" id="view-window">
+			<h2> Views </h2>
+				<span id="live-view" class="view-button"> Live </span>
+
+				<span id="all-view" class="view-button"> All </span> 
+
+				<span id="more-view" class="view-button"> More </span> 
+		</div>
+
+		<div class="user-container" id="usersWindow">
+			<h2> Users </h2>
 			<div id="user0" class="users"></div>
 			<div id="user1" class="users"></div>
 			<div id="user2" class="users"></div>
 			<div id="user3" class="users"></div>
 		</div>
 
-		<div class="relationship-container">
+		<div class="relationship-container" id="relationshipWindow">
+			<h2> Relationships </h2>
 			<div id="rel1" class="rel"></div>
 			<div id="rel2" class="rel"></div>
 			<div id="rel3" class="rel"></div>

@@ -17,6 +17,7 @@
         PersonOneLinkTwo,
         orb,
         rotation,
+        activeAll = true;
         mouseX = 0,
         mouseY = 0,
         okayToUpdate = true,
@@ -68,16 +69,41 @@
                     "relationship" : 0
                 }
 
-    ];
+    ],
+    allViewArray = [];
         //
 
+        //Some UI stuff /////
 
+            $("#usersWindow").click(function() {
+
+
+                $("#usersWindow").toggleClass("userWindowActive");
+
+            });
+
+            $("#relationshipWindow").click(function() {
+
+
+                $("#relationshipWindow").toggleClass("relationshipWindowActive");
+
+            });
+
+            ///view buttons
+            $("#all-view").click(function() {
+
+                    socket.emit('all-view-request');
+                    console.log('All view has been selected and socket request sent to server');
+            });
+            ///END VIEW buttons
+
+        ////////////////////////////////
 
         var bigCircle = '',
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://178.79.132.119');
+        var socket = io.connect('http://192.168.0.20');
 
             
 
@@ -121,7 +147,7 @@
 
                                         onUpdateValues();
 
-                                    } 
+                                    }
 
 
 
@@ -132,6 +158,14 @@
                     }
 
             
+            });
+
+            socket.on('all-view-data', function (allViewData) {
+
+
+                allViewArray = JSON.parse(allViewData);
+                console.log(allViewData);
+
             });
 
             setTimeout( function() {
@@ -146,9 +180,7 @@
 
                     
             //});
-
-
-
+        
 
 
             

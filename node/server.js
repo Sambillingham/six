@@ -1,7 +1,7 @@
 var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
-    io = require('socket.io').listen(server, { log: true }),
+    io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
     ObjectID = require('mongodb').ObjectID,
     relationships = '';
@@ -19,6 +19,7 @@ var express = require('express'),
 
 var defaultTopic = '/default',
     defaultPayload = "I'm a payload",
+    historicsStuff = [];
     people = [
         {
             id: 0,
@@ -162,6 +163,8 @@ app.get('/', function (req, res) {
     
     io.sockets.on('connection', function (socket) {
 
+
+
             (function () { // ANONYMOUS SELF CALLING FUNCTION 1.5 SECS
 
                 // FIND USERS IN DB AND EMIT TO SOCKET
@@ -237,10 +240,27 @@ app.get('/', function (req, res) {
         //END TEST FUNCTION
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
+            socket.on('all-view-request', function () {
+
+                console.log('REQUEST FOR all view has been recvied');
+                //historicsStuff = historicData("2012/7/7");
+
+                relationships.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+
+                    var allViewData = JSON.stringify(docs);
+
+                    console.log(allViewData);
+                    socket.emit('all-view-data', allViewData);
+                    
+                });
+            });
+
       });
 
     // END sockets Server
 
+
+    
 
 //SELF CALLING FUNCTION FOR DECAY
 setTimeout( function () {
@@ -608,17 +628,18 @@ function timeDelayForConnection ( connectionID ) {
         }, delayForConnectionTime );
 }
 
-function historicData (date) {
+// function historicData (date) {
 
-    //This gives you an array of the objects.
+//     //This gives you an array of the objects.
 
-    relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err,docs){
+//     relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err , docs){
     
-        console.log(docs);
+//         //console.log(docs);
+//         return docs;
     
-    })
+//     });
     
-}
+// }
 
 function createdFrom (date) {
 
@@ -634,5 +655,5 @@ function createdFrom (date) {
 
     return constructedObjectID;
 
-    };
+    }
 
