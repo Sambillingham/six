@@ -1,7 +1,7 @@
 var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
-    io = require('socket.io').listen(server, { log: true }),
+    io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
     ObjectID = require('mongodb').ObjectID,
     relationships = '';
@@ -19,6 +19,7 @@ var express = require('express'),
 
 var defaultTopic = '/default',
     defaultPayload = "I'm a payload",
+    historicsStuff = [];
     people = [
         {
             id: 0,
@@ -140,7 +141,7 @@ MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
         changes = db.collection('Changes');
         // End var creation
 
-        console.log(' Connected to Mongo Database');
+        console.log('Connected to Mongo Database');
 
 });//MONGO END
 
@@ -161,6 +162,8 @@ app.get('/', function (req, res) {
     // Sockets Server
     
     io.sockets.on('connection', function (socket) {
+
+
 
             (function () { // ANONYMOUS SELF CALLING FUNCTION 1.5 SECS
 
@@ -224,11 +227,6 @@ app.get('/', function (req, res) {
                 //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
                 //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
-                // USE TO UPDATE BY HAND may need at some point
-                //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
-                //users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
-
-
                 ///console.log( connectionIdTime,'   Whats LIVE:. ');
 
                 setTimeout(arguments.callee, 5000);
@@ -237,10 +235,36 @@ app.get('/', function (req, res) {
         //END TEST FUNCTION
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
+            socket.on('all-view-request', function () {
+
+                console.log('REQUEST FOR all view has been recvied');
+                //historicsStuff = historicData("2012/7/7");
+
+                users.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+
+                    var allViewDataUser = JSON.stringify(docs);
+
+                    console.log(allViewDataUser);
+                    socket.emit('all-view-data-user', allViewDataUser);
+
+                });
+
+                relationships.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+
+                    var allViewDataRelationship = JSON.stringify(docs);
+
+                    console.log(allViewDataRelationship);
+                    socket.emit('all-view-data-relationship', allViewDataRelationship);
+
+                });
+            });
+
       });
 
     // END sockets Server
 
+
+    
 
 //SELF CALLING FUNCTION FOR DECAY
 setTimeout( function () {
@@ -608,17 +632,18 @@ function timeDelayForConnection ( connectionID ) {
         }, delayForConnectionTime );
 }
 
-function historicData (date) {
+// function historicData (date) {
 
-    //This gives you an array of the objects.
+//     //This gives you an array of the objects.
 
-    relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err,docs){
+//     relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err , docs){
     
-        console.log(docs);
+//         //console.log(docs);
+//         return docs;
     
-    })
+//     });
     
-}
+// }
 
 function createdFrom (date) {
 
@@ -634,5 +659,5 @@ function createdFrom (date) {
 
     return constructedObjectID;
 
-    };
+    }
 
