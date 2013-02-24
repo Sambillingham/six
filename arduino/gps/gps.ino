@@ -109,12 +109,14 @@ void loop()
 {
     cl.loop();
     timer.run();
-    Serial.println(String(cl.connected()));
+    //Serial.println(String(cl.connected()));
+    
     if(cl.connected()==false){
       Serial.println("Disconnected from MQTT broker.");
       Serial.println("Retrying connection...");
       mqttSubscribe();
     }
+    
     
     if(wiFlyClient.connected()==false){
       Serial.println("Disconnected from WiFi.");
