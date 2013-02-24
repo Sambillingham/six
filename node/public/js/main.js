@@ -154,7 +154,7 @@
 
                 if ( useLiveData === true ) {
 
-                   for ( var i = 0 ; i < 4; i++) {
+                    for ( var i = 0 ; i < 4; i++) {
 
                             if ( maxConnection.id === i ) {
 
@@ -180,11 +180,11 @@
         
 
 
-            socket.on('all-view-data', function (allViewData) {
+            socket.on('all-view-data-user', function (allViewDataUser) {
 
 
-                allViewArray = JSON.parse(allViewData);
-                //console.log(allViewData);
+                allViewArray = JSON.parse(allViewDataUser);
+                //console.log(allViewDataUser);
 
                 if ( useAllData === true ) {
 
@@ -195,16 +195,39 @@
                                 console.log(allViewArray[index]);
                                 index = (index + 1) % allViewArray.length;
 
+                                for ( var i = 0 ; i < 4; i++) {
+
+                                        if ( allViewArray[index].id === i ) {
+
+                                                UserMaxConnection[i].id = allViewArray[index].id;
+                                                UserMaxConnection[i].max = allViewArray[index].max;
+
+                                                if ( okayToUpdate === true ) {
+
+                                                    onUpdateValues();
+
+                                                }
+
+                                        }
+                                }
+
+
                           }
 
-                          nextAllData();
+                nextAllData();
 
-                          if (intervalTimerId)clearInterval(intervalTimerId);
+                if (intervalTimerId)clearInterval(intervalTimerId);
 
-                          intervalTimerId = setInterval(nextAllData, 1000);
+                intervalTimerId = setInterval(nextAllData, 2500);
+                console.log(UserMaxConnection);
 
                 }
             });
+            
+            socket.on('all-view-data-relationship', function (allVierDataRelationship) {
+
+            });
+            
 
             setTimeout( function() {
 

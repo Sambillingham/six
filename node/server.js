@@ -227,11 +227,6 @@ app.get('/', function (req, res) {
                 //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
                 //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
-                // USE TO UPDATE BY HAND may need at some point
-                //relationships.update( { conId:"2" }, {$set:{relationship:0}}, {w:1}, function ( err, result ) {});
-                //users.update( {id:1}, {$set:{max:0}}, {w:1}, function ( err, result ) {});
-
-
                 ///console.log( connectionIdTime,'   Whats LIVE:. ');
 
                 setTimeout(arguments.callee, 5000);
@@ -245,12 +240,21 @@ app.get('/', function (req, res) {
                 console.log('REQUEST FOR all view has been recvied');
                 //historicsStuff = historicData("2012/7/7");
 
+                users.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+
+                    var allViewDataUser = JSON.stringify(docs);
+
+                    console.log(allViewDataUser);
+                    socket.emit('all-view-data-user', allViewDataUser);
+
+                });
+
                 relationships.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
 
-                    var allViewData = JSON.stringify(docs);
+                    var allViewDataRelationship = JSON.stringify(docs);
 
-                    console.log(allViewData);
-                    socket.emit('all-view-data', allViewData);
+                    console.log(allViewDataRelationship);
+                    socket.emit('all-view-data-relationship', allViewDataRelationship);
 
                 });
             });
