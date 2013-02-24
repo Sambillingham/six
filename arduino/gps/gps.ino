@@ -36,19 +36,38 @@ byte ip[] = { 192, 168, 0, 8 };
 WiFlyClient wiFlyClient;
 PubSubClient cl(ip, 8085, callback, wiFlyClient);
 
-//subTopic that the MQTT broker replies on.
+//subTopics that the MQTT broker replies on.
 
-char*  subTopic="1/buzz";
+
+char*  patternOneSubTopic = "1/buzz/1";
+char*  patternTwoSubTopic = "1/buzz/2";
+char*  patternThreeSubTopic = "1/buzz/3";
+char*  patternFourSubTopic = "1/buzz/4";
+
+//pubTopics that the Arduino publishes on.
+
 char*  pubTopicGpsLat="1/gpsLat";
 char*  pubTopicGpsLong="1/gpsLong";
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  if(String(topic)==subTopic){
-    Serial.println("Fuck you MQTT!");
+  
+  if(String(topic) == patternOneSubTopic){
+    buzz_1();  
   }
+  
+  if(String(topic) == patternTwoSubTopic){
+    buzz_2();
   }
-
-
+  
+  if(String(topic) == patternThreeSubTopic){
+    buzz_3();
+  }
+  
+  if(String(topic) == patternFourSubTopic){
+    buzz_4();
+  }
+}
+  
 /****************************************************/
 
 //Arduino setup
@@ -74,15 +93,20 @@ void setup()
     
       while (1) {
       // Hang on failure.
-    }
+      } 
   }
+  Serial.println("Connected to WiFi!");
   
   timer.setInterval(2500, getGPS);
 
-  
   cl.connect("ardWiFly");
-  cl.subscribe(subTopic);
-  Serial.println("Connected to WiFi!");
+  
+  cl.subscribe(patternOneSubTopic);
+  cl.subscribe(patternTwoSubTopic);
+  cl.subscribe(patternThreeSubTopic);
+  cl.subscribe(patternFourSubTopic);
+  
+  Serial.println("MQTT subscribed.");
  
 }
 
@@ -90,14 +114,7 @@ void loop()
 {
     cl.loop();
     timer.run();
-    //getGPS();
-
-
-    //delay(2000);
-    //buzz_1();
-    //buzz_2();
-    //buzz_3();
-    //buzz_4();
+    
 }
 /***************************************************/
 
@@ -127,21 +144,23 @@ void getGPS()
      unsigned long age;
      gps.f_get_position(&latitude, &longitude, &age);
      latitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : latitude, 6;
-      longitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : longitude, 6;
+     longitude == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : longitude, 6;
      
-      dtostrf(latitude, 10,6,latBuf);
-      dtostrf(longitude,10,6, lonBuf);
+     dtostrf(latitude, 10,6,latBuf);
+     dtostrf(longitude,10,6, lonBuf);
+      
+     cl.publish(pubTopicGpsLat,latBuf);
+     delay(500);
+     cl.publish(pubTopicGpsLong,lonBuf);
   
 }
   else
   {
       gpsLocked = false;
-
-      cl.publish(pubTopicGpsLat,latBuf);
-            delay(500);
-      cl.publish(pubTopicGpsLong,lonBuf);
-      Serial.println("Message sent");
   }
+  
+  printGPS();
+  
 }
 
 void printGPS()
@@ -149,20 +168,17 @@ void printGPS()
 
   if (gpsLocked == true)
   {
-    Serial.println("\n*************\nGPS CONNECTED\n");
-   
-}
+    Serial.println("GPS Connected.");
+  }
   else
   {
-    Serial.println("\n*************\nGPS FAILED\n");
+    Serial.println("GPS failed to connect.");
   }
-  
   Serial.println(latitude);
   Serial.println(longitude);
   Serial.println(latBuf);
   Serial.println(lonBuf);
-  
-  Serial.println("*************\n");
+  Serial.println("------");
 }
 
 
