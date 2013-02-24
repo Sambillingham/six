@@ -13,6 +13,7 @@
 
   TinyGPS gps;
   boolean gpsLocked;
+  String arduinoIdentifier = "Arduino One";
   int id = 1;
   float latitude;
   float longitude;
@@ -32,6 +33,7 @@ void toggleLED() {
 
 //Change depending on the MQTT broker either local/Sam's Linode
 byte ip[] = { 192, 168, 0, 8 };
+
 
 WiFlyClient wiFlyClient;
 PubSubClient cl(ip, 8085, callback, wiFlyClient);
@@ -98,8 +100,53 @@ void setup()
   Serial.println("Connected to WiFi!");
   
   timer.setInterval(2500, getGPS);
+  
+  mqttSubscribe();
+  
+}
 
-  cl.connect("ardWiFly");
+void loop()
+{
+    cl.loop();
+    timer.run();
+    Serial.println(String(cl.connected()));
+    if(cl.connected()==false){
+      Serial.println("Disconnected from MQTT broker.");
+      Serial.println("Retrying connection...");
+      mqttSubscribe();
+    }
+    
+    if(wiFlyClient.connected()==false){
+      Serial.println("Disconnected from WiFi.");
+      Serial.println("Retrying connection...");
+      wifiConnect();
+    }
+
+}
+/***************************************************/
+
+//Custom fucntion
+
+void wifiConnect() {
+  
+  WiFly.begin();
+    
+    Serial.println("WiFly began.. Connecting...");
+         
+    if (!WiFly.join(ssid, passphrase)) {
+    
+      Serial.println("Connection failed.");
+    
+      while (1) {
+      // Hang on failure.
+      } 
+  }
+
+}
+
+void mqttSubscribe(){
+  
+  if(cl.connect("ArduinoOne")){
   
   cl.subscribe(patternOneSubTopic);
   cl.subscribe(patternTwoSubTopic);
@@ -107,18 +154,19 @@ void setup()
   cl.subscribe(patternFourSubTopic);
   
   Serial.println("MQTT subscribed.");
- 
-}
 
-void loop()
-{
-    cl.loop();
-    timer.run();
+  }
+  
+  //Connects even without finding the MQTT broker,
+  
+  else {
     
-}
-/***************************************************/
+  Serial.println("MQTT subscription failed.");
 
-//Custom fucntion
+  }
+}
+  
+
 void getGPS()
 {
   bool newData = false;
