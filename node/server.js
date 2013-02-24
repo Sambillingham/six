@@ -141,7 +141,7 @@ MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
         changes = db.collection('Changes');
         // End var creation
 
-        console.log(' Connected to Mongo Database');
+        console.log('Connected to Mongo Database');
 
 });//MONGO END
 
@@ -251,7 +251,7 @@ app.get('/', function (req, res) {
 
                     console.log(allViewData);
                     socket.emit('all-view-data', allViewData);
-                    
+
                 });
             });
 

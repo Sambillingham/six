@@ -70,10 +70,13 @@
                 }
 
     ],
-    allViewArray = [];
+    allViewArray = [],
+    useLiveData = true,
+    useAllData = false,
+    intervalTimerId = 0;
         //
 
-        //Some UI stuff /////
+        //Some UI stuff failquery /////
 
             $("#usersWindow").click(function() {
 
@@ -92,9 +95,25 @@
             ///view buttons
             $("#all-view").click(function() {
 
+                    useLiveData = false;
+                    useAllData = true;
                     socket.emit('all-view-request');
                     console.log('All view has been selected and socket request sent to server');
+                    $("#all-view").addClass('view-button-active');
+                    $("#live-view").removeClass('view-button-active');
+                    $("#more-view").removeClass('view-button-active');
             });
+
+            $("#live-view").click(function() {
+
+                    useLiveData = true;
+                    useAllData = false;
+                    $("#live-view").addClass('view-button-active');
+                    $("#all-view").removeClass('view-button-active');
+                    $("#more-view").removeClass('view-button-active');
+                    clearInterval(intervalTimerId);
+            });
+
             ///END VIEW buttons
 
         ////////////////////////////////
@@ -104,15 +123,12 @@
         maxConnection = {};
 
         var socket = io.connect('http://192.168.0.20');
-
-            
-
-
+        
             socket.on('relationshipConnections', function (data) {
 
-                    relationshipConnections = data;
+                relationshipConnections = data;
 
-                    //console.log('Relationship Connections Data:   ',  relationshipConnections);
+                if ( useLiveData === true ) {
 
                     for ( var i = 1; i < 7; i++) {
 
@@ -128,13 +144,15 @@
                                     $('#rel'+i).html('Relationship ID ' + i  + "'s connection is " + relationshipConnections.relationship);
                             }
                     }
+                }
 
             });
+        
             socket.on('maxConnection', function (data) {
 
-                    maxConnection = data;
+                maxConnection = data;
 
-                   // console.log('Max Connection Data:   ',  maxConnection);
+                if ( useLiveData === true ) {
 
                    for ( var i = 0 ; i < 4; i++) {
 
@@ -153,19 +171,39 @@
 
                                         //console.log('Max Connection for ', i , ' is ', maxConnection.max);
 
-                                        $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
+                                    $('#user'+i).html('Max Connection for ID ' + i  + " = " + maxConnection.max);
                             }
                     }
-
+                }
             
             });
+        
+
 
             socket.on('all-view-data', function (allViewData) {
 
 
                 allViewArray = JSON.parse(allViewData);
-                console.log(allViewData);
+                //console.log(allViewData);
 
+                if ( useAllData === true ) {
+
+                          var index = 0;
+
+                          function nextAllData() {
+
+                                console.log(allViewArray[index]);
+                                index = (index + 1) % allViewArray.length;
+
+                          }
+
+                          nextAllData();
+
+                          if (intervalTimerId)clearInterval(intervalTimerId);
+
+                          intervalTimerId = setInterval(nextAllData, 1000);
+
+                }
             });
 
             setTimeout( function() {
@@ -176,10 +214,7 @@
 
             }, 1000 );
 
-            //socket.on('connected', function () {
 
-                    
-            //});
         
 
 
