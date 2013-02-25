@@ -15,12 +15,13 @@ var express = require('express'),
     delayForConnectionTime = 30000, // time in milleseconds
     timeBetweenDecay = 6000000; // 1 hour between delay
 
-    //LETS MAKE IT MODULAR
-
+    //Home made modules
     var historic = require("./historic"),
-    repeatconnection = require("./repeatconnection");
+    repeatconnection = require("./repeatconnection"),
+    mqqtclient = require("./mqqtclient");
 
     //
+
 var defaultTopic = '/default',
     defaultPayload = "I'm a payload",
     historicsStuff = [];
@@ -65,16 +66,6 @@ var defaultTopic = '/default',
         "a2a3" : 6
 
     },
-    
-    // connectionIdTime = {
-
-    //     "1" : false,
-    //     "2" : false,
-    //     "3" : false,
-    //     "4" : false,
-    //     "5" : false,
-    //     "6" : false
-    // },
     UserMaxConnection = [
                 {
 
@@ -215,7 +206,7 @@ app.get('/', function (req, res) {
 
 
                 //PUBLISH TO CLIENT
-                //publishClient('2/buzz', '600');
+                publishClient('2/buzz', '600');
 
                 setTimeout(arguments.callee, 1500);
 
@@ -376,61 +367,11 @@ var thisMqttServer = mqtt.createServer(function(client) {
 }).listen(mqttPort);
 // END mqtt Server
 
-var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
 
-        var defaultTopic;
-
-        if(err) {
-
-                console.log(err , " CLIENT = Unable to connect to broker");
-                process.exit(1);
-
-        }
-        client.connect({
-
-                 client: "buzz"
-
-        });
-
-        client.on('connack', function (packet) {
-
-            if (packet.returnCode === 0) {
-
-                    client.publish({
-
-                            topic: defaultTopic,
-
-                            payload: defaultPayload
-                        
-                    });
-
-            } else {
-
-                    console.log('connack error %d', packet.returnCode);
-
-                    process.exit(-1);
-
-            }
-        });
-
-        client.on('close', function () {
-
-                process.exit(0);
-
-        });
-
-        client.on('error', function (e) {
-
-                console.log('error %s', e);
-
-                process.exit(-1);
-
-        });
-});
 
 function publishClient ( topicName , payloadInfo ) {
 
-        thisMqttClient.publish( {
+        mqqtclient.thisMqttClient.publish( {
 
                 topic: topicName,
                 
