@@ -206,7 +206,7 @@ app.get('/', function (req, res) {
 
 
                 //PUBLISH TO CLIENT
-                publishClient('2/buzz', '600');
+                mqqtclient.publishClient('0/buzz', '1');
 
                 setTimeout(arguments.callee, 1500);
 
@@ -366,22 +366,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
 
 }).listen(mqttPort);
 // END mqtt Server
-
-
-
-function publishClient ( topicName , payloadInfo ) {
-
-        mqqtclient.thisMqttClient.publish( {
-
-                topic: topicName,
-                
-                payload: payloadInfo
-
-
-        });
-
-}
-
 
 function proximityCheck (id) {
 

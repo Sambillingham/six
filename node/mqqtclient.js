@@ -59,8 +59,21 @@ function runClient () {
         });
 
 }
-
 runClient();
+
+function publishClient ( topicName , payloadInfo ) {
+
+        thisMqttClient.publish( {
+
+                topic: topicName,
+                
+                payload: payloadInfo
+
+
+        });
+
+}
 
 exports.thisMqttClient = thisMqttClient;
 exports.runClient = runClient;
+exports.publishClient = publishClient;
