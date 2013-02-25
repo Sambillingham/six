@@ -18,54 +18,35 @@ var express = require('express'),
     //Home made modules
     var historic = require("./historic"),
     repeatconnection = require("./repeatconnection"),
-    mqqtclient = require("./mqqtclient");
+    mqqtclient = require("./mqqtclient"),
+    findconid = require("./findconid");
 
     //
 
-var defaultTopic = '/default',
-    defaultPayload = "I'm a payload",
-    historicsStuff = [];
+var historicsStuff = [],
     people = [
         {
             id: 0,
             gpsLat: "50.0103",
-            gpsLong: "50.0293",
-            randomNum: "-287",
-            maxCon: 0
+            gpsLong: "50.0293"
         },
         {
             id: 1,
             gpsLat: "50.0023",
-            gpsLong: "50.0999",
-            randomNum: "-237",
-            maxCon: 0
+            gpsLong: "50.0999"
         },
         {
             id: 2,
             gpsLat: "50.0023",
-            gpsLong: "50.0433",
-            randomNum: "-227",
-            maxCon: 0
+            gpsLong: "50.0433"
         },
         {
             id: 3,
             gpsLat: "50.0345",
-            gpsLong: "50.1234",
-            randomNum: "-187",
-            maxCon: 0
+            gpsLong: "50.1234"
         }
 
     ],
-    connectionIdObject = {
-
-        "a0a1" : 1,
-        "a0a2" : 2,
-        "a0a3" : 3,
-        "a1a2" : 4,
-        "a1a3" : 5,
-        "a2a3" : 6
-
-    },
     UserMaxConnection = [
                 {
 
@@ -206,29 +187,12 @@ app.get('/', function (req, res) {
 
 
                 //PUBLISH TO CLIENT
-                mqqtclient.publishClient('0/buzz', '1');
+                //mqqtclient.publishOnClient('1/buzz', '3');
 
                 setTimeout(arguments.callee, 1500);
 
             })(); // END ANONYMOUS FUNCTION
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        //Test function that reapeats every 2 seconds;
-        (function () {
-
-            //console.log(connectionIdTime);
-
-                // INITIAL INSERT for DB users & relationships Uncomment on deployment
-                //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
-                //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
-
-                ///console.log( connectionIdTime,'   Whats LIVE:. ');
-
-                setTimeout(arguments.callee, 5000);
-
-        })();
-        //END TEST FUNCTION
-        ////////////////////////////////////////////////////////////////////////////////////////////////
 
             socket.on('all-view-request', function () {
 
@@ -258,9 +222,6 @@ app.get('/', function (req, res) {
 
     // END sockets Server
 
-
-    
-
 //SELF CALLING FUNCTION FOR DECAY
 setTimeout( function () {
 
@@ -273,9 +234,6 @@ setTimeout( function () {
         })();
             
 }, 10000);  //10 SECONDS before decay starts so db can be setup
-
-
-
 
 // MQTT Server
 
@@ -417,7 +375,7 @@ function increaseConnection ( primary, secondary ){
 
             }
 
-            connectionID = findConnnectionId( thisPrimary, thisSecondary);
+            connectionID = findconid.findConnnectionId( thisPrimary, thisSecondary);
             stringConnectionID = connectionID + '';
 
              if ( repeatconnection.conBoo[stringConnectionID] === false ) {
@@ -439,29 +397,6 @@ function increaseConnection ( primary, secondary ){
                 console.log('DID NOT UPDATE, TIMER DELAY IS: ', repeatconnection.conBoo[stringConnectionID]);
 
             }
-}
-
-function findConnnectionId (ArduinoOne, ArduinoTwo) {
-
-        var thisArduino = ArduinoOne,
-            thisOtherArduino = ArduinoTwo,
-            connectionIdThing = "";
-
-            if (thisOtherArduino < thisArduino){
-
-                    var tempStore = thisArduino;
-
-                    thisArduino = thisOtherArduino;
-                    thisOtherArduino = tempStore;
-
-            }
-
-            connectionIdThing = "a" + thisArduino + "a" + thisOtherArduino;
-
-            actualConnectionID = connectionIdObject[connectionIdThing] || connectionIdObject[0];
-
-            return actualConnectionID;
-
 }
 
 function updateRelationshipDbEntry ( connectionID ){
@@ -551,15 +486,3 @@ function decayRelationship () {
         } );
 
 }
-
-// function timeDelayForConnection ( connectionID ) {
-
-//         setTimeout( function () {
-
-//                 connectionIdTime[connectionID] = false ;
-
-//         }, delayForConnectionTime );
-// }
-
-
-

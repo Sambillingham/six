@@ -61,7 +61,7 @@ function runClient () {
 }
 runClient();
 
-function publishClient ( topicName , payloadInfo ) {
+function publishOnClient ( topicName , payloadInfo ) {
 
         thisMqttClient.publish( {
 
@@ -76,4 +76,4 @@ function publishClient ( topicName , payloadInfo ) {
 
 exports.thisMqttClient = thisMqttClient;
 exports.runClient = runClient;
-exports.publishClient = publishClient;
+exports.publishOnClient = publishOnClient;
