@@ -95,7 +95,8 @@ var historicsStuff = [],
                     "relationship" : 0
                 }
 
-    ];
+    ],
+    latestTopic = '';
 
 // Mongo connection
 MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
@@ -116,6 +117,10 @@ MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
         users = db.collection('Users');
         changes = db.collection('Changes');
         // End var creation
+
+        //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
+                 
+        //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
         console.log('Connected to Mongo Database');
 
@@ -139,6 +144,8 @@ app.get('/', function (req, res) {
     
     io.sockets.on('connection', function (socket) {
 
+
+            
 
 
             (function () { // ANONYMOUS SELF CALLING FUNCTION 1.5 SECS
@@ -189,6 +196,10 @@ app.get('/', function (req, res) {
                 //PUBLISH TO CLIENT
                 //mqqtclient.publishOnClient('1/buzz', '3');
 
+
+                //show latestest topic to socket
+                socket.emit('testingTopic', latestTopic);
+
                 setTimeout(arguments.callee, 1500);
 
             })(); // END ANONYMOUS FUNCTION
@@ -217,6 +228,8 @@ app.get('/', function (req, res) {
 
                 });
             });
+
+
 
       });
 
@@ -270,6 +283,8 @@ var thisMqttServer = mqtt.createServer(function(client) {
                         var topicRemoveSlash = packet.topic.split("/"),
                             whichAttribute =  topicRemoveSlash[1],
                             aID = (topicRemoveSlash[0]);
+                            latestTopic = packet.payload;
+                            console.log(latestTopic);
 
 
                         if ( topicRemoveSlash[1] !== "buzz" ){
