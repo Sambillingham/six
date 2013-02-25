@@ -117,6 +117,30 @@
                     clearInterval(intervalTimerIdRelationship);
             });
 
+
+            $("#circle-buzz").click(function() {
+
+
+                    console.log('Circle buzz Click');
+                    socket.emit('circlebuzz', 1);
+
+            });
+
+            $("#front-back-buzz").click(function() {
+
+
+                    console.log('FB Buzz Click');
+                    socket.emit('fbbuzz', 1);
+
+            });
+
+            $("#all-buzz").click(function() {
+
+
+                    console.log('ALL Buzz Click');
+                    socket.emit('allbuzz', 1);
+                
+            });
             ///END VIEW buttons
 
         ////////////////////////////////
@@ -125,7 +149,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://127.0.0.1');
+        var socket = io.connect('http://141.163.233.7');
         
             socket.on('relationshipConnections', function (data) {
 

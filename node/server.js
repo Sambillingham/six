@@ -229,7 +229,26 @@ app.get('/', function (req, res) {
                 });
             });
 
+            socket.on('circlebuzz', function (id) {
 
+                    console.log('circle Buzz', id);
+                    mqqtclient.publishOnClient(id +'/buzz/circle', '1');
+
+            });
+
+            socket.on('fbbuzz', function (id) {
+
+                    console.log('FRONT BACK Buzz', id);
+                    mqqtclient.publishOnClient(id +'/buzz/fb', '1');
+
+            });
+
+            socket.on('allbuzz', function (id) {
+
+                    console.log('ALL Buzz', id);
+                    mqqtclient.publishOnClient(id +'/buzz/all', '1');
+
+            });
 
       });
 
