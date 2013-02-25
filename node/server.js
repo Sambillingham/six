@@ -3,7 +3,7 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
-    ObjectID = require('mongodb').ObjectID,
+    //ObjectID = require('mongodb').ObjectID,
     relationships = '';
     changes = '';
     users = '';
@@ -16,7 +16,11 @@ var express = require('express'),
     delayForConnectionTime = 30000, // time in milleseconds
     timeBetweenDecay = 6000000; // 1 hour between delay
 
+    //LETS MAKE IT MODULAR
 
+    var historic = require("./historic");
+
+    //
 var defaultTopic = '/default',
     defaultPayload = "I'm a payload",
     historicsStuff = [];
@@ -240,7 +244,7 @@ app.get('/', function (req, res) {
                 console.log('REQUEST FOR all view has been recvied');
                 //historicsStuff = historicData("2012/7/7");
 
-                users.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+                users.find({ _id: {$gt: historic.createdFrom("2012/7/7")}}).toArray(function (err , docs){
 
                     var allViewDataUser = JSON.stringify(docs);
 
@@ -249,7 +253,7 @@ app.get('/', function (req, res) {
 
                 });
 
-                relationships.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+                relationships.find({ _id: {$gt: historic.createdFrom("2012/7/7")}}).toArray(function (err , docs){
 
                     var allViewDataRelationship = JSON.stringify(docs);
 
@@ -645,19 +649,19 @@ function timeDelayForConnection ( connectionID ) {
     
 // }
 
-function createdFrom (date) {
+// function createdFrom (date) {
 
-    //This function is used within historicData to create an ObjectID with the specific date, then queries the DB for ObjectID's created after.
+//     //This function is used within historicData to create an ObjectID with the specific date, then queries the DB for ObjectID's created after.
 
-    if (typeof(date) == 'string'){
-            timestamp = new Date(date);
-        }
+//     if (typeof(date) == 'string'){
+//             timestamp = new Date(date);
+//         }
 
-    hexSeconds = Math.floor(timestamp/1000).toString(16);
+//     hexSeconds = Math.floor(timestamp/1000).toString(16);
 
-    constructedObjectID = ObjectID(hexSeconds+"0000000000000000");
+//     constructedObjectID = ObjectID(hexSeconds+"0000000000000000");
 
-    return constructedObjectID;
+//     return constructedObjectID;
 
-    }
+// }
 
