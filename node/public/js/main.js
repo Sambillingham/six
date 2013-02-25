@@ -139,7 +139,7 @@
 
                     console.log('ALL Buzz Click');
                     socket.emit('allbuzz', 1);
-                
+
             });
             ///END VIEW buttons
 
@@ -149,7 +149,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://141.163.233.7');
+        var socket = io.connect('http://141.163.233.88');
         
             socket.on('relationshipConnections', function (data) {
 
@@ -564,8 +564,11 @@
                     //Used to randomly change the radius, incrementing or decrementing by 3. USED FOR DEVLEOPMENT ONLY. 
                     var plusOrMinus = Math.floor(Math.random()*2);
                     var newRadius;
-                    if(plusOrMinus == 0){newRadius = (UserMaxConnection[i].max) + 3}
-                    else{newRadius = (UserMaxConnection[i].max) - 3}
+
+                    newRadius = UserMaxConnection[i].max;
+
+                    //if(plusOrMinus == 0){newRadius = (UserMaxConnection[i].max) + 3}
+                    //else{newRadius = (UserMaxConnection[i].max) - 3}
                     //USED FOR DEVLEOPMENT ONLY
 
                 console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
