@@ -283,7 +283,7 @@ var thisMqttServer = mqtt.createServer(function(client) {
                         var topicRemoveSlash = packet.topic.split("/"),
                             whichAttribute =  topicRemoveSlash[1],
                             aID = (topicRemoveSlash[0]);
-                            latestTopic = packet.payload;
+                            latestTopic = packet.topic + ' ' +  packet.payload;
                             console.log(latestTopic);
 
 

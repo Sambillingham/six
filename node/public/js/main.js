@@ -125,7 +125,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://141.163.232.163');
+        var socket = io.connect('http://127.0.0.1');
         
             socket.on('relationshipConnections', function (data) {
 
@@ -271,7 +271,7 @@
 
             socket.on('testingTopic', function(latest) {
 
-                console.log(latest);
+                $("#latestInput").html(latest);
 
             });
             
