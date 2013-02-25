@@ -6,62 +6,77 @@
 			<meta name="description" content="">
 			<meta name="author" content="">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
-
-			<link rel="stylesheet" type="text/css" href="css/main.css">
-	
-			
-
+			<link rel="stylesheet" type="text/css" href="css/1140.css">
+			<link rel="stylesheet" type="text/css" href="css/main.css">	
 	</head>
 
 
-	<body>
+	<body class="demo">
 		
-		<h1> Six Display Client </h1>
+		<header class="container">
+			<div class="row">
+				<div class="threecol">
+					<h1></h1>
+				</div>
+				<div class="ninecol last nav">
+					<a class ="btn-medium" href="#" title="menu">Blog</a>
+					<a class ="btn-medium" href="#" title="menu">Home</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="twelvecol last menu">
+					<a class ="btn-medium" id="toggle-stats" href="#" title="Toggle Stats">Toggle Stats</a>
+					<a class ="btn-medium" id="all-view" href="#" title="All Time">All Time</a>
+					<a class ="btn-medium" id="more-view" href="#" title="Demo View">Demo View</a>
+					<a class ="btn-medium" id="live-view" href="#" title="Live View">Live View</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="twelvecol last stats animated fadeIn">
+					<div class="stats-box">
+						<h3 class="first">Latest Input</h3>
+						<span id="latestInput"></span>
 
-		<div class="views" id="view-window">
-			<h2> Views </h2>
-				<span id="live-view" class="live-view-button view-button view-button-active"> Live </span>
+						<h3>Users</h3>
+						<div id="user0" class="users"></div>
+						<div id="user1" class="users"></div>
+						<div id="user2" class="users"></div>
+						<div id="user3" class="users"></div>
 
-				<span id="all-view" class="all-view-button view-button"> All </span> 
+						<h3>Relationships</h3>
+						<div id="rel1" class="rel"></div>
+						<div id="rel2" class="rel"></div>
+						<div id="rel3" class="rel"></div>
+						<div id="rel4" class="rel"></div>
+						<div id="rel5" class="rel"></div>
+						<div id="rel6" class="rel"></div>
+					</div>
+				</div>
+			</div>
+		</header>
 
-				<span id="more-view" class="more-view-buttonv iew-button"> More </span> 
-		</div>
-
-		<div class="latest-container">
-			<span = id="latestInput"></span>
-		</div>
-
-		<div class="user-container" id="usersWindow">
-			<h2> Users </h2>
-			<div id="user0" class="users"></div>
-			<div id="user1" class="users"></div>
-			<div id="user2" class="users"></div>
-			<div id="user3" class="users"></div>
-		</div>
-
-		<div class="relationship-container" id="relationshipWindow">
-			<h2> Relationships </h2>
-			<div id="rel1" class="rel"></div>
-			<div id="rel2" class="rel"></div>
-			<div id="rel3" class="rel"></div>
-			<div id="rel4" class="rel"></div>
-			<div id="rel5" class="rel"></div>
-			<div id="rel6" class="rel"></div>
-		</div>
-
-		 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<!-- <script src="js/three.js"></script> -->
 
-		<script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>
+		<!--<script src="https://raw.github.com/mrdoob/three.js/master/build/three.js"></script>-->
+		<script src="js/three.js"></script>
 		<script src="js/tween.js"></script>
 
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/EffectComposer.js"></script>
+		<script src="js/EffectComposer.js"></script>
+		<script src="js/RenderPass.js"></script>
+		<script src="js/ShaderPass.js"></script>
+		<script src="js/MaskPass.js"></script>
+		<script src="js/CopyShader.js"></script>
+		<script src="js/ConvolutionShader.js"></script>
+		<script src="js/VignetteShader.js"></script>
+
+		<!--<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/EffectComposer.js"></script>
 		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/RenderPass.js"></script>
 		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/ShaderPass.js"></script>
 		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/postprocessing/MaskPass.js"></script>
 		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/CopyShader.js"></script>
 		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/ConvolutionShader.js"></script>
-		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/VignetteShader.js"></script>
+		<script src="https://github.com/mrdoob/three.js/raw/master/examples/js/shaders/VignetteShader.js"></script>-->
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/main.js"></script>

@@ -118,9 +118,9 @@ MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
         changes = db.collection('Changes');
         // End var creation
 
-        //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
+        users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
                  
-        //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
+        relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
 
         console.log('Connected to Mongo Database');
 

@@ -1,5 +1,9 @@
 (function (){
 
+        $('#toggle-stats').click(function() {
+          $('.stats').toggle();
+        });
+
         //THREE STUFF
         var camera,
         scene,
@@ -297,7 +301,7 @@
 
             //main global variables
             var WIDTH = window.innerWidth; // scene width
-            var HEIGHT = window.innerHeight; // scene height
+            var HEIGHT = (window.innerHeight) - 95; // scene height
 
             var VIEW_ANGLE = 45; // camera attributes
             var ASPECT = WIDTH/HEIGHT; // camera attributes
@@ -339,10 +343,10 @@
                 window.addEventListener( 'resize', onWindowResize, false ); // when the window is resized, run the onWindowresize method
 
                 //array to store each sphere. Each sphere represents a person
-                person[0] = new sphere("GOLD",0xD2C282,40, 0, 0, 0);//gold
-                person[1] = new sphere("GREEN",0x00FF00,44, 0, 0, 0);//green
-                person[2] = new sphere("RED",0xFF0000,36, 0, 0, 0);//red
-                person[3] = new sphere("BLUE",0x0000FF,50, 0, 0, 0);//blue
+                person[0] = new sphere("GOLD",0xFFFFFF,40, 0, 0, 0);//gold
+                person[1] = new sphere("GREEN",0xFFFFFF,30, 0, 0, 0);//green
+                person[2] = new sphere("RED",0xFFFFFF,20, 0, 0, 0);//red
+                person[3] = new sphere("BLUE",0xFFFFFF,10, 0, 0, 0);//blue
 
                 console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
 
@@ -358,7 +362,7 @@
                 sphereLocations[0] = new locationHolder(0,0,0);
                 sphereLocations[1] = new locationHolder(200,60,0);
                 sphereLocations[2] = new locationHolder(-70,300,0);
-                sphereLocations[3] = new locationHolder(-320,-350,0);
+                sphereLocations[3] = new locationHolder(-200,-350,0);
 
                 //setup the sphere positions
                 setupSpherePositions();
@@ -406,7 +410,7 @@
 
                 scene.add(pointLight); // add light to scene
 
-                scene.add( new THREE.AmbientLight( 0xFF9900 ) );
+                scene.add( new THREE.AmbientLight( 0xD9C659 ) );
 
                 var dirLight1 = new THREE.DirectionalLight(0xFFFFFF,0.55,500);
                 scene.add(dirLight1);
@@ -418,7 +422,7 @@
 
             //grid. ONLY NEEDED FOR DEVELOPMENT
             function addGrid() {
-                plane = new THREE.Mesh( new THREE.PlaneGeometry( 3000, 3000, 20, 20 ), new THREE.MeshBasicMaterial( { ambient: 0x030303, color: 0xCCCCCC, shading: THREE.FlatShading, opacity: 0.2, transparent: true, wireframe: false, blending: THREE.AdditiveBlending } ) );
+                plane = new THREE.Mesh( new THREE.PlaneGeometry( 3000, 3000, 20, 20 ), new THREE.MeshLambertMaterial( { ambient: 0x030303, color: 0x333333, shading: THREE.FlatShading, opacity: 1, transparent: false, wireframe: false, blending: THREE.AdditiveBlending } ) );
                 plane.rotation.x = - Math.PI / 2;
                 plane.position.y = -50;
                 scene.add( plane );
@@ -496,7 +500,7 @@
                     } 
                 );
 
-                var sphereGeometry = new THREE.SphereGeometry(sRadius, 16, 16)
+                var sphereGeometry = new THREE.SphereGeometry(sRadius, 6, 6)
 
                 this.sphere = new THREE.Mesh(sphereGeometry, sphereMaterial); // create new mesh - sphere geometry
 
@@ -522,7 +526,7 @@
                 lineGeometry.vertices.push( pointB );
                 lineGeometry.verticesNeedUpdate = true;
 
-                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xFF9900, opacity: 0.5, linewidth:5 } );
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xFFFFFF, opacity: 0.5, linewidth:5 } );
 
                 this.line = new THREE.Line( lineGeometry, lineMaterial );
                 this.line.geometry.verticesNeedUpdate = true;
