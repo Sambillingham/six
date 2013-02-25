@@ -7,7 +7,7 @@
   #include <WiFly.h>
   #include <PubSubClient.h>
   #include <stdlib.h>
-  #include "Credentials.h"
+  #include "wifi_credentials.h"
   
   //timer
   #include <SimpleTimer.h>
@@ -25,7 +25,7 @@
   SimpleTimer timer;
   
   //wifly
-  byte ip[] = { 192, 168, 0, 8 };
+  byte ip[] = { 178, 79, 132, 119 };
   WiFlyClient sixClient;
   PubSubClient cl(ip, 8085, callback, sixClient);
   
@@ -39,9 +39,9 @@
     }
 
     //Topics to subscribe to
-    char*  patternOneSubTopic = "1/buzz/1";
-    char*  patternTwoSubTopic = "1/buzz/2";
-    char*  patternThreeSubTopic = "1/buzz/3";
+    char*  patternOneSubTopic = "1/buzz/circle";
+    char*  patternTwoSubTopic = "1/buzz/fb";
+    char*  patternThreeSubTopic = "1/buzz/all";
     char*  patternFourSubTopic = "1/buzz/4";
     
     //Topics to publish on
@@ -54,15 +54,15 @@
 void setup()
 {
     Serial.begin(4800);
-    
+     
+    pinMode(2, OUTPUT); 
+    pinMode(3, OUTPUT);
     pinMode(4, OUTPUT);     
     pinMode(5, OUTPUT); 
     pinMode(6, OUTPUT); 
     pinMode(7, OUTPUT); 
     pinMode(8, OUTPUT); 
-    pinMode(9, OUTPUT); 
-    pinMode(2, OUTPUT); 
-    pinMode(3, OUTPUT);
+    pinMode(9, OUTPUT);
     
     wifiConnect();
     timer.setInterval(2500, getGPS);
@@ -136,9 +136,9 @@ void mqttSubscribe(){
   if(cl.connect("ArduinoOne")){
   
   cl.subscribe(patternOneSubTopic);
-  cl.subscribe(patternTwoSubTopic);
-  cl.subscribe(patternThreeSubTopic);
-  cl.subscribe(patternFourSubTopic);
+  //cl.subscribe(patternTwoSubTopic);
+  //cl.subscribe(patternThreeSubTopic);
+  //cl.subscribe(patternFourSubTopic);
   
   Serial.println("MQTT subscribed.");
 
@@ -216,9 +216,17 @@ void printGPS()
   Serial.println("------");
 }
 
-
-
 void buzz_1(){
+  digitalWrite(2, HIGH);
+  digitalWrite(3, HIGH);
+  Serial.println("Buzz 4");
+  delay(1000);
+  digitalWrite(2, LOW);
+  digitalWrite(3, LOW);
+  delay(1000);
+}
+
+void buzz_2(){
   digitalWrite(4, HIGH);
   digitalWrite(5, HIGH);
   Serial.println("Buzz 1");
@@ -228,7 +236,7 @@ void buzz_1(){
   delay(1000);
 }
 
-void buzz_2(){
+void buzz_3(){
   digitalWrite(6, HIGH);
   digitalWrite(7, HIGH);
   Serial.println("Buzz 2");
@@ -238,23 +246,13 @@ void buzz_2(){
   delay(1000);
 }
 
-void buzz_3(){
+void buzz_4(){
   digitalWrite(8, HIGH);
   digitalWrite(9, HIGH);
   Serial.println("Buzz 3");
   delay(1000);
   digitalWrite(8, LOW);
   digitalWrite(9, LOW);
-  delay(1000);
-}
-
-void buzz_4(){
-  digitalWrite(2, HIGH);
-  digitalWrite(3, HIGH);
-  Serial.println("Buzz 4");
-  delay(1000);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
   delay(1000);
 }
 /***************************************************/
