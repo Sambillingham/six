@@ -14,3 +14,5 @@ This is an example paragraph about everyware and other arty stuff that we all kn
 - another slightly less important thing like tv
 
 Now what has happened down here, it looks like we have appeared onto another paragraph. 
+
+![testpic]({{site.baseurl}}/img/connection-map.png)
