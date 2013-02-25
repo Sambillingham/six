@@ -1,0 +1,15 @@
+---
+layout: post
+title: Bacon and Tuna
+author: Phil Rose
+tags: Everyware
+excerpt: Design stuff rahh i love dribble and design inspiration… awesome sauce is awesome.
+---
+
+
+
+Bacon ipsum dolor sit amet drumstick flank voluptate dolore pariatur bresaola, eiusmod brisket ullamco ball tip sausage veniam pastrami minim t-bone. Leberkas fatback ut sunt ground round nisi nostrud aute id pancetta quis pastrami ea pariatur. Nisi shankle ut enim sint ea. Nulla ad hamburger spare ribs short loin ball tip. Reprehenderit velit salami quis sint, venison nulla bacon ut commodo boudin pork belly non chuck ground round.
+
+Laborum spare ribs rump, pork chop elit ex pork belly fatback et dolore hamburger ea ground round. Brisket tempor commodo doner. Culpa spare ribs do andouille tempor, nostrud ex cow jowl corned beef. Ball tip meatball jowl shankle chicken. Beef nisi shank, ut meatball tempor labore. Tail capicola tempor, fugiat consequat aute dolor reprehenderit ball tip.
+
+Meatball reprehenderit beef enim strip steak pork loin turkey jerky exercitation. Cillum magna mollit, qui ut beef ribs consectetur. Sint meatloaf swine anim, short ribs commodo ea in pork belly ball tip shank andouille irure duis aute. Excepteur ullamco adipisicing, boudin frankfurter enim prosciutto tri-tip shankle. Filet mignon pork chop tri-tip excepteur, quis commodo magna. Meatloaf ullamco corned beef beef ribs ribeye ground round, capicola jowl consequat duis sed minim anim swine. Id mollit nulla spare ribs, prosciutto proident pork belly in.

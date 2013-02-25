@@ -3,21 +3,73 @@ layout: default
 title: Home
 ---
 
-<!-- Show last 5 posts here -->
-{% for post in site.posts limit: 5  %}
-	
-	<div class="post">
 
-        <h2><a href="{{site.baseurl}}{{post.url}}">{{ post.title }}</a></h2>
-
-        <p class="meta">
-            <span class="date"><i class="icon-clock"></i>{{ post.date | date_to_string }}</span><br/>
-            <span class="category"><i class="icon-tag"></i> {{ post.categories | category_links }}</span><br/>
-            <span class="author"><i class="icon-user"></i> {% if post.author %}{{post.author}}{% else %}{{site.author}}{% endif%}</span>
-        </p>
-	
-		<div class="entry">{{ post.excerpt }}</div>
+<header class="container">
+	<div class="row">
+		<div class="twelvecol last">
+			<div class="six-video">
+				<iframe src="http://player.vimeo.com/video/23106251?title=0&amp;byline=0&amp;portrait=0&amp;color=ffffff" width="630" height="354" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+			</div>
+			<h1></h1>
+			<p>Connecting the invisible city</p>
+			<a class="btn-medium first" href="http://project.me.uk:8080" title="View Project">View Project</a>
+			<a class="btn-medium" href="{{site.baseurl}}/archive" title="View Project">View Blog</a>
+		</div>
 	</div>
+</header>
 
-	
-{% endfor %}
+<div class="container build">
+	<div class="row">
+		<div class="twelvecol last">
+			<h4>This Experiment was built with...</h4>
+		</div>
+	</div>
+	<div class="row">
+		<div class="threecol">
+			<a class="build-link" href="#" title="nodejs"><img src="img/build_node.png"/></a>
+		</div>
+		<div class="threecol">
+			<a class="build-link" href="#" title="mongodb"><img src="img/build_mongo.png"/></a>
+		</div>
+		<div class="threecol">
+			<a class="build-link" href="#" title="threejs"><img src="img/build_three.png"/></a>
+		</div>
+		<div class="threecol last">
+			<a class="build-link" href="#" title="arduino"><img src="img/build_arduino.png"/></a>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="container team">
+	<div class="row">
+		<div class="twelvecol last">
+			<h4>Six was made by...</h4>
+		</div>
+	</div>
+	<div class="row">
+		<div class="sixcol team-sam">
+			<img src="img/team_sam.png"/>
+			<h3>Sam Billingham</h3>
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+		</div>
+		<div class="sixcol team-chris last">
+			<img src="img/team_chris.png"/>
+			<h3>Chris Packard</h3>
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="sixcol team-phil">
+			<img src="img/team_phil.png"/>
+			<h3>Phil Rose</h3>
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+		</div>
+		<div class="sixcol team-luke last">
+			<img src="img/team_luke.png"/>
+			<h3>Luke Wotton</h3>
+			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+		</div>
+	</div>
+</div>

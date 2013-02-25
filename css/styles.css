@@ -1,0 +1,384 @@
+	@font-face {
+	    font-family: 'proxima_nova_rgbold';
+	    src: url('../fonts/proximanova-bold-webfont.eot');
+	    src: url('../fonts/proximanova-bold-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('../fonts/proximanova-bold-webfont.svg#proxima_nova_rgbold') format('svg'),
+	         url('../fonts/proximanova-bold-webfont.woff') format('woff'),
+	         url('../fonts/proximanova-bold-webfont.ttf') format('truetype');
+	    font-weight: normal;
+	    font-style: normal;
+
+	}
+
+	@font-face {
+	    font-family: 'proxima_nova_rgregular';
+	    src: url('../fonts/proximanova-regular-webfont.eot');
+	    src: url('../fonts/proximanova-regular-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('../fonts/proximanova-regular-webfont.svg#proxima_nova_rgregular') format('svg'),
+	         url('../fonts/proximanova-regular-webfont.woff') format('woff'),
+	         url('../fonts/proximanova-regular-webfont.ttf') format('truetype');
+	         
+	    font-weight: normal;
+	    font-style: normal;
+
+	}
+
+	@font-face {
+	    font-family: 'proxima_nova_ltbold';
+	    src: url('../fonts/proximanova-semibold-webfont.eot');
+	    src: url('../fonts/proximanova-semibold-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('../fonts/proximanova-semibold-webfont.svg#proxima_nova_ltbold') format('svg'),
+	         url('../fonts/proximanova-semibold-webfont.woff') format('woff'),
+	         url('../fonts/proximanova-semibold-webfont.ttf') format('truetype');
+	    font-weight: normal;
+	    font-style: normal;
+
+	}
+
+/* ============================== */
+/* ! Layout for desktop version   */
+/* ============================== */
+	
+	p {
+		font-family: "proxima_nova_rgregular", Helvetica, Arial, sans-serif;
+		line-height: 180%;
+		font-size: 16px;
+		color:#333;
+		margin-bottom:35px;
+
+	}
+
+	strong {
+		font-family: "proxima_nova_rgbold", Helvetica, Arial, sans-serif;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	h1 {
+		font-family: "proxima_nova_ltbold", Helvetica, Arial, sans-serif;
+		letter-spacing:3pt;
+		line-height: 140%;
+	}
+
+	h2 {
+		font-family: "proxima_nova_ltbold", Helvetica, Arial, sans-serif;
+		text-transform: uppercase;
+		font-size: 20px;
+		letter-spacing: 3px;
+		color: #66605E;
+		margin-bottom: 30px;
+	}
+
+	h3 {
+		font-family: "proxima_nova_ltbold", Helvetica, Arial, sans-serif;
+		text-transform: uppercase;
+		font-size: 16px;
+		letter-spacing:2px;
+		line-height: 140%;
+		color: #66605E;
+		margin-bottom: 15px;
+	}
+
+	h4 {
+		font-family: "proxima_nova_ltbold", Helvetica, Arial, sans-serif;
+		font-size: 16px;
+		color: #A09A96;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		line-height: 140%;
+	}
+
+	h5 {
+
+	}
+
+	h6 {
+
+	}
+
+	.btn-medium {
+		font-family: "proxima_nova_rgbold", Helvetica, Arial, sans-serif;
+		font-size: 12px;
+		letter-spacing: 2px;
+		text-decoration: none;
+		text-transform: uppercase;
+		background-color: #66615E;
+		padding: 12px 20px 10px 20px;
+		border-radius: 5px;
+		color: #FFF;
+		margin-bottom:20px;
+	}
+
+	.btn-medium:hover {
+		background-color: #534F4D;
+	}
+
+	body {
+		font-family: "proxima_nova_rgregular", Helvetica, Arial, sans-serif;
+		background: #FFFFFF;
+		color: #000;
+		min-width: 960px; /*min-width: 320px;*/
+	}
+
+	header {
+		background-color: #202020;
+		background-image: url('../img/header_bg.png');
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center center;
+		text-align: center;
+		color: #FFF;
+	}
+
+	header h1 {
+		margin: 0 auto;
+		background-image: url('../img/six_logo.png');
+		background-repeat: no-repeat;
+		width:230px;
+		height:50px;
+	}
+
+	header .row {
+		padding: 60px 0;
+	}
+
+	header p {
+		color: #FFF;
+		text-transform: uppercase;
+		font-family: "proxima_nova_ltbold", Helvetica, Arial, sans-serif;
+		letter-spacing: 3pt;
+		line-height: 140%;
+		margin: 30px 0;
+	}
+
+	header .btn-medium {
+		display: inline-block;
+		background: rgba(255, 255, 255, 0.3);
+	}
+
+	header .btn-medium.first {
+		margin-right: 20px;
+	}
+
+	header .btn-medium:hover {
+		background: rgba(255, 255, 255, 0.4);
+	}
+
+	.six-video {
+		margin: 0 auto 50px;
+		width:650px;
+		padding: 9px 0px 5px 0px;
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.build {
+		background: #F0F0F0;
+		padding: 50px 0;
+		text-align: center;
+		border-bottom: 1px solid #DDD;
+	}
+
+	.build-link {
+		display: block;
+		background: #DDD;
+		margin-top: 30px;
+		border: 2px solid #DDD;
+	}
+
+	.build-link:hover {
+		border: 2px solid #CCC;
+	}
+
+	.info {
+		padding: 160px 0;
+		border-bottom: 1px solid #DDD;
+	}
+
+	.info .row {
+		margin-bottom: 40px;
+		padding-bottom: 20px;
+	}
+
+	.info img {
+		margin-bottom:30px;
+	}
+
+	.info .no-margin {
+		margin-bottom: -60px;
+		padding-bottom: 0;
+	}
+
+	.info_art {
+		padding-bottom: 0;
+		display: block;
+		background-image: url('../img/info_art.png');
+		background-repeat: no-repeat;
+		background-position: center center;
+		height:183px;
+		
+	}
+
+	.team {
+		padding: 50px 0;
+	}
+
+	.team h4 {
+		text-align: center;
+		margin-bottom: 50px;
+	}
+
+	.team img {
+		float: left;
+		margin: 0 30px 50px 0;
+	}
+	.bloglink {
+		
+		text-align: center;
+		margin: 0 auto;
+		max-width: 800px;
+	}
+	.blog-title {
+
+		margin-top: 130px;
+	}
+
+	.blog-excerpt {
+
+		text-align: center;
+		margin: 0 auto;
+		margin-top: 30px;
+		max-width: 800px;
+	}
+
+	.blog-content {
+
+		max-width: 75%;
+		margin: 0 auto;
+		margin-top: 90px;
+	}
+	.blog-content img {
+
+		max-width:  75%;
+	}
+	.blog-content ul li {
+
+		padding: 5px;
+		margin-left: 10px;
+		margin-bottom: 10px;
+		text-decoration: none;
+		list-style: none;
+	}
+	.blog-content p {
+
+		font-size: 18px;
+	}
+
+
+	.author-name {
+		margin-top: 10px;
+		text-align: center; 
+	}
+
+	.info a h2 {
+		text-decoration: none;
+	}
+	.info a:hover h2 {
+		color:#DDD;
+	}
+
+	a:-webkit-any-link {
+		text-decoration: none !important;
+	}
+
+	.archive-line {
+		width:90px;
+	}
+
+	.posttitle {
+
+		font-size: 26px
+	}
+
+	footer {
+		font-family: "proxima_nova_ltbold", Helvetica, Arial, sans-serif;
+		letter-spacing: 1px;
+		border-top: 1px solid #DDD;
+		background: #F0F0F0;
+		color: #999999;
+	}
+
+	footer .row {
+		text-align: center;
+		text-transform: uppercase;
+		font-size: 12px;
+		padding: 50px 0;
+	}
+
+	footer a {
+		font-family: "proxima_nova_rgbold", Helvetica, Arial, sans-serif;
+		text-decoration: none;
+		color: #66605E;
+		border-bottom: 1px solid #CCC;
+	}
+
+	footer a:hover {
+		border-bottom: 1px solid #66605E;
+	}
+
+/* ============================= */
+/* !   Layout for DEMO page      */
+/* ============================= */
+
+	.demo header {
+		position: fixed;
+		width:100%;
+		min-width: 960px;
+		height:90px;
+		background-image: url('../img/demo_bg.png');
+	}
+
+	.demo header .row {
+		padding: 26px 0;
+	}
+
+	.demo header h1 {
+		background-image: url('../img/six_logo_small.png');
+		width: 469px;
+
+	}
+
+	.demo header a {
+		float: right;
+	}
+
+/* ============================= */
+/* ! Layout for mobile version   */
+/* ============================= */
+
+@media handheld, only screen and (max-width: 767px) {
+
+}
+
+@media screen and (max-width: 767px) {
+
+}
+
+@media screen and (min-width: 767px) {
+
+}
+
+
+/* ========================================== */
+/* ! Provide higher res assets for iPhone 4   */
+/* ========================================== */
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) { 
+
+/*	.logo {
+		background: url(logo2x.jpg) no-repeat;
+		background-size: 212px 303px;
+	}*/
+
+}

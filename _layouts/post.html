@@ -2,17 +2,42 @@
 layout: default
 ---
 
-<div class="post">
+<div class="demo">
 
-    <h2>{{ page.title }}</h2>
+	<header class="container">
+		<div class="row">
+			<div class="fourcol">
+				<h1></h1>	
+			</div>
+			<div class="eightcol last">
+				<a class="btn-medium first" href="{{site.baseurl}}/archive/" title="archive">Archive</a>
+			</div>
+		</div>
+	</header>
 
-        <p class="meta">
-            <span class="date"><i class="icon-clock"></i>{{ page.date | date_to_string }}</span><br/>
-            <span class="category"><i class="icon-tag"></i> {{ page.categories | category_links }}</span><br/>
-            <span class="author"><i class="icon-user"></i> {% if page.author %}{{page.author}}{% else %}{{site.author}}{% endif%}</span>
-        </p>
+	<div class="container demo">
+		
+	</div>
+</div>
+	
+<div class="container info">
 
-	<div class="entry">{{ content }}</div>
+
+	    <div class="row">
+			
+			<div class="twelvecol">
+
+				<h2 class="bloglink posttitle">{{ page.title }}</h2>
+					<hr class="archive-line"/> 
+					<h4 class="author-name">{{ page.author }}</h4>
+
+				<div class="blog-content"> 
+
+					{{ content }} 
+
+				</div>
+
+			</div>
+		</div>
 
 </div>
-
