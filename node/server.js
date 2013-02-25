@@ -3,7 +3,6 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
-    ObjectID = require('mongodb').ObjectID,
     relationships = '';
     changes = '';
     users = '';
@@ -16,61 +15,38 @@ var express = require('express'),
     delayForConnectionTime = 30000, // time in milleseconds
     timeBetweenDecay = 6000000; // 1 hour between delay
 
+    //Home made modules
+    var historic = require("./historic"),
+    repeatconnection = require("./repeatconnection"),
+    mqqtclient = require("./mqqtclient"),
+    findconid = require("./findconid");
 
-var defaultTopic = '/default',
-    defaultPayload = "I'm a payload",
-    historicsStuff = [];
+    //
+
+var historicsStuff = [],
     people = [
         {
             id: 0,
             gpsLat: "50.0103",
-            gpsLong: "50.0293",
-            randomNum: "-287",
-            maxCon: 0
+            gpsLong: "50.0293"
         },
         {
             id: 1,
             gpsLat: "50.0023",
-            gpsLong: "50.0999",
-            randomNum: "-237",
-            maxCon: 0
+            gpsLong: "50.0999"
         },
         {
             id: 2,
             gpsLat: "50.0023",
-            gpsLong: "50.0433",
-            randomNum: "-227",
-            maxCon: 0
+            gpsLong: "50.0433"
         },
         {
             id: 3,
             gpsLat: "50.0345",
-            gpsLong: "50.1234",
-            randomNum: "-187",
-            maxCon: 0
+            gpsLong: "50.1234"
         }
 
     ],
-    connectionIdObject = {
-
-        "a0a1" : 1,
-        "a0a2" : 2,
-        "a0a3" : 3,
-        "a1a2" : 4,
-        "a1a3" : 5,
-        "a2a3" : 6
-
-    },
-    
-    connectionIdTime = {
-
-        "1" : false,
-        "2" : false,
-        "3" : false,
-        "4" : false,
-        "5" : false,
-        "6" : false
-    },
     UserMaxConnection = [
                 {
 
@@ -211,36 +187,19 @@ app.get('/', function (req, res) {
 
 
                 //PUBLISH TO CLIENT
-                //publishClient('2/buzz', '600');
+                //mqqtclient.publishOnClient('1/buzz', '3');
 
                 setTimeout(arguments.callee, 1500);
 
             })(); // END ANONYMOUS FUNCTION
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        //Test function that reapeats every 2 seconds;
-        (function () {
-
-            //console.log(connectionIdTime);
-
-                // INITIAL INSERT for DB users & relationships Uncomment on deployment
-                //users.insert( UserMaxConnection, { w:1 }, function ( err, result ) { } );
-                //relationships.insert( relationshipsDbInsert, { w:1 }, function ( err, result ) { } );
-
-                ///console.log( connectionIdTime,'   Whats LIVE:. ');
-
-                setTimeout(arguments.callee, 5000);
-
-        })();
-        //END TEST FUNCTION
-        ////////////////////////////////////////////////////////////////////////////////////////////////
 
             socket.on('all-view-request', function () {
 
                 console.log('REQUEST FOR all view has been recvied');
                 //historicsStuff = historicData("2012/7/7");
 
-                users.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+                users.find({ _id: {$gt: historic.createdFrom("2012/7/7")}}).toArray(function (err , docs){
 
                     var allViewDataUser = JSON.stringify(docs);
 
@@ -249,7 +208,7 @@ app.get('/', function (req, res) {
 
                 });
 
-                relationships.find({ _id: {$gt: createdFrom("2012/7/7")}}).toArray(function (err , docs){
+                relationships.find({ _id: {$gt: historic.createdFrom("2012/7/7")}}).toArray(function (err , docs){
 
                     var allViewDataRelationship = JSON.stringify(docs);
 
@@ -263,9 +222,6 @@ app.get('/', function (req, res) {
 
     // END sockets Server
 
-
-    
-
 //SELF CALLING FUNCTION FOR DECAY
 setTimeout( function () {
 
@@ -278,9 +234,6 @@ setTimeout( function () {
         })();
             
 }, 10000);  //10 SECONDS before decay starts so db can be setup
-
-
-
 
 // MQTT Server
 
@@ -372,72 +325,6 @@ var thisMqttServer = mqtt.createServer(function(client) {
 }).listen(mqttPort);
 // END mqtt Server
 
-var thisMqttClient = mqtt.createClient( mqttPort, serverAddress, function (err, client) {
-
-        var defaultTopic;
-
-        if(err) {
-
-                console.log(err , " CLIENT = Unable to connect to broker");
-                process.exit(1);
-
-        }
-        client.connect({
-
-                 client: "buzz"
-
-        });
-
-        client.on('connack', function (packet) {
-
-            if (packet.returnCode === 0) {
-
-                    client.publish({
-
-                            topic: defaultTopic,
-
-                            payload: defaultPayload
-                        
-                    });
-
-            } else {
-
-                    console.log('connack error %d', packet.returnCode);
-
-                    process.exit(-1);
-
-            }
-        });
-
-        client.on('close', function () {
-
-                process.exit(0);
-
-        });
-
-        client.on('error', function (e) {
-
-                console.log('error %s', e);
-
-                process.exit(-1);
-
-        });
-});
-
-function publishClient ( topicName , payloadInfo ) {
-
-        thisMqttClient.publish( {
-
-                topic: topicName,
-                
-                payload: payloadInfo
-
-
-        });
-
-}
-
-
 function proximityCheck (id) {
 
     var thisGpsLat = people[id].gpsLat,
@@ -488,12 +375,12 @@ function increaseConnection ( primary, secondary ){
 
             }
 
-            connectionID = findConnnectionId( thisPrimary, thisSecondary);
+            connectionID = findconid.findConnnectionId( thisPrimary, thisSecondary);
             stringConnectionID = connectionID + '';
 
-             if ( connectionIdTime[stringConnectionID] === false ) {
+             if ( repeatconnection.conBoo[stringConnectionID] === false ) {
 
-                    //console.log( connectionIdTime,'   CONECTIONS AVALIBLE:. ');
+                    //console.log( repeatconnection.conBoo,'   CONECTIONS AVALIBLE:. ');
 
                             updateUserMax( thisPrimary ,thisSecondary , 1 ); //UPDATE Max Connections
 
@@ -501,38 +388,15 @@ function increaseConnection ( primary, secondary ){
 
                             updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
-                    connectionIdTime[stringConnectionID] = true; // BLOCK CONNECTIONS UNTIL TIMER SETS THIS FALSE
+                    repeatconnection.conBoo[stringConnectionID] = true; // BLOCK CONNECTIONS UNTIL TIMER SETS THIS FALSE
 
-                    timeDelayForConnection(stringConnectionID); // RUN FUNCTION FOR THIS CONNECTION ID
+                    repeatconnection.timeDelayForConnection(stringConnectionID); // RUN FUNCTION FOR THIS CONNECTION ID
 
             } else {
 
-                console.log('DID NOT UPDATE, TIMER DELAY IS: ', connectionIdTime[stringConnectionID]);
+                console.log('DID NOT UPDATE, TIMER DELAY IS: ', repeatconnection.conBoo[stringConnectionID]);
 
             }
-}
-
-function findConnnectionId (ArduinoOne, ArduinoTwo) {
-
-        var thisArduino = ArduinoOne,
-            thisOtherArduino = ArduinoTwo,
-            connectionIdThing = "";
-
-            if (thisOtherArduino < thisArduino){
-
-                    var tempStore = thisArduino;
-
-                    thisArduino = thisOtherArduino;
-                    thisOtherArduino = tempStore;
-
-            }
-
-            connectionIdThing = "a" + thisArduino + "a" + thisOtherArduino;
-
-            actualConnectionID = connectionIdObject[connectionIdThing] || connectionIdObject[0];
-
-            return actualConnectionID;
-
 }
 
 function updateRelationshipDbEntry ( connectionID ){
@@ -622,42 +486,3 @@ function decayRelationship () {
         } );
 
 }
-
-function timeDelayForConnection ( connectionID ) {
-
-        setTimeout( function () {
-
-                connectionIdTime[connectionID] = false ;
-
-        }, delayForConnectionTime );
-}
-
-// function historicData (date) {
-
-//     //This gives you an array of the objects.
-
-//     relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err , docs){
-    
-//         //console.log(docs);
-//         return docs;
-    
-//     });
-    
-// }
-
-function createdFrom (date) {
-
-    //This function is used within historicData to create an ObjectID with the specific date, then queries the DB for ObjectID's created after.
-
-    if (typeof(date) == 'string'){
-            timestamp = new Date(date);
-        }
-
-    hexSeconds = Math.floor(timestamp/1000).toString(16);
-
-    constructedObjectID = ObjectID(hexSeconds+"0000000000000000");
-
-    return constructedObjectID;
-
-    }
-

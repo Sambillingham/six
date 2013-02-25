@@ -71,10 +71,12 @@
 
     ],
     allViewArray = [],
+    allViewArrayRel = [],
     useLiveData = true,
     useAllData = false,
-    intervalTimerId = 0;
-        //
+    intervalTimerId = 0,
+    intervalTimerIdRelationship = 0;
+            //
 
         //Some UI stuff failquery /////
 
@@ -112,6 +114,7 @@
                     $("#all-view").removeClass('view-button-active');
                     $("#more-view").removeClass('view-button-active');
                     clearInterval(intervalTimerId);
+                    clearInterval(intervalTimerIdRelationship);
             });
 
             ///END VIEW buttons
@@ -216,15 +219,53 @@
 
                 nextAllData();
 
-                if (intervalTimerId)clearInterval(intervalTimerId);
+                if (intervalTimerId)clearInterval();
 
                 intervalTimerId = setInterval(nextAllData, 2500);
-                console.log(UserMaxConnection);
 
                 }
             });
             
             socket.on('all-view-data-relationship', function (allVierDataRelationship) {
+
+
+                allViewArrayRel = JSON.parse(allVierDataRelationship);
+
+                if ( useAllData === true ) {
+
+                          var indexRel = 0;
+
+                          function nextAllDataRelationships() {
+
+                                console.log(allViewArrayRel[indexRel]);
+                                indexRel = (indexRel + 1) % allViewArrayRel.length;
+
+                                for ( var i = 0 ; i < 4; i++) {
+
+                                        if ( allViewArrayRel[indexRel].id === i ) {
+
+                                                relationshipsDbInsert[i].conId = allViewArrayRel[indexRel].conId;
+                                                relationshipsDbInsert[i].relationship = allViewArrayRel[indexRel].relationship;
+
+                                                if ( okayToUpdate === true ) {
+
+                                                    onUpdateValues();
+
+                                                }
+
+                                        }
+                                }
+
+
+                          }
+
+                nextAllDataRelationships();
+
+                if (intervalTimerIdRelationship)clearInterval(intervalTimerIdRelationship);
+
+                intervalTimerIdRelationship = setInterval(nextAllDataRelationships, 2300);
+
+                }
 
             });
             
