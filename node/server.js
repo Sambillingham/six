@@ -3,7 +3,6 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, { log: false }),
     mqtt = require('mqttjs'),
-    //ObjectID = require('mongodb').ObjectID,
     relationships = '';
     changes = '';
     users = '';
@@ -18,7 +17,8 @@ var express = require('express'),
 
     //LETS MAKE IT MODULAR
 
-    var historic = require("./historic");
+    var historic = require("./historic"),
+    repeatconnection = require("./repeatconnection");
 
     //
 var defaultTopic = '/default',
@@ -66,15 +66,15 @@ var defaultTopic = '/default',
 
     },
     
-    connectionIdTime = {
+    // connectionIdTime = {
 
-        "1" : false,
-        "2" : false,
-        "3" : false,
-        "4" : false,
-        "5" : false,
-        "6" : false
-    },
+    //     "1" : false,
+    //     "2" : false,
+    //     "3" : false,
+    //     "4" : false,
+    //     "5" : false,
+    //     "6" : false
+    // },
     UserMaxConnection = [
                 {
 
@@ -495,9 +495,9 @@ function increaseConnection ( primary, secondary ){
             connectionID = findConnnectionId( thisPrimary, thisSecondary);
             stringConnectionID = connectionID + '';
 
-             if ( connectionIdTime[stringConnectionID] === false ) {
+             if ( repeatconnection.conBoo[stringConnectionID] === false ) {
 
-                    //console.log( connectionIdTime,'   CONECTIONS AVALIBLE:. ');
+                    //console.log( repeatconnection.conBoo,'   CONECTIONS AVALIBLE:. ');
 
                             updateUserMax( thisPrimary ,thisSecondary , 1 ); //UPDATE Max Connections
 
@@ -505,13 +505,13 @@ function increaseConnection ( primary, secondary ){
 
                             updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
-                    connectionIdTime[stringConnectionID] = true; // BLOCK CONNECTIONS UNTIL TIMER SETS THIS FALSE
+                    repeatconnection.conBoo[stringConnectionID] = true; // BLOCK CONNECTIONS UNTIL TIMER SETS THIS FALSE
 
-                    timeDelayForConnection(stringConnectionID); // RUN FUNCTION FOR THIS CONNECTION ID
+                    repeatconnection.timeDelayForConnection(stringConnectionID); // RUN FUNCTION FOR THIS CONNECTION ID
 
             } else {
 
-                console.log('DID NOT UPDATE, TIMER DELAY IS: ', connectionIdTime[stringConnectionID]);
+                console.log('DID NOT UPDATE, TIMER DELAY IS: ', repeatconnection.conBoo[stringConnectionID]);
 
             }
 }
@@ -627,41 +627,14 @@ function decayRelationship () {
 
 }
 
-function timeDelayForConnection ( connectionID ) {
+// function timeDelayForConnection ( connectionID ) {
 
-        setTimeout( function () {
+//         setTimeout( function () {
 
-                connectionIdTime[connectionID] = false ;
+//                 connectionIdTime[connectionID] = false ;
 
-        }, delayForConnectionTime );
-}
-
-// function historicData (date) {
-
-//     //This gives you an array of the objects.
-
-//     relationships.find({ _id: {$gt: createdFrom(date)}}).toArray(function (err , docs){
-    
-//         //console.log(docs);
-//         return docs;
-    
-//     });
-    
+//         }, delayForConnectionTime );
 // }
 
-// function createdFrom (date) {
 
-//     //This function is used within historicData to create an ObjectID with the specific date, then queries the DB for ObjectID's created after.
-
-//     if (typeof(date) == 'string'){
-//             timestamp = new Date(date);
-//         }
-
-//     hexSeconds = Math.floor(timestamp/1000).toString(16);
-
-//     constructedObjectID = ObjectID(hexSeconds+"0000000000000000");
-
-//     return constructedObjectID;
-
-// }
 
