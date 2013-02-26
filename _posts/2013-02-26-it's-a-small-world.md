@@ -21,6 +21,8 @@ The area is still being researched with researchers Peter Dodds, Roby Muhamad an
 
 Within the six degrees of seperation there is the concept of 'funneling' that was stipulated by Malcolm Gladwell, his sociological research suggested that within a network there are extremely connected people who act like 'nodes' which can then be a bridge between several different groups.
 
+![testpic]({{site.baseurl}}/img/testing-gps.png)
+
 ###Sixty Arduino's
 
 While our mapping has been limited to both our hardware constraints, in essence the six degrees of separation would be mapped digitally in a theoretical situation in which we took a random sample of users, geographically seperate and had them use our project. While we can demonstrate this information, if we had the funds available and found willing participants this would become a digital experiment to map the six degrees. Within the digital age the six degrees has been found to still work, as research mentioned earlier has said, while trying to map the six degrees we would forceably make any audience members to stop using social media networks as they could possibly serve as an extremely large node connecting people and would likely skew any findings, however by doing so we could look at how social media networks have better connected us all and are bringing the phrase "It's a small world" truly to town.
