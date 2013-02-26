@@ -478,15 +478,6 @@ function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
 }
 
-function addRelationshipChange ( connectionID , relationship ) {
-
-       // Inserts a new document with the ID and change into changes collection.
-        // changes.insert({ID:connectionID,rChange:relationship}, function(err){
-        //     if(err) console.log('Inserting change failed.')
-        //     else console.log('Inserted change' + connectionID + " : " + relationship)
-        // })
-
-}
 
 function showDbValues () {
 
