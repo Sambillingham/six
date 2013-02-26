@@ -99,7 +99,7 @@ var historicsStuff = [],
     latestTopic = '';
 
 // Mongo connection
-MongoClient.connect("mongodb://localhost:27017/sixproduction", function(err, db) {
+MongoClient.connect("mongodb://localhost:27017/seven", function(err, db) {
 
     if(err) {
 
@@ -240,21 +240,21 @@ app.get('/multi', function (req, res) {
             socket.on('circlebuzz', function (id) {
 
                     console.log('circle Buzz', id);
-                    mqqtclient.publishOnClient(id +'/buzz/circle', '1');
+                    mqqtclient.publishOnClient(id +'/buzz/newRelationship', '1');
 
             });
 
             socket.on('fbbuzz', function (id) {
 
                     console.log('FRONT BACK Buzz', id);
-                    mqqtclient.publishOnClient(id +'/buzz/fb', '1');
+                    mqqtclient.publishOnClient(id +'/buzz/lowRelationship', '1');
 
             });
 
             socket.on('allbuzz', function (id) {
 
                     console.log('ALL Buzz', id);
-                    mqqtclient.publishOnClient(id +'/buzz/all', '1');
+                    mqqtclient.publishOnClient(id +'/buzz/highRelationship', '1');
 
             });
 
