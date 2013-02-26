@@ -39,10 +39,9 @@
     }
 
     //Topics to subscribe to
-    char*  patternOneSubTopic = "1/buzz/circle";
-    char*  patternTwoSubTopic = "1/buzz/fb";
-    char*  patternThreeSubTopic = "1/buzz/all";
-    char*  patternFourSubTopic = "1/buzz/4";
+    char*  newRelationshipSubTopic = "1/buzz/newRelationship";
+    char*  lowRelationshipSubTopic = "1/buzz/lowRelationship";
+    char*  highRelationshipSubTopic = "1/buzz/highRelationship";
     
     //Topics to publish on
     char*  pubTopicGpsLat="1/gpsLat";
@@ -95,19 +94,28 @@ void loop()
 //Custom fucntion
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  if(String(topic) == patternOneSubTopic){
-    buzz_1();  
+  if(String(topic) == newRelationshipSubTopic){
+    Serial.println("new");
+    buzz_1();
+    buzz_2();
+    buzz_3();
+    buzz_4();
+    buzz_1();
+    buzz_2();
+    buzz_3();
+    buzz_4();
   }
-  
-  if(String(topic) == patternTwoSubTopic){
+  if(String(topic) == lowRelationshipSubTopic){
+    buzz_1();
+    buzz_2();
+    buzz_1();
     buzz_2();
   }
-  
-  if(String(topic) == patternThreeSubTopic){
+  if(String(topic) == highRelationshipSubTopic){
+    Serial.println("high");
     buzz_3();
-  }
-  
-  if(String(topic) == patternFourSubTopic){
+    buzz_4();
+    buzz_3();
     buzz_4();
   }
 }
@@ -134,22 +142,16 @@ void wifiConnect() {
 void mqttSubscribe(){
   
   if(cl.connect("ArduinoOne")){
-  
-  cl.subscribe(patternOneSubTopic);
-  //cl.subscribe(patternTwoSubTopic);
-  //cl.subscribe(patternThreeSubTopic);
-  //cl.subscribe(patternFourSubTopic);
-  
-  Serial.println("MQTT subscribed.");
-
+    cl.subscribe(newRelationshipSubTopic);
+    cl.subscribe(lowRelationshipSubTopic);
+    cl.subscribe(highRelationshipSubTopic);
+    Serial.println("MQTT subscribed.");
   }
   
   //Connects even without finding the MQTT broker,
   
   else {
-    
-  Serial.println("MQTT subscription failed.");
-
+    Serial.println("MQTT subscription failed.");
   }
 }
   
@@ -219,40 +221,40 @@ void printGPS()
 void buzz_1(){
   digitalWrite(2, HIGH);
   digitalWrite(3, HIGH);
-  Serial.println("Buzz 4");
-  delay(1000);
+  Serial.println("Buzz 1");
+  delay(500);
   digitalWrite(2, LOW);
   digitalWrite(3, LOW);
-  delay(1000);
+  delay(500);
 }
 
 void buzz_2(){
   digitalWrite(4, HIGH);
   digitalWrite(5, HIGH);
-  Serial.println("Buzz 1");
-  delay(1000);
+  Serial.println("Buzz 2");
+  delay(500);
   digitalWrite(4, LOW);
   digitalWrite(5, LOW);
-  delay(1000);
+  delay(500);
 }
 
 void buzz_3(){
   digitalWrite(6, HIGH);
   digitalWrite(7, HIGH);
-  Serial.println("Buzz 2");
-  delay(1000);
+  Serial.println("Buzz 3");
+  delay(500);
   digitalWrite(6, LOW);
   digitalWrite(7, LOW);
-  delay(1000);
+  delay(500);
 }
 
 void buzz_4(){
   digitalWrite(8, HIGH);
   digitalWrite(9, HIGH);
-  Serial.println("Buzz 3");
-  delay(1000);
+  Serial.println("Buzz 4");
+  delay(500);
   digitalWrite(8, LOW);
   digitalWrite(9, LOW);
-  delay(1000);
+  delay(500);
 }
 /***************************************************/
