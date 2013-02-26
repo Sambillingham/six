@@ -79,7 +79,11 @@
     useLiveData = true,
     useAllData = false,
     intervalTimerId = 0,
-    intervalTimerIdRelationship = 0;
+    intervalTimerIdRelationship = 0,
+    index = 0,
+    indexRel = 0,
+    indexCheck = false,
+    indexRelCheck = false;
             //
 
         //Some UI stuff failquery /////
@@ -100,6 +104,9 @@
 
             ///view buttons
             $("#all-view").click(function() {
+                      
+                    index = 0;
+                    indexRel = 0;
 
                     useLiveData = false;
                     useAllData = true;
@@ -153,7 +160,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://141.163.144.45');
+        var socket = io.connect('http://178.79.132.119');
         
             socket.on('relationshipConnections', function (data) {
 
@@ -219,15 +226,32 @@
 
                 if ( useAllData === true ) {
 
-                          var index = 0;
+
 
                           function nextAllData() {
 
-                                console.log(allViewArray[index]);
-                                
-                                index = (index + 1) % allViewArray.length;
+
+                                //index = (index + 1) % allViewArray.length;
+                                if (indexCheck === false ) {
+                                index = allViewArray.length - 1;
+                                indexCheck = true;
+
+
+                                } 
+
+                                if ( index === 0 ) {
+
+                                    indexCheck = false;
+                                } else {
+
+                                    index -= 1;
+                                }
+
+
 
                                 for ( var i = 0 ; i < 4; i++) {
+
+                                    console.log(index, "  ", allViewArray[index]);
 
                                         if ( allViewArray[index].id === i ) {
 
@@ -262,16 +286,36 @@
 
                 if ( useAllData === true ) {
 
-                          var indexRel = 0;
+                        
 
                           function nextAllDataRelationships() {
 
-                                console.log(allViewArrayRel[indexRel]);
-                                indexRel = (indexRel + 1) % allViewArrayRel.length;
+                            if (indexRelCheck === false ) {
+                                indexRel = allViewArrayRel.length - 1;
+                                indexRelCheck = true;
+
+
+                                } 
+
+                                if ( indexRel === 0 ) {
+
+                                    indexRelCheck = false;
+
+                                } else {
+
+                                    indexRel -= 1;
+                                }
+
+                                
+                                //indexRel = (indexRel + 1) % allViewArrayRel.length;
+                                //indexRel = allViewArrayRel.length - 1;
 
                                 for ( var i = 0 ; i < 4; i++) {
 
-                                        if ( allViewArrayRel[indexRel].id === i ) {
+                                    console.log(indexRel , "  ", allViewArrayRel[indexRel]);
+
+
+                                        if ( allViewArrayRel[indexRel].conId === i ) {
 
                                                 relationshipsDbInsert[i].conId = allViewArrayRel[indexRel].conId;
                                                 relationshipsDbInsert[i].relationship = allViewArrayRel[indexRel].relationship;

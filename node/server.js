@@ -99,7 +99,7 @@ var historicsStuff = [],
     latestTopic = '';
 
 // Mongo connection
-MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
+MongoClient.connect("mongodb://localhost:27017/sixproduction", function(err, db) {
 
     if(err) {
 
@@ -137,6 +137,12 @@ app.configure(function() {
 app.get('/', function (req, res) {
 
         res.sendfile(__dirname + '/index.html');
+
+});
+
+app.get('/multi', function (req, res) {
+
+        res.sendfile(__dirname + '/multi.html');
 
 });
 
@@ -197,7 +203,7 @@ app.get('/', function (req, res) {
                 socket.emit('testingTopic', latestTopic);
 
 
-                    runLotsOfData();
+                    //randomSelectPlusMinus();
                 
 
                 setTimeout(arguments.callee, 1500);
@@ -259,7 +265,7 @@ setTimeout( function () {
 
        (function () {
                 
-                showDbValues();
+                //showDbValues();
 
                 updateDbWithDecay();
 
@@ -608,7 +614,7 @@ function someDbData (rid, a1 , a2) {
 
                 else  {
 
-                        console.log('1 & 2 users Max decreased' );
+                        console.log('random users Max increase' );
 
                 }
 
@@ -629,7 +635,7 @@ function someDbData (rid, a1 , a2) {
 
                     else  {
 
-                            console.log('decreased all relationships');
+                            console.log('increased random relationship');
 
                     }
 
@@ -641,7 +647,7 @@ function someDbData (rid, a1 , a2) {
 
 function runLotsOfData () {
 
-        for ( var i = 0 ; i < 6 ; i++) {
+        for ( var i = 0 ; i < 4 ; i++) {
 
             newRand = Math.floor(Math.random() * 7 );
 
@@ -671,4 +677,100 @@ function runLotsOfData () {
 
 
 }
+
+
+function someDbLessData (rid, a1 , a2) {
+
+    console.log( rid, a1 , a2);
+
+
+        users.update( { $or: [ { id: a1 }, { id: a2 } ] }  , { $inc: { max:-1 } }, { multi:true }, function ( err, result ){
+
+                if (err)  {
+
+                        console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                        console.log('random users Max increase' );
+
+                }
+
+    
+        });
+
+        
+
+        
+
+            relationships.update( { conId:rid }, { $inc: { relationship:-1 } }, {w:1}, function ( err, result ){
+
+                    if (err)  {
+
+                            console.log('Update failed', err);
+
+                    }
+
+                    else  {
+
+                            console.log('increased random relationship');
+
+                    }
+
+            });
+        
+
+}
+
+function runLotsOfMinusData () {
+
+        for ( var i = 0 ; i < 4 ; i++) {
+
+            newRand = Math.floor(Math.random() * 7 );
+
+
+            switch (newRand) {
+
+            case 1:
+                someDbLessData (1, 0 , 1);
+            break;
+            case 2:
+                someDbLessData (2, 0 , 2);
+            break;
+            case 3:
+                someDbLessData (3, 0 , 3);
+            break;
+            case 4:
+                someDbLessData (4, 1 , 2);
+            break;
+            case 5:
+                someDbLessData (5, 1 , 3);
+            break;
+            case 6:
+                someDbLessData (6, 2 , 3);
+            break;
+            }
+        }
+
+
+}
+
+function randomSelectPlusMinus () {
+
+        newRand = Math.floor(Math.random() * 12 );
+
+        if  ( newRand > 8 ) {
+
+            runLotsOfMinusData();
+
+        } else {
+
+            runLotsOfData();
+
+        }
+
+}
+
 
