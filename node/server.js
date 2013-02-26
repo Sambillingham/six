@@ -187,7 +187,9 @@ app.get('/multi', function (req, res) {
                                         console.log('Oh noes an error');
 
                                 } else {
-                                        
+
+                                    
+
                                         socket.emit("relationshipConnections", item);
                                         //console.log(item);
 
@@ -430,6 +432,42 @@ function increaseConnection ( primary, secondary ){
 
                             updateRelationshipDbEntry( connectionID ); //UPDATE Relationship connection
 
+
+
+                            relationships.findOne( { conId: connectionID }, function ( err, item ) {
+
+                                if ( err ) {
+
+                                        console.log('Oh noes an error');
+
+                                } else {
+
+                                        if ( item.relationship <= 0 ) {
+
+                                            mqqtclient.publishOnClient(id +'/buzz/newRelationship', '1');
+
+                                        }else if ( item.relationship >= 10 && item.relationship <= 20 ) {
+
+                                            mqqtclient.publishOnClient(id +'/buzz/lowRelationship', '1');
+
+                                        } else if ( item.relationship >= 20 ) {
+
+                                            mqqtclient.publishOnClient(id +'/buzz/highRelationship', '1');
+
+                                        }
+
+                                        socket.emit("relationshipConnections", item);
+                                        //console.log(item);
+
+                                }
+
+                        });
+
+                            
+
+
+
+
                     repeatconnection.conBoo[stringConnectionID] = true; // BLOCK CONNECTIONS UNTIL TIMER SETS THIS FALSE
 
                     repeatconnection.timeDelayForConnection(stringConnectionID); // RUN FUNCTION FOR THIS CONNECTION ID
@@ -464,6 +502,9 @@ function updateRelationshipDbEntry ( connectionID ){
 function updateUserMax ( ArduinoOne, ArduinoTwo , incAmmount ) {
 
         // Incremention both Users Max Connection by Increment
+
+
+        
 
         users.update(  { $or: [ { id: ArduinoOne }, { id: ArduinoTwo } ] } , { $inc: { max:incAmmount } }, { multi:true }, function ( err, result ){
 
