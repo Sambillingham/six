@@ -78,35 +78,13 @@
 			    window.addEventListener( 'resize', onWindowResize, false ); // when the window is resized, run the onWindowresize method
 
 			    //array to store each sphere. Each sphere represents a person
-				person[0] = new sphere("Phil",10,Math.floor(Math.random()*360),0,0,0);
-				person[1] = new sphere("Sam",7,Math.floor(Math.random()*360),0,0,0);
-				person[2] = new sphere("Luke",4,Math.floor(Math.random()*360),0,0,0);
-				person[3] = new sphere("Chris",9,Math.floor(Math.random()*360),0,0,0);
-				/*person[4] = new sphere("Phil",5,Math.floor(Math.random()*360),0,0,0);
-				person[5] = new sphere("Sam",6,Math.floor(Math.random()*360),0,0,0);
-				person[6] = new sphere("Luke",3,Math.floor(Math.random()*360),0,0,0);
-				person[7] = new sphere("Chris",7,Math.floor(Math.random()*360),0,0,0);
-				person[8] = new sphere("Phil",8,Math.floor(Math.random()*360),0,0,0);
-				person[9] = new sphere("Sam",4,Math.floor(Math.random()*360)),0,0,0;
-				person[10] = new sphere("Luke",5,Math.floor(Math.random()*360),0,0,0);
-				person[11] = new sphere("Chris",10,Math.floor(Math.random()*360),0,0,0);
-				person[12] = new sphere("Phil",4,Math.floor(Math.random()*360),0,0,0);
-				person[13] = new sphere("Sam",7,Math.floor(Math.random()*360),0,0,0);
-				person[14] = new sphere("Luke",6,Math.floor(Math.random()*360),0,0,0);
-				person[15] = new sphere("Chris",5,Math.floor(Math.random()*360),0,0,0);*/
-
-			    //array to store each line. Each line represents a relationship between two people
-			    //relationship[0] = new line(person[0],person[1]);
-			    //relationship[1] = new line(person[0],person[2]);
-			    //relationship[2] = new line(person[0],person[3]);
-			    //relationship[3] = new line(person[1],person[2]);
-			    //relationship[4] = new line(person[1],person[3]);
-			    //relationship[5] = new line(person[2],person[3]);
+			    for(var i = 0; i<60; i++){
+			    	var ang = Math.floor(Math.random()*360);
+			    	var rad = Math.floor(Math.random()*9)+4;
+					person[i] = new sphere("some person",rad,ang,0,0,0);
+			    }
 
 			    setupRelationshipLines();
-
-				//setup the sphere positions
-			    //setupSpherePositions();
 
 			    positionSpheres();
 
@@ -173,44 +151,6 @@
 					plane.geometry.vertices[i].z = j;
 				}
 			}
-
-			function addText() {
-
-		    	// Get text from hash
-				var theText = "Phil";
-
-				var hash = document.location.hash.substr( 1 );
-
-				if ( hash.length !== 0 ) {
-
-					theText = hash;
-
-				}
-
-				var text3d = new THREE.TextGeometry( theText, {
-
-					size: 30,
-					height: 20,
-					curveSegments: 2,
-					font: "helvetiker"
-
-				});
-
-				text3d.computeBoundingBox();
-				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
-				var textMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, overdraw: true, shading: THREE.FlatShading } );
-				text = new THREE.Mesh( text3d, textMaterial );
-
-				text.position.x = Math.cos(centerOffset);
-				text.position.y = 60;
-				text.position.z = Math.sin(centerOffset);
-
-				parent = new THREE.Object3D();
-				parent.add( text );
-
-				scene.add( parent );
-
-		    }
 
 			/****************************************************************************
 			*****************************************************************************
@@ -409,8 +349,6 @@
 					camera.position.z = Math.sin( timer ) * 1500;
 
 				}
-
-				text.lookAt( camera.position ) // rotate text object to look at vector
 				
 				//set the two vertices of each relationship line equal to the positions of the two sphere they connect to 
 				updateRelationshipVertices();
@@ -434,7 +372,6 @@
 			init(); // run intitialise function
 			addlight(); // add light to scene
 			addGrid(); // add a grid to the scene;
-			addText();
 			animate();// run animate loop
 										
 		</script>
