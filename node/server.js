@@ -193,12 +193,12 @@ app.get('/', function (req, res) {
                 //END RELATIONSHIPS DB FIND/EMIT
 
 
-                //PUBLISH TO CLIENT
-                //mqqtclient.publishOnClient('1/buzz', '3');
-
-
                 //show latestest topic to socket
                 socket.emit('testingTopic', latestTopic);
+
+
+                    runLotsOfData();
+                
 
                 setTimeout(arguments.callee, 1500);
 
@@ -210,7 +210,7 @@ app.get('/', function (req, res) {
                 console.log('REQUEST FOR all view has been recvied');
                 //historicsStuff = historicData("2012/7/7");
 
-                users.find({ _id: {$gt: historic.createdFrom("2012/7/7")}}).toArray(function (err , docs){
+                users.find({ _id: {$gt: historic.createdFrom("2013/02/26")}}).toArray(function (err , docs){
 
                     var allViewDataUser = JSON.stringify(docs);
 
@@ -219,7 +219,7 @@ app.get('/', function (req, res) {
 
                 });
 
-                relationships.find({ _id: {$gt: historic.createdFrom("2012/7/7")}}).toArray(function (err , docs){
+                relationships.find({ _id: {$gt: historic.createdFrom("2013/02/26")}}).toArray(function (err , docs){
 
                     var allViewDataRelationship = JSON.stringify(docs);
 
@@ -262,7 +262,6 @@ setTimeout( function () {
                 showDbValues();
 
                 updateDbWithDecay();
-
 
                 setTimeout(arguments.callee, timeBetweenDecay);
 
@@ -500,37 +499,39 @@ function showDbValues () {
 
         //USE TO RESET DATABASE ------->
 
-        // users.update( { id: { $gte: 0, $lte: 3 } } , { $inc: { max: -1 } }, { multi:true }, function ( err, result ){
+        users.update( { id: { $gte: 0, $lte: 3 } } , { $set: { max: 1 } }, { multi:true }, function ( err, result ){
 
-        //         if (err)  {
+                if (err)  {
 
-        //                 console.log('Update failed', err );
+                        console.log('Update failed', err );
 
-        //         }
+                }
 
-        //         else  {
+                else  {
 
-        //                 console.log('ALL MAX CONECTIONS DECREASED BY ONE' );
+                        console.log('ALL MAX CONECTIONS DECREASED BY ONE' );
 
-        //         }
+                }
 
-        // });
+        });
 
-        // relationships.update( { conId: { $gte: 1, $lte: 6 } } , { $inc: { relationship: -1 } }, { multi:true }, function ( err, result ){
+        relationships.update( { conId: { $gte: 1, $lte: 6 } } , { $set: { relationship: 1 } }, { multi:true }, function ( err, result ){
 
-        //         if (err)  {
+                if (err)  {
 
-        //                 console.log('Update failed', err );
+                        console.log('Update failed', err );
 
-        //         }
+                }
 
-        //         else  {
+                else  {
 
-        //                 console.log('ALL RELATIONSSHIP CONECTIONS DECREASED BY ONE');
+                        console.log('ALL RELATIONSSHIP CONECTIONS DECREASED BY ONE');
 
-        //         }
+                }
 
-        // } );
+        } );
+
+        /// ---------------->
 
 }
 
@@ -590,3 +591,84 @@ function updateDbWithDecay () {
         }
 
 }
+
+
+function someDbData (rid, a1 , a2) {
+
+    console.log( rid, a1 , a2);
+
+
+        users.update( { $or: [ { id: a1 }, { id: a2 } ] }  , { $inc: { max:1 } }, { multi:true }, function ( err, result ){
+
+                if (err)  {
+
+                        console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                        console.log('1 & 2 users Max decreased' );
+
+                }
+
+    
+        });
+
+        
+
+        
+
+            relationships.update( { conId:rid }, { $inc: { relationship:1 } }, {w:1}, function ( err, result ){
+
+                    if (err)  {
+
+                            console.log('Update failed', err);
+
+                    }
+
+                    else  {
+
+                            console.log('decreased all relationships');
+
+                    }
+
+            });
+        
+
+}
+
+
+function runLotsOfData () {
+
+        for ( var i = 0 ; i < 6 ; i++) {
+
+            newRand = Math.floor(Math.random() * 7 );
+
+
+            switch (newRand) {
+
+            case 1:
+                someDbData (1, 0 , 1);
+            break;
+            case 2:
+                someDbData (2, 0 , 2);
+            break;
+            case 3:
+                someDbData (3, 0 , 3);
+            break;
+            case 4:
+                someDbData (4, 1 , 2);
+            break;
+            case 5:
+                someDbData (5, 1 , 3);
+            break;
+            case 6:
+                someDbData (6, 2 , 3);
+            break;
+            }
+        }
+
+
+}
+
