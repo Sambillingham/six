@@ -1,8 +1,9 @@
 ---
 layout: post
-title: It's a small world
+title: Its a small world
 author: Luke Wotton
 tags: Everyware
+---
 
 ### "It's a small world.."
 
