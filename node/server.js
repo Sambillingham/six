@@ -12,8 +12,8 @@ var express = require('express'),
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4, // Number of Arduino's for live connection
-    delayForConnectionTime = 30000, // time in milleseconds
-    timeBetweenDecay = 6000000; // 1 hour between delay
+    delayForConnectionTime = 30000, // time in milleseconds "30 secs"
+    timeBetweenDecay = 4*(60*(60*(1000))); // 4 hours between delay
 
     //Home made modules
     var historic = require("./historic"),
@@ -259,7 +259,10 @@ setTimeout( function () {
 
        (function () {
                 
-                decayRelationship();
+                showDbValues();
+
+                updateDbWithDecay();
+
 
                 setTimeout(arguments.callee, timeBetweenDecay);
 
@@ -485,9 +488,64 @@ function addRelationshipChange ( connectionID , relationship ) {
 
 }
 
-function decayRelationship () {
+function showDbValues () {
 
-        users.update( { id: { $gte: 0, $lte: 3 } } , { $inc: { max: -1 } }, { multi:true }, function ( err, result ){
+
+        users.find({ id: { $gte: 0, $lte: 3 } } ).limit(4).toArray(function (err , docs) {
+
+
+                    console.log(docs);
+           
+                    
+        });
+
+        relationships.find({ conId: { $gte: 1, $lte: 6 } } ).limit(6).toArray(function (err , docs) {
+
+
+                    console.log(docs);
+           
+                    
+        });
+
+        //USE TO RESET DATABASE ------->
+
+        // users.update( { id: { $gte: 0, $lte: 3 } } , { $inc: { max: -1 } }, { multi:true }, function ( err, result ){
+
+        //         if (err)  {
+
+        //                 console.log('Update failed', err );
+
+        //         }
+
+        //         else  {
+
+        //                 console.log('ALL MAX CONECTIONS DECREASED BY ONE' );
+
+        //         }
+
+        // });
+
+        // relationships.update( { conId: { $gte: 1, $lte: 6 } } , { $inc: { relationship: -1 } }, { multi:true }, function ( err, result ){
+
+        //         if (err)  {
+
+        //                 console.log('Update failed', err );
+
+        //         }
+
+        //         else  {
+
+        //                 console.log('ALL RELATIONSSHIP CONECTIONS DECREASED BY ONE');
+
+        //         }
+
+        // } );
+
+}
+
+function updateDbWithDecay () {
+
+        users.update( { $or: [ { id: 1 }, { id: 2 } ] }  , { $inc: { max:-1 } }, { multi:true }, function ( err, result ){
 
                 if (err)  {
 
@@ -497,26 +555,47 @@ function decayRelationship () {
 
                 else  {
 
-                        console.log('ALL MAX CONECTIONS DECREASED BY ONE' );
+                        console.log('1 & 2 users Max decreased' );
 
                 }
+
+    
+        });
+
+        users.update( { $or: [ { id: 0 }, { id: 3 } ] }  , { $inc: { max:-1 } }, { multi:true }, function ( err, result ){
+
+                if (err)  {
+
+                        console.log('Update failed', err );
+
+                }
+
+                else  {
+
+                        console.log('0 & 3 users Max decreased' );
+
+                }
+
 
         });
 
-        relationships.update( { conId: { $gte: 1, $lte: 6 } } , { $inc: { relationship: -1 } }, { multi:true }, function ( err, result ){
+        for ( var i = 0 ; i < 7 ; i ++ ){
 
-                if (err)  {
+                relationships.update( { conId:i }, { $inc: { relationship:-1 } }, {w:1}, function ( err, result ){
 
-                        console.log('Update failed', err );
+                        if (err)  {
 
-                }
+                                console.log('Update failed', err);
 
-                else  {
+                        }
 
-                        console.log('ALL RELATIONSSHIP CONECTIONS DECREASED BY ONE');
+                        else  {
 
-                }
+                                console.log('decreased all relationships');
 
-        } );
+                        }
+
+                });
+        }
 
 }

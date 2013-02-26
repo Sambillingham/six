@@ -153,7 +153,7 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://141.163.172.83');
+        var socket = io.connect('http://141.163.144.45');
         
             socket.on('relationshipConnections', function (data) {
 
@@ -311,11 +311,6 @@
 
 
             }, 1000 );
-
-
-        
-
-
             
             /****************************************************************************
             *****************************************************************************
@@ -367,32 +362,17 @@
                 window.addEventListener( 'resize', onWindowResize, false ); // when the window is resized, run the onWindowresize method
 
                 //array to store each sphere. Each sphere represents a person
-                person[0] = new sphere("GOLD",0xFFFFFF,40, 0, 0, 0);//gold
-                person[1] = new sphere("GREEN",0xFFFFFF,30, 0, 0, 0);//green
-                person[2] = new sphere("RED",0xFFFFFF,20, 0, 0, 0);//red
-                person[3] = new sphere("BLUE",0xFFFFFF,10, 0, 0, 0);//blue
+                person[0] = new sphere("Phil",10,Math.floor(Math.random()*360),0,0,0);
+                person[1] = new sphere("Sam",7,Math.floor(Math.random()*360),0,0,0);
+                person[2] = new sphere("Luke",4,Math.floor(Math.random()*360),0,0,0);
+                person[3] = new sphere("Chris",9,Math.floor(Math.random()*360),0,0,0);
 
                 console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
 
-                //array to store each line. Each line represents a relationship between two people
-                relationship[0] = new line(person[0],person[1]);
-                relationship[1] = new line(person[0],person[2]);
-                relationship[2] = new line(person[0],person[3]);
-                relationship[3] = new line(person[1],person[2]);
-                relationship[4] = new line(person[1],person[3]);
-                relationship[5] = new line(person[2],person[3]);
 
-                //array to store each of the locations on the page where the spheres can be positioned
-                sphereLocations[0] = new locationHolder(0,0,0);
-                sphereLocations[1] = new locationHolder(200,60,0);
-                sphereLocations[2] = new locationHolder(-70,300,0);
-                sphereLocations[3] = new locationHolder(-200,-350,0);
+                setupRelationshipLines();
 
-                //setup the sphere positions
-                setupSpherePositions();
-
-                //on mouse click, run the onDocumentMouseDown method
-               // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                positionSpheres();
 
                 //run post processing
                 postProcessing();
@@ -484,10 +464,6 @@
                 var textMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, overdraw: true, shading: THREE.FlatShading } );
                 text = new THREE.Mesh( text3d, textMaterial );
 
-                //text.position.x = -(text.geometry.boundingBox.max.x)/2;
-                //text.position.y = 0;
-                ///text.position.z = -(text.geometry.boundingBox.max.z)/2;
-
                 text.position.x = Math.cos(centerOffset);
                 text.position.y = 60;
                 text.position.z = Math.sin(centerOffset);
@@ -505,22 +481,20 @@
             *****************************************************************************
             ****************************************************************************/
 
-            //function for creating objects that store xyz coordinates
-            function locationHolder(x,y,z){
-                this.x = x;
-                this.y = y;
-                this.z = z;
-            }
+            
 
             //function to create a sphere given the shown parameters. some parameters are stored in the object
-            function sphere(sId, sColor,sRadius, sX, sY, sZ) {
+            function sphere(sId,sRadius,sAngle,sX,sY,sZ) {
                 this.sId = sId;
-                this.sColor = sColor;
                 this.sRadius = sRadius;
+                this.sAngle = sAngle;
+                this.sX = sX;
+                this.sX = sY;
+                this.sX = sZ;
 
                 var sphereMaterial = new THREE.MeshLambertMaterial(
                     { 
-                        ambient: 0xFFFFFF, color: sColor, specular: 0x000000, shininess: 0, shading: THREE.FlatShading, opacity: 1.0, transparent: true
+                        ambient: 0xFFFFFF, color: 0xFFFFFF, specular: 0x000000, shininess: 0, shading: THREE.FlatShading, opacity: 1.0, transparent: true
                     } 
                 );
 
@@ -535,8 +509,45 @@
                 scene.add(this.sphere);// add sphere to scene
             }
 
+            function positionSpheres(){
+                var personHolder = new Array();
+                for(var i = 0; i<person.length; i++){
+                    var counter = 0;
+                    for(var j = 0; j<person.length; j++){
+                        if(i!=j){
+                            if (person[i].sRadius < person[j].sRadius){
+                                counter++;
+                            }
+                        }
+                    }
+                    personHolder[counter] = person[i];
+
+                    fromPosX = person[i].sphere.position.x;
+                    fromPosY = 0;
+                    fromPosZ = person[i].sphere.position.z;
+
+                    toPosX = positionSphereX(counter,person[i].sAngle);
+                    toPosY = 0;
+                    toPosZ = positionSphereZ(counter,person[i].sAngle);
+
+                    setupTween(person[i],fromPosX,fromPosY,fromPosZ, toPosX,toPosY,toPosZ);
+                }
+
+
+            }
+
+            function positionSphereX(counter,sAngle){
+                hyp = counter*(800/person.length);
+                return(Math.cos(sAngle)*hyp);
+            }
+
+            function positionSphereZ(counter,sAngle){
+                hyp = counter*(800/person.length);
+                return(Math.sin(sAngle)*hyp);
+            }
+
             //function to create a line from one sphere to another. Both spheres are stored in variables 'sphereA' and 'sphereB'.
-            function line(sphereA, sphereB){
+            function line(sphereA, sphereB, lineOpacity){
 
                 this.sphereA = sphereA;
                 this.sphereB = sphereB;
@@ -550,7 +561,7 @@
                 lineGeometry.vertices.push( pointB );
                 lineGeometry.verticesNeedUpdate = true;
 
-                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xFFFFFF, opacity: 0.5, linewidth:5 } );
+                var lineMaterial = new THREE.LineBasicMaterial( { color: 0xFFFFFF, transparent: true, opacity: lineOpacity, linewidth:1 } );
 
                 this.line = new THREE.Line( lineGeometry, lineMaterial );
                 this.line.geometry.verticesNeedUpdate = true;
@@ -563,101 +574,44 @@
             function updateSphereRadius(){
                 for(var i = 0; i<person.length; i++){
                     var newId = person[i].sId;
-                    var newColor = person[i].sColor;
-
-                    //Used to randomly change the radius, incrementing or decrementing by 3. USED FOR DEVLEOPMENT ONLY. 
-                    var plusOrMinus = Math.floor(Math.random()*2);
-                    var newRadius;
-
-                    newRadius = UserMaxConnection[i].max;
-
-                    //if(plusOrMinus == 0){newRadius = (UserMaxConnection[i].max) + 3}
-                    //else{newRadius = (UserMaxConnection[i].max) - 3}
-                    //USED FOR DEVLEOPMENT ONLY
-
-                console.log(UserMaxConnection[0].max, UserMaxConnection[1].max, UserMaxConnection[2].max, UserMaxConnection[3].max);
-
+                    var newAngle = person[i].sAngle;
                     var newX = person[i].sphere.position.x;
                     var newY = person[i].sphere.position.y;
                     var newZ = person[i].sphere.position.z;
+
+                    var newRadius = UserMaxConnection[i].max;
+
                     scene.remove(person[i].sphere);
-                    person[i] = new sphere(newId,newColor,newRadius,newX,newY,newZ);    
-                }
-
-                //array to store each line. Each line represents a relationship between two people
-                //TODO: make this happen dynamically
-                scene.remove(relationship[0].line);
-                scene.remove(relationship[1].line);
-                scene.remove(relationship[2].line);
-                scene.remove(relationship[3].line);
-                scene.remove(relationship[4].line);
-                scene.remove(relationship[5].line);
-                relationship[0] = new line(person[0],person[1]);
-                relationship[1] = new line(person[0],person[2]);
-                relationship[2] = new line(person[0],person[3]);
-                relationship[3] = new line(person[1],person[2]);
-                relationship[4] = new line(person[1],person[3]);
-                relationship[5] = new line(person[2],person[3]);
+                    person[i] = new sphere(newId,newRadius,newAngle,newX,newY,newZ);
             }
 
-            //method run during initialising. positions the spheres
-            //TODO: make this happen dynamically
-            function setupSpherePositions(){
-                for(var i = 0; i<person.length; i++){
-                    person[i].sphere.position.x = sphereLocations[i].x;
-                    person[i].sphere.position.y = sphereLocations[i].y;
-                    person[i].sphere.position.z = sphereLocations[i].z;
+                
+
+                for (var i = 0; i < relationship.length; i++){
+                    scene.remove(relationship[i].line);
                 }
+
+                setupRelationshipLines();
+
+                positionSpheres();
             }
 
+            function setupRelationshipLines(){
+                var counter = 0;
 
-            function repositionSpheres(){
-                var storePeople = new Array();
+                for( var a = (person.length-1); a>0; a--){
 
-                for(var i = 0; i<person.length; i++){
-                    var counter = 0;
-                    for(var j = 0; j<person.length; j++){
-                        if (person[j].sRadius > person[i].sRadius){
-                            counter++;
-                        }
-                        else if (person[j].sRadius == person[i].sRadius){
-                            if(j>i){
-                                counter++;
-                            }
-                        }
+                    for(var b = (a-1); b>=0; b--){
+                        var opacity = Math.random();
+                        relationship[counter] = new line(person[a], person[b], opacity);
+                        counter++;
 
                     }
-                    storePeople[i] = counter;
-                    //console.log(i + ") person:" + person[i].sId + " - new radius:" + person[i].sRadius + ". new pos: " + counter);
-                }
-
-                //console.log("");
-                //console.log("Store People 0: " + storePeople[0]);
-                //console.log("Store People 1: " + storePeople[1]);
-                //console.log("Store People 2: " + storePeople[2]);
-                //console.log("Store People 3: " + storePeople[3]);
-                //console.log("");
-
-                for(var i = 0; i<person.length; i++){
-                    var k = storePeople[i];
-                    var objectToTween = person[i];
-                    var fromPosX = objectToTween.sphere.position.x;
-                    var fromPosY = objectToTween.sphere.position.y;
-                    var fromPosZ = objectToTween.sphere.position.z;
-                    //console.log(k);
-                    //console.log("person "+objectToTween.sId+" is at sphere loc " + k + "(x: " + sphereLocations[k].x+ ")");
-                    var toPosX = sphereLocations[k].x;
-                    var toPosY = sphereLocations[k].y;
-                    var toPosZ = sphereLocations[k].z;
-                    //console.log("move person "+i+" to poistion "+storePeople[i]);
-                    //console.log("move person "+objectToTween+" from position "+ fromPosX+" to poistion "+toPosX)
-                    setupTween(objectToTween,fromPosX,fromPosY,fromPosZ, toPosX,toPosY,toPosZ);
 
                 }
-
-                //console.log("");
-                //console.log("");
             }
+
+            
 
             function setupTween(objectToTween,fromPosX,fromPosY,fromPosZ,toPosX,toPosY,toPosZ)
             { 
@@ -695,7 +649,6 @@
             function onUpdateValues() {
                 TWEEN.removeAll();
                 updateSphereRadius();
-                repositionSpheres();
 
                 okayToUpdate = false;
                 timeOutForAnimation ();
@@ -752,7 +705,7 @@
             ****************************************************************************/
             //run all the functions to make it work
 
-            setTimeout( function () { 
+            setTimeout( function () {
 
                     init(); // run intitialise function
                     addlight(); // add light to scene
