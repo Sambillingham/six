@@ -5,11 +5,11 @@ author: Luke Wotton
 tags: Everyware
 ---
 
-### "It's a small world.."
-
-So - the theory goes that you know anyone else in the world through six degrees of seperation. The study that found this was by Stanley Milgram, althoug he never actually used the term 'six degrees of seperation' but the term has always associated with his work. 
+The theory goes that you know anyone else in the world through six degrees of seperation. The study that found this was by Stanley Milgram, althoug he never actually used the term 'six degrees of seperation' but the term has always associated with his work. 
 
 The study used a randomly selected individual and sent them a information packet with a name of a 'target' located a large distance from them, they were then to pass the message on to try to become closer to the target recepient, this would continue until hopefully the target was reached. They were to write their name on a card within the packet and send it on aswell as send a pre-addresssed postcard back to Harvard University so that the researchers could track the movement towards the target. The researchers found that the amount of steps to a target, when it got to the target the average amount of steps was from five to six steps. Ocasionally being just one or going from up to ten. 
+
+###Small-world-type network
 
 The theory suggested that society is a small-world-type network - one in which nodes are not neighbours but can be reached by a small number of steps. This is what allows mutual friends to connect through a theoretical maximum of six node jumps to connect to another individual within the network. This type of networking model is common in infrastructure networks as it models our anthropocentric society and the geographical regions that we inhabit. 
 
@@ -17,7 +17,11 @@ Milgram looked at a theory by Michael Gurevitch from The Massachusetts Institute
 
 The area is still being researched with researchers Peter Dodds, Roby Muhamad and Duncan Watts sending out 24,163 chain emails with 18 randomly selected targets around the world - this study found once again that the mean chain length was six, even in a digitally connected
 
+###Funneling
+
 Within the six degrees of seperation there is the concept of 'funneling' that was stipulated by Malcolm Gladwell, his sociological research suggested that within a network there are extremely connected people who act like 'nodes' which can then be a bridge between several different groups.
+
+###Sixty Arduino's
 
 While our mapping has been limited to both our hardware constraints, in essence the six degrees of separation would be mapped digitally in a theoretical situation in which we took a random sample of users, geographically seperate and had them use our project. While we can demonstrate this information, if we had the funds available and found willing participants this would become a digital experiment to map the six degrees. Within the digital age the six degrees has been found to still work, as research mentioned earlier has said, while trying to map the six degrees we would forceably make any audience members to stop using social media networks as they could possibly serve as an extremely large node connecting people and would likely skew any findings, however by doing so we could look at how social media networks have better connected us all and are bringing the phrase "It's a small world" truly to town.
 
