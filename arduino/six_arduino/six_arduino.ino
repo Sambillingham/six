@@ -106,6 +106,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     buzz_4();
   }
   if(String(topic) == lowRelationshipSubTopic){
+    Serial.println("low");
     buzz_1();
     buzz_2();
     buzz_1();
