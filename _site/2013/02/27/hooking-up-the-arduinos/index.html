@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title> Hooking up the Arduinos |  Six</title>
+	<meta name="description" content="This is the blog for project Six" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="author" href="humans.txt"/>
+	<link rel="stylesheet" href="/six/css/1140.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/six/css/styles.css" type="text/css" media="screen" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="/six/js/functions.js" language="javascript"></script>
+</head>
+
+<body>
+
+		<div class="demo">
+
+	<header class="container">
+		<div class="row">
+			<div class="fourcol">
+				<h1></h1>	
+			</div>
+			<div class="eightcol last">
+				<a class="btn-medium first" href="/six/archive/" title="archive">Archive</a>
+			</div>
+		</div>
+	</header>
+
+	<div class="container demo">
+		
+	</div>
+</div>
+	
+<div class="container info">
+
+
+	    <div class="row">
+			
+			<div class="twelvecol">
+
+				<h2 class="bloglink posttitle">Hooking up the Arduinos</h2>
+					<hr class="archive-line"/> 
+					<h4 class="author-name">Chris Packard</h4>
+
+				<div class="blog-content"> 
+
+					<p><img src="/six/img/belt_1LR.jpg" alt="Arduino Belt" /></p>
+
+<p>The physical components of the Six Project are centered around Arduinos. My role in the Six Project was to develop and then construct our setup, i wrote the code and tested everything was working correctly throughout our project.</p>
+
+<p>Each person who is part of the Six Project has a belt (or other wearable tech) with an Arduino attached. These Arduinos use a Wifly shield to connect to a wifi hotspot created by the user’s  phone and then allowing the Arduino to access the phones 3G connection. Once a successful internet connection has been established, the Arduino then connects to our Node app where the calculations and  connections for the Six project can be made and then results databased.</p>
+
+<p><img src="/six/img/belt_2lr.jpg" alt="Arduino Belt" /></p>
+
+<p>Every person with Six has a belt housing a GPS locator which sends the user’s current longitude and latitude coordinates as MQTT packets to the node server. A function runs on the server to determine if the user is near any other user. If they are, their relationship with that person increases.</p>
+
+<p>As well as the data value for this relationship increasing, the user receives haptic feedback in the form of four vibration motors. These vibrate in different combinations to offer the user information on their relationship with the people they are near. There are currently three different patterns of vibrations: one for when a new relationship is created, one for when a relationship exists, but the relationship value is low, and one for when a relationship exists, and the relationship value is high.</p>
+
+<p>A belt was used as it is a common everyday clothing accessory that many people use. It is also very easy to embed vibration motors in an inconspicuous way, yet still be easily felt by each user.</p>
+
+<p>As well as being the main programmer of the Arduinos I also helped with some of the technicalities of the three.js web experience. This included writing mathematical equations for mapping each orb at certain angles, getting the orbs to animate when their respective radii change and connecting the relationship lines to the orbs they connect.</p>
+ 
+
+				</div>
+
+			</div>
+		</div>
+
+</div>
+
+<footer class="container">
+	<div class="row">
+		<div class="twelvecol last">
+			<a href="https://github.com/sambillingham/six">Six</a> - An Everyware Project for <a href="http://digitalartandtechnology.co.uk/">Digital Art and Technology</a> at <a href="http://plymouth.ac.uk/">Plymouth University</a>
+		</div>
+	</div>
+</footer>
+
+
+</body>
+
+</html>

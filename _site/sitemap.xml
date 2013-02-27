@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+      <loc>http://sambillingham.github.com/six/2013/02/27/hooking-up-the-arduinos/</loc>
+      <lastmod>2013-02-27</lastmod>
+      <changefreq>never</changefreq>
+  </url>
+  <url>
       <loc>http://sambillingham.github.com/six/2013/02/27/git-version-control/</loc>
       <lastmod>2013-02-27</lastmod>
       <changefreq>never</changefreq>
@@ -18,6 +23,11 @@
   <url>
       <loc>http://sambillingham.github.com/six/2013/02/20/visualising-separation-with-three-js/</loc>
       <lastmod>2013-02-20</lastmod>
+      <changefreq>never</changefreq>
+  </url>
+  <url>
+      <loc>http://sambillingham.github.com/six/2012/02/24/frontend-connections/</loc>
+      <lastmod>2012-02-24</lastmod>
       <changefreq>never</changefreq>
   </url>
 </urlset>
