@@ -10,7 +10,7 @@ The physical components of the Six Project are centered around Arduinos. My role
 
 Each person who is part of the Six Project has a belt (or other wearable tech) with an Arduino attached. These Arduinos use a Wifly shield to connect to a wifi hotspot created by the user’s  phone and then allowing the Arduino to access the phones 3G connection. Once a successful internet connection has been established, the Arduino then connects to our Node app where the calculations and  connections for the Six project can be made and then results databased.
 
-![Arduino Belt]({{site.baseurl}}/img/belt_2lr.jpg)
+![Arduino Belt]({{site.baseurl}}/img/belt_2LR.jpg)
 
 Every person with Six has a belt housing a GPS locator which sends the user’s current longitude and latitude coordinates as MQTT packets to the node server. A function runs on the server to determine if the user is near any other user. If they are, their relationship with that person increases.
 
