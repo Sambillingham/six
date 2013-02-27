@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title> Configure The Mainframe |  Six</title>
+	<meta name="description" content="This is the blog for project Six" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="author" href="humans.txt"/>
+	<link rel="stylesheet" href="/six/css/1140.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/six/css/styles.css" type="text/css" media="screen" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="/six/js/functions.js" language="javascript"></script>
+</head>
+
+<body>
+
+		<div class="demo">
+
+	<header class="container">
+		<div class="row">
+			<div class="fourcol">
+				<h1></h1>	
+			</div>
+			<div class="eightcol last">
+				<a class="btn-medium first" href="/six/archive/" title="archive">Archive</a>
+			</div>
+		</div>
+	</header>
+
+	<div class="container demo">
+		
+	</div>
+</div>
+	
+<div class="container info">
+
+
+	    <div class="row">
+			
+			<div class="twelvecol">
+
+				<h2 class="bloglink posttitle">Configure The Mainframe</h2>
+					<hr class="archive-line"/> 
+					<h4 class="author-name">Sam Billingham</h4>
+
+				<div class="blog-content"> 
+
+					<h1>The Backend System</h1>
+
+<p>*The nearly there edition.</p>
+
+<h2>Node js</h2>
+
+<p>Five weeks ago I'd not had a single experience with Node.js but had heard about how powerful a tool it could be. Node.js is a serve side implementation of Javascript, i set out to learn Node.js for Six and another project <a href="http://samillingham.github.com/lucid">lucid</a> with little prior experience of Javascript, previously only using basic functionality and some Jquery snippetsts.</p>
+
+<h3>Express framework</h3>
+
+<h3>MQTT Broker</h3>
+
+<ul>
+<li>Allows matt clients to connect and then works just to mediate messages between all connected clients.</li>
+</ul>
+
+
+<h3>MQTT Publish Client</h3>
+
+<p>I was able to integrate a simple MQTT client that sits within the Node.js app. Now the client was available server-side I could simply use a function to connect the client to our MQTT broker and another function throughout out server that would pass in a topic and a packet of information to be sent whenever necessary. We used this publish client a number of times both for automated response when our users make connections and when manual buttons are pressed within the user interface online. When buttons are pressed on the user interface a corresponding socket connection is made and then the server responses by running the publish client functions with relevant parameters.</p>
+
+<h1>Frontend</h1>
+
+<ul>
+<li>socket.io</li>
+<li>Prototype with 2x cube setup for three.js</li>
+<li>plugging sockets implementation into the Three.js Vis</li>
+<li>using MQTT Utility for testing</li>
+<li>why use all this tech?</li>
+<li>Compare to the ESN</li>
+</ul>
+
+ 
+
+				</div>
+
+			</div>
+		</div>
+
+</div>
+
+<footer class="container">
+	<div class="row">
+		<div class="twelvecol last">
+			<a href="https://github.com/sambillingham/six">Six</a> - An Everyware Project for <a href="http://digitalartandtechnology.co.uk/">Digital Art and Technology</a> at <a href="http://plymouth.ac.uk/">Plymouth University</a>
+		</div>
+	</div>
+</footer>
+
+
+</body>
+
+</html>

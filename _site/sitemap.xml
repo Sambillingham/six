@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+      <loc>http://sambillingham.github.com/six/2013/02/27/git-version-control/</loc>
+      <lastmod>2013-02-27</lastmod>
+      <changefreq>never</changefreq>
+  </url>
+  <url>
       <loc>http://sambillingham.github.com/six/2013/02/26/it%27s-a-small-world/</loc>
       <lastmod>2013-02-26</lastmod>
       <changefreq>never</changefreq>
   </url>
   <url>
+      <loc>http://sambillingham.github.com/six/2013/02/25/configure-the-mainframe/</loc>
+      <lastmod>2013-02-25</lastmod>
+      <changefreq>never</changefreq>
+  </url>
+  <url>
       <loc>http://sambillingham.github.com/six/2013/02/20/visualising-separation-with-three-js/</loc>
       <lastmod>2013-02-20</lastmod>
-      <changefreq>never</changefreq>
-  </url>
-  <url>
-      <loc>http://sambillingham.github.com/six/2013/02/12/everyware-im-hustling/</loc>
-      <lastmod>2013-02-12</lastmod>
-      <changefreq>never</changefreq>
-  </url>
-  <url>
-      <loc>http://sambillingham.github.com/six/2013/02/06/bacon-and-tune/</loc>
-      <lastmod>2013-02-06</lastmod>
-      <changefreq>never</changefreq>
-  </url>
-  <url>
-      <loc>http://sambillingham.github.com/six/2013/02/05/example/</loc>
-      <lastmod>2013-02-05</lastmod>
       <changefreq>never</changefreq>
   </url>
 </urlset>
