@@ -285,7 +285,13 @@
 
 		border-bottom: 1px solid #66605E;
 	}
-	.blog-content a:visited {}
+	.blog-content a:visited {
+
+		font-family: "proxima_nova_rgbold", Helvetica, Arial, sans-serif;
+		text-decoration: none;
+		color: #66605E;
+		border-bottom: 1px solid #CCC;
+	}
 
 	.author-name {
 		margin-top: 10px;
