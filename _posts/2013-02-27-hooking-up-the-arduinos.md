@@ -8,7 +8,7 @@ author: Chris Packard
 
 The physical components of the Six Project are centered around Arduinos. My role in the Six Project was to develop and then construct our setup, i wrote the code and tested everything was working correctly throughout our project.
 
-Each person who is part of the Six Project has a belt (or other wearable tech) with an Arduino attached. These Arduinos use a Wifly shield to connect to a wifi hotspot created by the user’s  phone and then allowing the Arduino to access the phones 3G connection. Once a successful internet connection has been established, the Arduino then connects to our Node app where the calculations and  connections for the Six project can be made and then results databased.
+Each person who is part of the Six Project has a belt (or other wearable tech) with an Arduino attached. Arduinos utilising a Wifly shield connect to a wifi hotspot created by a user’s  phone thus allowing the Arduino to access the phones 3G connection. Once a successful internet connection has been established, the Arduino then connects to our Node app where the calculations and  connections for the Six project can be made and then results databased.
 
 ![Arduino Belt]({{site.baseurl}}/img/belt_2LR.jpg)
 
