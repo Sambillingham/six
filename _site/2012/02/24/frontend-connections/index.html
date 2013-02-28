@@ -48,19 +48,17 @@
 
 					<h2>Frontend</h2>
 
-<p>I used Socket.io which is a node module but around web sockets, it extends this protocol and adds fallbacks for when it is not available aswell as more advanced functions onto of the standard sockets. Every 1.5 seconds the database is</p>
+<p>I used Socket.io which is a node module but using the html5 web sockets protocol, it extends this protocol and adds fallbacks for when it is not available as-well as adds more advanced functionality over standard sockets.</p>
 
-<ul>
-<li>socket.io</li>
-<li>Prototype with 2x cube setup for three.js</li>
-<li>plugging sockets implementation into the Three.js Vis</li>
-<li>using MQTT Utility for testing</li>
-<li>why use all this tech?</li>
-<li>Compare to the ESN</li>
-</ul>
+<p>Every 1.5 seconds the server access the database, finds the latest entry for all of the users latest Max connection and for the relationships and sends them though to the client via a socket connection. Using web sockets allowed for this communication in real-time whenever the system needed updating.</p>
 
+<p>Using web sockets was a classic lightbulb moment, it took a couple days of playing around, working with examples and breaking things but eventually something twigged and it all came together. Once i realised to think of a socket.on as an event listener and socket.emit as what fires that it became pretty simple and i was able to create all the functionality we needed.</p>
 
-<h1>Why not use a phone and geoLocation?</h1>
+<p>I had a little adventure with three.js myself, just enough to know where to plug the data received through sockets into and how to basic camera/render setup worked. This testing phase was also useful for using MQTT inputs running through the server to make sure the connections make it all the way through the chain and can affect the webgl render in real-time. Fun fun.</p>
+
+<h2>Why not use a phone and geoLocation?</h2>
+
+<p>As with any project Six changed a lot during its development, we began to focus more on the connections forming based on proximity and less about data from sensors. We decided to stick with using an Arduino form factor because we wanted to base our project around wearable technology, so even though we could get similar functionality using a mobile device we decided not to.</p>
  
 
 				</div>
