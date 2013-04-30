@@ -1,7 +1,7 @@
 Project SIX Blog
 ===
 
-View the Blog [here](http://www.sambillingham.github.com/six "Blog")
+View the Blog [here](http://sambillingham.github.com/six "Blog")
 
 ##Authors
 
