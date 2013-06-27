@@ -7,8 +7,8 @@ var express = require('express'),
     changes = '';
     users = '';
     MongoClient = require('mongodb').MongoClient,
-    socketsPort = 8080,
-    mqttPort = 8085, // need to be diffrent to socketsPort
+    socketsPort = 8082,
+    mqttPort = 1883, // need to be diffrent to socketsPort
     serverAddress = "127.0.0.1",
     proximityThreshold = 0.0003, // Equal to 20m
     NumOfClients = 4, // Number of Arduino's for live connection
@@ -99,7 +99,7 @@ var historicsStuff = [],
     latestTopic = '';
 
 // Mongo connection
-MongoClient.connect("mongodb://localhost:27017/seven", function(err, db) {
+MongoClient.connect("mongodb://localhost:27017/six", function(err, db) {
 
     if(err) {
 
@@ -269,7 +269,7 @@ setTimeout( function () {
                 
                 //showDbValues();
 
-                updateDbWithDecay();
+                //updateDbWithDecay();
 
                 setTimeout(arguments.callee, timeBetweenDecay);
 

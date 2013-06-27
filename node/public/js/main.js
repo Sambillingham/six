@@ -4,6 +4,8 @@
           $('.stats').toggle();
         });
 
+
+
         //THREE STUFF
         var camera,
         scene,
@@ -160,13 +162,27 @@
         relationshipConnections = {};
         maxConnection = {};
 
-        var socket = io.connect('http://178.79.132.119');
+        var socket = io.connect('six.sambillingham.com');
+
+        index = 0;
+        indexRel = 0;
+
+        
+        //fake all button press//
+        useLiveData = false;
+        useAllData = true;
+        socket.emit('all-view-request');
+        console.log('All view has been selected and socket request sent to server');
+        $("#all-view").addClass('view-button-active');
+        $("#live-view").removeClass('view-button-active');
+        $("#more-view").removeClass('view-button-active');
+
         
             socket.on('relationshipConnections', function (data) {
 
                 relationshipConnections = data;
 
-                if ( useLiveData === true ) {
+                if ( useLiveData != undefined  ) {
 
                     for ( var i = 1; i < 7; i++) {
 
@@ -190,7 +206,7 @@
 
                 maxConnection = data;
 
-                if ( useLiveData === true ) {
+                if ( useLiveData != undefined ) {
 
                     for ( var i = 0 ; i < 4; i++) {
 
