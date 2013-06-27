@@ -6,7 +6,7 @@ Welcome to Six. Six is our way of tyring to explore the invisible connections be
 
 Find out more at the Six site [here](http://sambillingham.github.com/six "Blog")
 
-View the project [here](http://project.me.uk:8080 "Six Project")
+View the project [here](http://six.sambillingham.com "Six Project")
 
 ##The System
 
